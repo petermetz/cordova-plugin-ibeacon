@@ -26,7 +26,7 @@
 //
 //
 
-#import "CDVPluginIBeacon.h"
+#import "CDVIBeacon.h"
 
 @implementation CDVPluginIBeacon
 {
