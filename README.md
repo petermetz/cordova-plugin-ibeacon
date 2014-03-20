@@ -17,7 +17,92 @@
          under the License.
 -->
 
-# com.mippin.cordova.ibeacon
+## ![iBeacon Cordova Plugin](http://icons.iconarchive.com/icons/artua/mac/128/Bluetooth-icon.png) Cordova plugin for monitoring and ranging iBeacons
+
+### Installation
+
+```
+cordova plugin add https://github.com/petermetz/cordova-plugin-ibeacon.git
+```
+
+### Usage
+
+The plugin's API closely mimics the one exposed through the [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) in iOS 7. There is some added sugar as well, like the ability to interact with multiple iBeacons through a single call.
+
+#### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
+
+##### Creating CLBeaconRegion DTOs
+```
+/**
+ * Function that creates a CLBeaconRegion data transfer object.
+ * 
+ * @throws Error if the CLBeaconRegion cannot be created.
+ */
+function createBeacon() {
+   var identifier = 'beaconAtTheMacBooks'; // optional
+   var major = 1111; // mandatory
+   var minor = 2222; // mandatory
+   var uuid = '550e8400-e29b-41d4-a716-446655440000'; // mandatory
+
+   // throws an error if the parameters are not valid
+   var beacon = new IBeacon.CLBeaconRegion(uuid, major, minor, identifier);
+   return beacon;   
+} 
+```
+ 
+##### Start monitoring a single iBeacon
+```
+
+var onDidDetermineStateCallback = function (result) {
+     console.log(result.state);
+};
+
+var beacon = createBeacon();
+IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
+
+```
+ 
+
+##### Stop monitoring a single iBeacon
+```
+
+var beacon = createBeacon();
+IBeacon.stopMonitoringForRegion(beacon);
+
+```
+ 
+ 
+##### Start ranging a single iBeacon
+```
+
+var onDidRangeBeacons = function (result) {
+   console.log('onDidRangeBeacons() ', result);
+};
+
+var beacon = createBeacon();
+IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
 
 
-TODO
+```
+ 
+##### Stop ranging a single iBeacon
+```
+
+var beacon = createBeacon();
+IBeacon.stopRangingBeaconsInRegion(beacon);
+
+```
+
+#### Convenience functions
+
+##### Handle multiple beacons with the same call:
+```
+
+var beacon1 = createBeacon(); 
+var beacon2 = createBeacon(); 
+var beacon3 = createBeacon(); 
+var beacons = [beacon1, beacon2, beacon3]; 
+
+IBeacon.startMonitoringForRegions(beacons); 
+IBeacon.startRangingBeaconsInRegions(beacons);
+```
