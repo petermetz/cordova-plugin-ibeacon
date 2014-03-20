@@ -1,4 +1,4 @@
-cordova.define("com.mippin.cordova.ibeacon", function(require, exports, module) {/*
+/*
 *
 * Licensed to the Apache Software Foundation (ASF) under one
 * or more contributor license agreements.  See the NOTICE file
@@ -47,10 +47,11 @@ IBeacon.prototype.isArrayOfBeacons = function (array) {
 
     for (var i = 0; i < array.length; i++) {
       var beacon = array[i];
-      if (!(beacon instanceof IBeacon.CLBeaconRegion)) {
+      if (!(beacon instanceof CLBeaconRegion)) {
         return false;
       }
     };
+    return true;
 };
 
 IBeacon.prototype.validateRegionArray = function (regionArray) {
@@ -112,7 +113,7 @@ IBeacon.prototype.startMonitoringForRegions = function (regions, didDetermineSta
     this.validateRegionArray(regions);
 
     for (var i = 0; i < regions.length; i++) {
-      var beacon = regions[i];
+      var region = regions[i];
       this.callObjCRuntime('startMonitoringForRegion', region, didDetermineStateCallback);
     }
 };
@@ -135,7 +136,7 @@ IBeacon.prototype.startRangingBeaconsInRegions = function (regions, didRangeBeac
     this.validateRegionArray(regions);
 
     for (var i = 0; i < regions.length; i++) {
-      var beacon = regions[i];
+      var region = regions[i];
       this.callObjCRuntime('startRangingBeaconsInRegion', region, didRangeBeaconsCallback);
     }
 };
@@ -231,4 +232,4 @@ IBeacon.prototype.CLBeaconRegion = CLBeaconRegion;
 
 module.exports = new IBeacon();
 
-});
+

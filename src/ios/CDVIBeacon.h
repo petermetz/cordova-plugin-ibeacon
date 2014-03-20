@@ -19,7 +19,7 @@
  */
 
 //
-//  CDVPluginIBeacon.h
+//  CDVBeacon.h
 //
 //  Created by Peter Metz on 19/02/2014.
 //
@@ -28,7 +28,7 @@
 #import <Cordova/CDVPlugin.h>
 #import <CoreLocation/CoreLocation.h>
 
-@interface CDVPluginIBeacon : CDVPlugin<CLLocationManagerDelegate>
+@interface CDVIBeacon : CDVPlugin<CLLocationManagerDelegate>
 
 - (void)startMonitoringForRegion: (CDVInvokedUrlCommand*)command;
 - (void)stopMonitoringForRegion: (CDVInvokedUrlCommand*)command;
