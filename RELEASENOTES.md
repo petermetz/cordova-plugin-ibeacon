@@ -22,3 +22,6 @@
 
 ### 0.1.0 (14.02.2014)
 * Beta version created.
+
+### 0.2.0 (20.03.2014)
+* Wrote proper documentation and retested all the functionality. No API change introduced.
