@@ -28,7 +28,7 @@
 
 #import "CDVIBeacon.h"
 
-@implementation CDVPluginIBeacon
+@implementation CDVIBeacon
 {
     NSString *monitoringCallbackId;
     NSString *rangingCallbackId;
@@ -229,7 +229,7 @@
     NSLog(@"[IBeacon Plugin] startRangingBeaconsInRegion() %@", command.arguments);
     CLBeaconRegion* beaconRegion = [self parse:[command.arguments objectAtIndex: 0]];
     rangingCallbackId = command.callbackId;
-    [_locationManager startRangingBeaconsInRegion:NULL];
+    [_locationManager startRangingBeaconsInRegion:beaconRegion];
     NSLog(@"[IBeacon Plugin] Started ranging successfully.");
 }
 
