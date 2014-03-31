@@ -17,7 +17,14 @@
          under the License.
 -->
 
-## ![iBeacon Cordova Plugin](http://icons.iconarchive.com/icons/artua/mac/128/Bluetooth-icon.png) Cordova plugin for monitoring and ranging iBeacons
+
+## ![iBeacon Cordova Plugin](http://icons.iconarchive.com/icons/artua/mac/128/Bluetooth-icon.png) Cordova / Phonegap iBeacon plugin
+
+### Features
+
+ * Ranging
+ * Monitoring
+ * Coming soon => Advertising (Turning the actual device into a beacon)
 
 ### Installation
 
