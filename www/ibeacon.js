@@ -123,6 +123,15 @@ IBeacon.prototype.stopMonitoringForRegion = function (region) {
     return this.callObjCRuntime('stopMonitoringForRegion', region);
 };
 
+IBeacon.prototype.stopMonitoringForRegions = function (regions) {
+    this.validateRegionArray(regions);
+
+    for (var i = 0; i < regions.length; i++) {
+      var region = regions[i];
+      this.callObjCRuntime('stopMonitoringForRegion', region);
+    }
+};
+
 /**
  * A simple wrapper around {#startRangingBeaconsInRegion()} to make it possible to start ranging
  * multiple beacons with a single call.
@@ -162,10 +171,11 @@ IBeacon.prototype.stopRangingBeaconsInRegion = function (region) {
  */
 IBeacon.prototype.stopRangingBeaconsInRegions = function (regions) {
     this.validateRegionArray(regions);
-    for (var i = Things.length - 1; i >= 0; i--) {
-      Things[i]
-    };
-    return this.callObjCRuntime('stopRangingBeaconsInRegion', region);
+    
+    for (var i = 0; i < regions.length; i++) {
+      var region = regions[i];
+      this.callObjCRuntime('stopRangingBeaconsInRegion', region);
+    }; 
 };
 
 
