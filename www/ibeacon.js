@@ -175,7 +175,7 @@ IBeacon.prototype.stopRangingBeaconsInRegions = function (regions) {
     for (var i = 0; i < regions.length; i++) {
       var region = regions[i];
       this.callObjCRuntime('stopRangingBeaconsInRegion', region);
-    }; 
+    } 
 };
 
 

@@ -167,5 +167,4 @@ IBeacon.stopRangingBeaconsInRegion(beacon);
 IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
 IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
 
-
 ```
