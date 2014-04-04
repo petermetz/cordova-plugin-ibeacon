@@ -41,7 +41,7 @@ IBeacon.prototype.validateRegion = function (regionObject) {
 }
 
 IBeacon.prototype.isArrayOfBeacons = function (array) {
-    if (!array || typeof(array.length) !== 'number') {
+    if (!isArray(array)) {
         return false;
     }
 
@@ -69,10 +69,10 @@ IBeacon.prototype.validateRegionArray = function (regionArray) {
  * @param beaconCallback: This will be called by the native layer when an update
  * is triggered by the OS.
  */
-IBeacon.prototype.callObjCRuntime = function (actionName, region, beaconCallback, errorCallback) {
+IBeacon.prototype.callObjCRuntime = function (actionName, region, beaconCallback, errorCallback, extraArgs) {
     this.validateRegion(region);
     
-    var validActions = ['startMonitoringForRegion', 'stopMonitoringForRegion', 'startRangingBeaconsInRegion', 'stopRangingBeaconsInRegion'];
+    var validActions = ['startMonitoringForRegion', 'stopMonitoringForRegion', 'startRangingBeaconsInRegion', 'stopRangingBeaconsInRegion', 'startAdvertising'];
     
     if (validActions.indexOf(actionName) < 0) {
         throw new Error('Invalid operation: ' + actionName + ' Valid ones are: ' + validActions.join(','));
@@ -93,7 +93,12 @@ IBeacon.prototype.callObjCRuntime = function (actionName, region, beaconCallback
       }
     };
 
-    exec(onSuccess, onFailure, "IBeacon", actionName, [region]);
+    var commandArguments = [region];
+    if (isArray(extraArgs)) {
+        commandArguments = commandArguments.concat(extraArgs);
+    }
+
+    exec(onSuccess, onFailure, "IBeacon", actionName, commandArguments);
 };
 
 IBeacon.prototype.startMonitoringForRegion = function (region, didDetermineStateCallback) {
@@ -178,6 +183,23 @@ IBeacon.prototype.stopRangingBeaconsInRegions = function (regions) {
     } 
 };
 
+/**
+ * Starts advertising the current device as an iBeacon. Backed by the CoreBluetooth framework of iOS.
+ * 
+ * @param onPeripheralManagerDidUpdateState: Callback to be called when the Objective-C runtime receives
+ * the similarly named invocation.
+ *
+ * @param measuredPower: Optional parameter, if left empty, the device will use it's own default value.
+ *
+ */
+IBeacon.prototype.startAdvertising = function (region, onPeripheralManagerDidUpdateState, measuredPower) {
+    this.validateRegion(region);
+    return this.callObjCRuntime('startAdvertising', region, onPeripheralManagerDidUpdateState, null, measuredPower);
+};
+
+function isArray(array) {
+    return !(!array || typeof(array.length) !== 'number');
+}
 
 function isBlank(str) {
     return (!str || /^\s*$/.test(str));

@@ -23,5 +23,7 @@
 
         <header-file src="src/ios/CDVIBeacon.h" />
         <source-file src="src/ios/CDVIBeacon.m" />
+
+        <framework src="CoreBluetooth.framework" />
     </platform>
 </plugin>

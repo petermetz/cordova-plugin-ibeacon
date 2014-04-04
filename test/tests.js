@@ -40,3 +40,9 @@ IBeacon.stopRangingBeaconsInRegion(beacon);
 
 IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
 IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
+
+var onPeripheralManagerDidUpdateState = function (state) {
+	console.log('onPeripheralManagerDidUpdateState() state: ', state);
+} 
+IBeacon.startAdvertising(beacon, onPeripheralManagerDidUpdateState, 95);
+
