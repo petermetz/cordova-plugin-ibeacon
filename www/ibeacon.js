@@ -183,6 +183,13 @@ IBeacon.prototype.stopRangingBeaconsInRegions = function (regions) {
     } 
 };
 
+IBeacon.prototype.isAdvertising = function (onSuccess) {
+    if (typeof(onSuccess) !== 'function') {
+        throw new TypeError('The onSuccess parameter has to be a callback function.');
+    }
+    exec(onSuccess, null, "IBeacon", 'isAdvertising', []);
+};
+
 /**
  * Starts advertising the current device as an iBeacon. Backed by the CoreBluetooth framework of iOS.
  * 
@@ -200,6 +207,10 @@ IBeacon.prototype.startAdvertising = function (region, onPeripheralManagerDidSta
         return this.callObjCRuntime('startAdvertising', region, onPeripheralManagerDidStartAdvertising);
     }
     
+};
+
+IBeacon.prototype.stopAdvertising = function (onSuccess) {
+    exec(onSuccess, null, "IBeacon", 'stopAdvertising', []);
 };
 
 function isArray(array) {

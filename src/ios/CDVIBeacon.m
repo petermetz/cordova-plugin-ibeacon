@@ -52,20 +52,7 @@
         
         _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
         
-        // You can listen to more app notifications, see:
-        // http://developer.apple.com/library/ios/#DOCUMENTATION/UIKit/Reference/UIApplication_Class/Reference/Reference.html#//apple_ref/doc/uid/TP40006728-CH3-DontLinkElementID_4
         
-        // NOTE: if you want to use these, make sure you uncomment the corresponding notification handler
-        
-        // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onResume) name:UIApplicationWillEnterForegroundNotification object:nil];
-        // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onOrientationWillChange) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
-        // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-        
-        // Added in 2.3.0
-        // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLocalNotification:) name:CDVLocalNotification object:nil];
-        
-        // Added in 2.5.0
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
     }
     
@@ -186,7 +173,21 @@
 }
     
 # pragma mark Exposed Javascript API
+
+- (void) isAdvertising:(CDVInvokedUrlCommand *)command {
+    NSNumber *isAdvertising = [NSNumber numberWithBool:_peripheralManager.isAdvertising];
     
+    [self.commandDelegate runInBackground:^{
+        NSMutableDictionary* callbackData = [[NSMutableDictionary alloc]init];
+        [callbackData setObject:isAdvertising forKey:@"isAdvertising"];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:callbackData];
+        [pluginResult setKeepCallbackAsBool:YES];
+        
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 - (void)startAdvertising: (CDVInvokedUrlCommand*)command {
     NSLog(@"[IBeacon Plugin] startAdvertising() %@", command.arguments);
     
@@ -210,7 +211,22 @@
     
     advertisingCallbackId = command.callbackId;
 }
-    
+
+- (void) stopAdvertising:(CDVInvokedUrlCommand *)command {
+    NSLog(@"[IBeacon Plugin] stopAdvertising()");
+    if (_peripheralManager.state == CBPeripheralManagerStatePoweredOn) {
+        NSLog(@"[IBeacon Plugin] Stopping the advertising. The peripheral manager might report isAdvertising true even after this, for a short period of time.");
+        [_peripheralManager stopAdvertising];
+    } else {
+        NSLog(@"[IBeacon Plugin] Peripheral manager isn`t powered on. There is nothing to stop.");
+    }
+    [self.commandDelegate runInBackground:^{
+        NSMutableDictionary* callbackData = [[NSMutableDictionary alloc]init];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:callbackData];
+        [pluginResult setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
     
 - (void)startMonitoringForRegion: (CDVInvokedUrlCommand*)command {
     NSLog(@"[IBeacon Plugin] startMonitoringForRegion() %@", command.arguments);

@@ -23,32 +23,65 @@ try {
   };
 
   var beacon = createBeacon();
- IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
- IBeacon.stopMonitoringForRegion(beacon);
+  IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
+  IBeacon.stopMonitoringForRegion(beacon);
 
- IBeacon.startMonitoringForRegions(arrayOfBeacons, onDidDetermineStateCallback);
- IBeacon.stopMonitoringForRegions(arrayOfBeacons);
+  IBeacon.startMonitoringForRegions(arrayOfBeacons, onDidDetermineStateCallback);
+  IBeacon.stopMonitoringForRegions(arrayOfBeacons);
 
- var onDidRangeBeacons = function(result) {
-   console.log('onDidRangeBeacons() ', result);
- };
- IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
- IBeacon.stopRangingBeaconsInRegion(beacon);
+  var onDidRangeBeacons = function(result) {
+    console.log('onDidRangeBeacons() ', result);
+  };
+  IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
+  IBeacon.stopRangingBeaconsInRegion(beacon);
 
- IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
- IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
+  IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
+  IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
 
-  var onPeripheralManagerDidStartAdvertising = function(pluginResult) {
-    console.log('onPeripheralManagerDidStartAdvertising() pluginResult: ', pluginResult);
-  }
-  IBeacon.startAdvertising(createBeacon(), onPeripheralManagerDidStartAdvertising);
+  IBeacon.isAdvertising(function(pluginResult) {
+    var isAdvertising = pluginResult.isAdvertising;
+    console.log('isAdvertising:' + isAdvertising);
+    if (isAdvertising === true) {
+      throw new Error('Test case failed for `isAdvertising` #1');
+    }
+
+    // TODO This is ugly, define more top level callbacks to make it cleaner.
+    var onPeripheralManagerDidStartAdvertising = function(pluginResult) {
+      console.log('onPeripheralManagerDidStartAdvertising() pluginResult: ', pluginResult);
+
+      IBeacon.isAdvertising(function(pluginResult) {
+        var isAdvertising = pluginResult.isAdvertising;
+        console.log('isAdvertising:' + isAdvertising);
+        if (isAdvertising !== true) {
+          throw new Error('Test case failed for `isAdvertising` #2');
+        }
+        IBeacon.stopAdvertising(function() {
+
+          IBeacon.isAdvertising(function(pluginResult) {
+            var isAdvertising = pluginResult.isAdvertising;
+            console.log('isAdvertising:' + isAdvertising);
+            // FIXME The CBPeripheralManager is not KVO compilant and provides no way to
+            // get notified when the advertising really shut down.
+            // if (isAdvertising === true) {
+            //   throw new Error('Test case failed for `isAdvertising` #3');
+            // }
+          });
+
+        });
+      });
+    }
+
+    IBeacon.startAdvertising(createBeacon(), onPeripheralManagerDidStartAdvertising);
+  });
+
+
 
   if (app && app.receivedEvent) {
-    app.receivedEvent('deviceready');  
+    app.receivedEvent('deviceready');
   } else {
     alert('Tests were successful.');
   }
-  
+
 
 } catch (error) {
   alert('There were test failures. \n' + error.message);
