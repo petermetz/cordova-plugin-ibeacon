@@ -100,6 +100,15 @@ IBeacon.stopRangingBeaconsInRegion(beacon);
 
 ```
 
+##### Determine if advertising is turned on.
+
+```
+IBeacon.isAdvertising(function(pluginResult) {
+    var isAdvertising = pluginResult.isAdvertising;
+    console.log('isAdvertising:' + isAdvertising);
+});
+```
+
 ##### Start advertising device as an iBeacon
 ```
 var beacon = createBeacon();
@@ -111,7 +120,12 @@ IBeacon.startAdvertising(beacon, onPeripheralManagerDidStartAdvertising);
 
 ```
 
-#### Convenience functions
+##### Stopping the advertising
+```
+IBeacon.stopAdvertising(); // optionally you can specify a success callback as the first parameter
+```
+
+#### Convenience methods
 
 ##### Handle multiple beacons with the same call:
 ```
