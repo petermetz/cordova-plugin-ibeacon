@@ -34,7 +34,8 @@
         NSString *rangingCallbackId;
         NSString *advertisingCallbackId;
         
-        NSDictionary *peripheralData;
+        CLBeaconRegion *_advertisedBeaconRegion; // The beacon object provided by the caller, used to construct the _peripheralData object.
+        NSDictionary *_peripheralData;
         
         CLLocationManager *_locationManager;
         CBPeripheralManager * _peripheralManager;
@@ -49,8 +50,7 @@
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         
-        _peripheralManager = [[CBPeripheralManager alloc] init];
-        _peripheralManager.delegate = self;
+        _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
         
         // You can listen to more app notifications, see:
         // http://developer.apple.com/library/ios/#DOCUMENTATION/UIKit/Reference/UIApplication_Class/Reference/Reference.html#//apple_ref/doc/uid/TP40006728-CH3-DontLinkElementID_4
@@ -72,141 +72,19 @@
 - (void) pageDidLoad: (NSNotification*)notification{
     NSLog(@"[IBeacon Plugin] pageDidLoad()");
 }
-    
-# pragma mark Utilities
-    
-- (NSString*) nameOfRegionState:(CLRegionState)state {
-    switch (state) {
-        case CLRegionStateInside:
-        return @"CLRegionStateInside";
-        break;
-        case CLRegionStateOutside:
-        return @"CLRegionStateOutside";
-        case CLRegionStateUnknown:
-        return @"CLRegionStateUnknown";
-        default:
-        return @"ErrorUnknownCLRegionStateObjectReceived";
-        break;
+
+- (void) onReadyToStartAdvertising {
+    if (_peripheralData == NULL) {
+        NSLog(@"[IBeacon Plugin] Can`t start advertising, peripheral data is unavailable.");
+        return;
     }
-}
-    
-- (NSDictionary*) mapOfRegion: (CLRegion*) region {
-    NSMutableDictionary* dict;
-    
-    if ([region isKindOfClass:[CLBeaconRegion class]]) {
-        CLBeaconRegion* beaconRegion = (CLBeaconRegion*) region;
-        dict = [[NSMutableDictionary alloc] initWithDictionary:[self mapOfBeaconRegion:beaconRegion]];
-    } else {
-        dict = [[NSMutableDictionary alloc] init];
+    if (_peripheralManager == NULL || _peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
+        NSLog(@"[IBeacon Plugin] Can`t start advertising, the peripheral manager is not yet powered on.");
+        return;
     }
-    
-    // identifier
-    [dict setObject:region.identifier forKey:@"identifier"];
-    
-    // radius
-    NSNumber* radius = [[NSNumber alloc] initWithDouble:region.radius ];
-    [dict setObject:radius forKey:@"radius"];
-    CLLocationCoordinate2D coordinates;
-    
-    // center
-    NSDictionary* coordinatesMap = [[NSMutableDictionary alloc]initWithCapacity:2];
-    [coordinatesMap setValue:[[NSNumber alloc] initWithDouble: coordinates.latitude] forKey:@"latitude"];
-    [coordinatesMap setValue:[[NSNumber alloc] initWithDouble: coordinates.longitude] forKey:@"longitude"];
-    [dict setObject:coordinatesMap forKey:@"center"];
-    
-    
-    return dict;
+    NSLog(@"[IBeacon Plugin] Starting the actual advertising of %@", _peripheralData);
+    [_peripheralManager startAdvertising:_peripheralData];
 }
-    
-- (NSDictionary*) mapOfBeaconRegion: (CLBeaconRegion*) region {
-    
-    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-    [dict setObject:region.proximityUUID.UUIDString forKey:@"uuid"];
-    [dict setObject:region.major forKey:@"major"];
-    [dict setObject:region.minor forKey:@"minor"];
-    
-    
-    return dict;
-}
-    
-- (NSDictionary*) mapOfBeacon: (CLBeacon*) beacon {
-    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-    
-    // uuid
-    NSString* uuid = beacon.proximityUUID.UUIDString;
-    [dict setObject:uuid forKey:@"uuid"];
-    
-    // proximity
-    CLProximity proximity = beacon.proximity;
-    NSString* proximityString = [self nameOfProximity:proximity];
-    [dict setObject:proximityString forKey:@"proximity"];
-    
-    // major
-    [dict setObject:beacon.major forKey:@"major"];
-    
-    // minor
-    [dict setObject:beacon.minor forKey:@"minor"];
-    
-    // rssi
-    NSNumber * rssi = [[NSNumber alloc] initWithInteger:beacon.rssi];
-    [dict setObject:rssi forKey:@"rssi"];
-    
-    return dict;
-}
-    
-- (NSString*) nameOfProximity: (CLProximity) proximity {
-    switch (proximity) {
-        case CLProximityNear:
-        return @"CLProximityNear";
-        break;
-        case CLProximityFar:
-        return @"CLProximityFar";
-        case CLProximityImmediate:
-        return @"CLProximityImmediate";
-        case CLProximityUnknown:
-        return @"CLProximityUnknown";
-        default:
-        return @"ErrorProximityValueUnknown";
-        break;
-    }
-}
-    
-- (CLBeaconRegion *) parse :(NSDictionary*) regionArguments {
-    
-    NSString* uuidString = [regionArguments objectForKey:@"uuid"];
-    NSUUID* uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
-    int major = [[regionArguments objectForKey:@"major"] intValue];
-    int minor = [[regionArguments objectForKey:@"minor"] intValue];
-    NSString* identifier = [regionArguments objectForKey:@"identifier"];
-    BOOL notifyEntryStateOnDisplay = [[regionArguments objectForKey:@"notifyEntryStateOnDisplay"] boolValue];
-    
-    CLBeaconRegion *beaconRegion;
-    NSLog(@"[IBeacon Plugin] Creating Beacon with parameters uuid: %@, major: %i, minor: %i, identifier: %@", uuid, major, minor, identifier);
-    beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major: major minor: minor identifier: identifier];
-    beaconRegion.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
-    NSLog(@"[IBeacon Plugin] Parsed CLBeaconRegion successfully: %@", beaconRegion.debugDescription);
-    return beaconRegion;
-}
-    
-- (NSString*) nameOfPeripherialState: (CBPeripheralManagerState) state {
-    switch (state) {
-        case CBPeripheralManagerStatePoweredOff:
-        return @"CBPeripheralManagerStatePoweredOff";
-        case CBPeripheralManagerStatePoweredOn:
-        return @"CBPeripheralManagerStatePoweredOn";
-        case CBPeripheralManagerStateResetting:
-        return @"CBPeripheralManagerStateResetting";
-        case CBPeripheralManagerStateUnauthorized:
-        return @"CBPeripheralManagerStateUnauthorized";
-        case CBPeripheralManagerStateUnknown:
-        return @"CBPeripheralManagerStateUnknown";
-        case CBPeripheralManagerStateUnsupported:
-        return @"CBPeripheralManagerStateUnsupported";
-        default:
-        return @"ErrorUnknownCBPeripheralManagerState";
-    }
-}
-    
     
 # pragma mark CBPeripheralManagerDelegate
     
@@ -214,27 +92,41 @@
     NSString *stateName = [self nameOfPeripherialState:peripheral.state];
     NSLog(@"[IBeacon Plugin] peripheralManagerDidUpdateState() state: %@", stateName);
     
+    if (peripheral.state != CBPeripheralManagerStatePoweredOn) {
+        return;
+    }
+    [self onReadyToStartAdvertising];
+}
+
+- (void)peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheral error:(NSError *)error{
+    NSString *stateName = [self nameOfPeripherialState:peripheral.state];
+    NSLog(@"[IBeacon Plugin] peripheralManagerDidStartAdvertising() %@", stateName);
+    
+    if (_peripheralData == NULL) {
+        NSLog(@"[IBeacon Plugin] peripheral data is not yet available.");
+        return;
+    }
+    
     NSLog(@"[IBeacon Plugin] Sending plugin callback with callbackId: %@", advertisingCallbackId);
     [self.commandDelegate runInBackground:^{
         NSMutableDictionary* callbackData = [[NSMutableDictionary alloc]init];
+    
+        CDVCommandStatus status = CDVCommandStatus_OK;
+        if (error) {
+            NSLog(@"Error advertising: %@", [error localizedDescription]);
+            status = CDVCommandStatus_ERROR;
+            [callbackData setObject:error.localizedDescription forKey:@"error"];
+        } else {
+            [callbackData setObject:[self mapOfBeaconRegion:_advertisedBeaconRegion] forKey:@"region"];
+        }
         
         [callbackData setObject:stateName forKey:@"state"];
-        
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:callbackData];
+       
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:status messageAsDictionary:callbackData];
         [pluginResult setKeepCallbackAsBool:YES];
         
         [self.commandDelegate sendPluginResult:pluginResult callbackId:advertisingCallbackId];
     }];
-}
-    
-- (void)peripheralManager:(CBPeripheralManager *)peripheral didAddService:(CBService *)service error:(NSError *)error{
-    NSLog(@"[IBeacon Plugin] Starting to advertise with peripheralData %@", peripheralData);
-    [_peripheralManager startAdvertising:peripheralData];
-    NSLog(@"[IBeacon Plugin] started advertising successfully.");
-}
-    
-- (void)peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheral error:(NSError *)error{
-    NSLog(@"[IBeacon Plugin] peripheralManagerDidStartAdvertising()");
 }
     
     
@@ -304,15 +196,16 @@
     if (measuredPowerSpecifiedByUser) {
         measuredPower = [command.arguments objectAtIndex: 1];
         NSLog(@"[IBeacon Plugin] Custom measuredPower specified by caller: %@", measuredPower);
+    } else {
+        NSLog(@"[IBeacon Plugin] Default measuredPower will be used.");
     }
     
-    peripheralData = [beaconRegion peripheralDataWithMeasuredPower:measuredPower];
+    _advertisedBeaconRegion = beaconRegion;
+    _peripheralData = [beaconRegion peripheralDataWithMeasuredPower:measuredPower];
+    NSLog(@"[IBeacon Plugin] %@", [self nameOfPeripherialState:_peripheralManager.state]);
     
     if (_peripheralManager.state == CBPeripheralManagerStatePoweredOn) {
-        NSLog(@"[IBeacon Plugin] Peripheral manager is powered on, starting to advertise now.");
-        [_peripheralManager startAdvertising:peripheralData];
-    } else {
-        NSLog(@"[IBeacon Plugin] Peripheral manager is not powered on, advertising is delayed.");
+        [self onReadyToStartAdvertising];
     }
     
     advertisingCallbackId = command.callbackId;
@@ -351,5 +244,139 @@
     [_locationManager stopRangingBeaconsInRegion:beaconRegion];
     NSLog(@"[IBeacon Plugin] Stopped ranging successfully.");
 }
+
+# pragma mark Utilities
+
+- (NSString*) nameOfRegionState:(CLRegionState)state {
+    switch (state) {
+        case CLRegionStateInside:
+            return @"CLRegionStateInside";
+            break;
+        case CLRegionStateOutside:
+            return @"CLRegionStateOutside";
+        case CLRegionStateUnknown:
+            return @"CLRegionStateUnknown";
+        default:
+            return @"ErrorUnknownCLRegionStateObjectReceived";
+            break;
+    }
+}
+
+- (NSDictionary*) mapOfRegion: (CLRegion*) region {
+    NSMutableDictionary* dict;
     
-    @end
+    if ([region isKindOfClass:[CLBeaconRegion class]]) {
+        CLBeaconRegion* beaconRegion = (CLBeaconRegion*) region;
+        dict = [[NSMutableDictionary alloc] initWithDictionary:[self mapOfBeaconRegion:beaconRegion]];
+    } else {
+        dict = [[NSMutableDictionary alloc] init];
+    }
+    
+    // identifier
+    [dict setObject:region.identifier forKey:@"identifier"];
+    
+    // radius
+    NSNumber* radius = [[NSNumber alloc] initWithDouble:region.radius ];
+    [dict setObject:radius forKey:@"radius"];
+    CLLocationCoordinate2D coordinates;
+    
+    // center
+    NSDictionary* coordinatesMap = [[NSMutableDictionary alloc]initWithCapacity:2];
+    [coordinatesMap setValue:[[NSNumber alloc] initWithDouble: coordinates.latitude] forKey:@"latitude"];
+    [coordinatesMap setValue:[[NSNumber alloc] initWithDouble: coordinates.longitude] forKey:@"longitude"];
+    [dict setObject:coordinatesMap forKey:@"center"];
+    
+    
+    return dict;
+}
+
+- (NSDictionary*) mapOfBeaconRegion: (CLBeaconRegion*) region {
+    
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:region.proximityUUID.UUIDString forKey:@"uuid"];
+    [dict setObject:region.major forKey:@"major"];
+    [dict setObject:region.minor forKey:@"minor"];
+    
+    
+    return dict;
+}
+
+- (NSDictionary*) mapOfBeacon: (CLBeacon*) beacon {
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    
+    // uuid
+    NSString* uuid = beacon.proximityUUID.UUIDString;
+    [dict setObject:uuid forKey:@"uuid"];
+    
+    // proximity
+    CLProximity proximity = beacon.proximity;
+    NSString* proximityString = [self nameOfProximity:proximity];
+    [dict setObject:proximityString forKey:@"proximity"];
+    
+    // major
+    [dict setObject:beacon.major forKey:@"major"];
+    
+    // minor
+    [dict setObject:beacon.minor forKey:@"minor"];
+    
+    // rssi
+    NSNumber * rssi = [[NSNumber alloc] initWithInteger:beacon.rssi];
+    [dict setObject:rssi forKey:@"rssi"];
+    
+    return dict;
+}
+
+- (NSString*) nameOfProximity: (CLProximity) proximity {
+    switch (proximity) {
+        case CLProximityNear:
+            return @"CLProximityNear";
+            break;
+        case CLProximityFar:
+            return @"CLProximityFar";
+        case CLProximityImmediate:
+            return @"CLProximityImmediate";
+        case CLProximityUnknown:
+            return @"CLProximityUnknown";
+        default:
+            return @"ErrorProximityValueUnknown";
+            break;
+    }
+}
+
+- (CLBeaconRegion *) parse :(NSDictionary*) regionArguments {
+    
+    NSString* uuidString = [regionArguments objectForKey:@"uuid"];
+    NSUUID* uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+    int major = [[regionArguments objectForKey:@"major"] intValue];
+    int minor = [[regionArguments objectForKey:@"minor"] intValue];
+    NSString* identifier = [regionArguments objectForKey:@"identifier"];
+    BOOL notifyEntryStateOnDisplay = [[regionArguments objectForKey:@"notifyEntryStateOnDisplay"] boolValue];
+    
+    CLBeaconRegion *beaconRegion;
+    NSLog(@"[IBeacon Plugin] Creating Beacon with parameters uuid: %@, major: %i, minor: %i, identifier: %@", uuid, major, minor, identifier);
+    beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major: major minor: minor identifier: identifier];
+    beaconRegion.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
+    NSLog(@"[IBeacon Plugin] Parsed CLBeaconRegion successfully: %@", beaconRegion.debugDescription);
+    return beaconRegion;
+}
+
+- (NSString*) nameOfPeripherialState: (CBPeripheralManagerState) state {
+    switch (state) {
+        case CBPeripheralManagerStatePoweredOff:
+            return @"CBPeripheralManagerStatePoweredOff";
+        case CBPeripheralManagerStatePoweredOn:
+            return @"CBPeripheralManagerStatePoweredOn";
+        case CBPeripheralManagerStateResetting:
+            return @"CBPeripheralManagerStateResetting";
+        case CBPeripheralManagerStateUnauthorized:
+            return @"CBPeripheralManagerStateUnauthorized";
+        case CBPeripheralManagerStateUnknown:
+            return @"CBPeripheralManagerStateUnknown";
+        case CBPeripheralManagerStateUnsupported:
+            return @"CBPeripheralManagerStateUnsupported";
+        default:
+            return @"ErrorUnknownCBPeripheralManagerState";
+    }
+}
+
+@end

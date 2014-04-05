@@ -186,15 +186,20 @@ IBeacon.prototype.stopRangingBeaconsInRegions = function (regions) {
 /**
  * Starts advertising the current device as an iBeacon. Backed by the CoreBluetooth framework of iOS.
  * 
- * @param onPeripheralManagerDidUpdateState: Callback to be called when the Objective-C runtime receives
+ * @param onPeripheralManagerDidStartAdvertising: Callback to be called when the Objective-C runtime receives
  * the similarly named invocation.
  *
  * @param measuredPower: Optional parameter, if left empty, the device will use it's own default value.
  *
  */
-IBeacon.prototype.startAdvertising = function (region, onPeripheralManagerDidUpdateState, measuredPower) {
+IBeacon.prototype.startAdvertising = function (region, onPeripheralManagerDidStartAdvertising, measuredPower) {
     this.validateRegion(region);
-    return this.callObjCRuntime('startAdvertising', region, onPeripheralManagerDidUpdateState, null, measuredPower);
+    if (measuredPower) {
+        return this.callObjCRuntime('startAdvertising', region, onPeripheralManagerDidStartAdvertising, null, [measuredPower]);
+    } else {
+        return this.callObjCRuntime('startAdvertising', region, onPeripheralManagerDidStartAdvertising);
+    }
+    
 };
 
 function isArray(array) {
