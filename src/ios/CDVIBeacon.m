@@ -232,8 +232,12 @@
     NSLog(@"[IBeacon Plugin] startMonitoringForRegion() %@", command.arguments);
     
     CLBeaconRegion* beaconRegion = [self parse:[command.arguments objectAtIndex: 0]];
-    
     monitoringCallbackId = command.callbackId;
+    
+    if (beaconRegion == nil) {
+        NSLog(@"Error CLBeaconRegion is null, cannot start monitoring.");
+        return;
+    }
     [_locationManager startMonitoringForRegion:beaconRegion];
     
     NSLog(@"[IBeacon Plugin] started monitoring successfully.");
@@ -242,6 +246,10 @@
 - (void)stopMonitoringForRegion: (CDVInvokedUrlCommand*)command {
     NSLog(@"[IBeacon Plugin] stopMonitoringForRegion() %@", command.arguments);
     CLBeaconRegion* beaconRegion = [self parse:[command.arguments objectAtIndex: 0]];
+    if (beaconRegion == nil) {
+        NSLog(@"Error CLBeaconRegion is null, cannot stop monitoring.");
+        return;
+    }
     [_locationManager stopMonitoringForRegion:beaconRegion];
     NSLog(@"[IBeacon Plugin] stopped monitoring successfully.");
 }
@@ -250,6 +258,10 @@
     NSLog(@"[IBeacon Plugin] startRangingBeaconsInRegion() %@", command.arguments);
     CLBeaconRegion* beaconRegion = [self parse:[command.arguments objectAtIndex: 0]];
     rangingCallbackId = command.callbackId;
+    if (beaconRegion == nil) {
+        NSLog(@"Error CLBeaconRegion is null, cannot start ranging.");
+        return;
+    }
     [_locationManager startRangingBeaconsInRegion:beaconRegion];
     NSLog(@"[IBeacon Plugin] Started ranging successfully.");
 }
@@ -257,6 +269,10 @@
 - (void)stopRangingBeaconsInRegion: (CDVInvokedUrlCommand*)command {
     NSLog(@"[IBeacon Plugin] stopRangingBeaconsInRegion() %@", command.arguments);
     CLBeaconRegion* beaconRegion = [self parse:[command.arguments objectAtIndex: 0]];
+    if (beaconRegion == nil) {
+        NSLog(@"Error CLBeaconRegion is null, cannot stop ranging.");
+        return;
+    }
     [_locationManager stopRangingBeaconsInRegion:beaconRegion];
     NSLog(@"[IBeacon Plugin] Stopped ranging successfully.");
 }
@@ -360,20 +376,47 @@
 }
 
 - (CLBeaconRegion *) parse :(NSDictionary*) regionArguments {
-    
-    NSString* uuidString = [regionArguments objectForKey:@"uuid"];
-    NSUUID* uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
-    int major = [[regionArguments objectForKey:@"major"] intValue];
-    int minor = [[regionArguments objectForKey:@"minor"] intValue];
-    NSString* identifier = [regionArguments objectForKey:@"identifier"];
-    BOOL notifyEntryStateOnDisplay = [[regionArguments objectForKey:@"notifyEntryStateOnDisplay"] boolValue];
-    
     CLBeaconRegion *beaconRegion;
-    NSLog(@"[IBeacon Plugin] Creating Beacon with parameters uuid: %@, major: %i, minor: %i, identifier: %@", uuid, major, minor, identifier);
-    beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major: major minor: minor identifier: identifier];
-    beaconRegion.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
-    NSLog(@"[IBeacon Plugin] Parsed CLBeaconRegion successfully: %@", beaconRegion.debugDescription);
-    return beaconRegion;
+
+    @try {
+        NSString* uuidString = [regionArguments objectForKey:@"uuid"];
+        NSUUID* uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+
+        id majorAsId = [regionArguments objectForKey:@"major"];
+        id minorAsId = [regionArguments objectForKey:@"minor"];
+
+        NSString* identifier = [regionArguments objectForKey:@"identifier"];
+        BOOL notifyEntryStateOnDisplay = [[regionArguments objectForKey:@"notifyEntryStateOnDisplay"] boolValue];
+
+        NSLog(@"[IBeacon Plugin] Creating Beacon uuid: %@, major: %@, minor: %@, identifier: %@", uuid, majorAsId, minorAsId, identifier);
+
+        BOOL majorDefined = majorAsId != [NSNull null];
+        BOOL minorDefined = minorAsId != [NSNull null];
+        if (!majorDefined && !minorDefined) {
+            beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier: identifier];
+            beaconRegion.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
+        } else if (majorDefined && !minorDefined) {
+            beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major: [majorAsId intValue] identifier: identifier];
+            beaconRegion.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
+        } else if (majorDefined && minorDefined) {
+            beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major: [majorAsId intValue] minor: [minorAsId intValue] identifier: identifier];
+            beaconRegion.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
+        } else {
+            NSLog(@"[IBeacon Plugin] Error, incorrect parameter combination. Minor passed but without a major.");
+        }
+
+        if (beaconRegion != nil) {
+            NSLog(@"[IBeacon Plugin] Parsing CLBeaconRegion OK: %@", beaconRegion.debugDescription);
+        } else {
+            NSLog(@"[IBeacon Plugin] Error: Parsing CLBeaconRegion Failed for unknown reason.");
+        }
+    }
+    @catch (NSException *exception) {
+        NSLog(@"[IBeacon Plugin] Failed to parse CLBeaconRegion. Reason: %@", exception.reason);
+    }
+    @finally {
+        return beaconRegion;
+    }
 }
 
 - (NSString*) nameOfPeripherialState: (CBPeripheralManagerState) state {

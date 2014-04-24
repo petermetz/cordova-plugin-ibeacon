@@ -251,21 +251,38 @@ var CLBeaconRegion = function(uuid, major, minor, identifier, notifyEntryStateOn
    
 };
 
+CLBeaconRegion.prototype.isValidUuid = function (uuid) {
+	var uuidValidatorRegex = this.getUuidValidatorRegex();
+	return uuid.match(uuidValidatorRegex) != null;
+};
+
+CLBeaconRegion.prototype.getUuidValidatorRegex = function () {
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+}
+
 CLBeaconRegion.prototype.validateFields = function () {
     // Parameter uuid
     if (isBlank(this.uuid)) {
         throw new TypeError('Parameter uuid has to be a String.');
     }
+	var uuidInvalid = !this.isValidUuid(this.uuid);
+	if (uuidInvalid) {
+		throw new TypeError('Parameter uuid has to be in the format of ' + this.getUuidValidatorRegex());
+	}
 
-    // Parameter major
-    var majorInt = parseInt(this.major);
-    if (majorInt !== this.major || majorInt === NaN) {
+	// Parameter major - only validated if non null/undefined value is passed in
+	var shouldValidateMajor = (this.major !== undefined && this.major !==  null);
+	var majorInt = parseInt(this.major);
+	var majorIsNotValid = (majorInt !== this.major || majorInt === NaN);
+	if (shouldValidateMajor && majorIsNotValid) {
         throw new TypeError('Parameter major has to be an integer.');
     }
 
-    // Parameter minor
+    // Parameter minor - only validated if non null/undefined value is passed in
+	var shouldValidateMinor = (this.minor !== undefined && this.minor !==  null);
     var minorInt = parseInt(this.minor);
-    if (minorInt !== this.minor || minorInt === NaN) {
+	var minorIsNotValid = (minorInt !== this.minor || minorInt === NaN);
+    if (shouldValidateMinor && minorIsNotValid) {
         throw new TypeError('Parameter minor has to be an integer.');
     } 
 

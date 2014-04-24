@@ -47,9 +47,9 @@ The plugin's API closely mimics the one exposed through the [CLLocationManager](
  */
 function createBeacon() {
    var identifier = 'beaconAtTheMacBooks'; // optional
-   var major = 1111; // mandatory
-   var minor = 2222; // mandatory
-   var uuid = '550e8400-e29b-41d4-a716-446655440000'; // mandatory
+   var major = 1111; // optional
+   var minor = 2222; // optional
+   var uuid = '9C3B7561-1B5E-4B80-B7E9-31183E73B0FB'; // mandatory
 
    // throws an error if the parameters are not valid
    var beacon = new IBeacon.CLBeaconRegion(uuid, major, minor, identifier);
@@ -148,10 +148,10 @@ IBeacon.startRangingBeaconsInRegions(beacons);
 ### How to execute the tests - OS X
 
 #### Prerequisites Of The Test Runner
-* [Dart SDK](http://dartlang.org) installed on the path (Minimum version: 1.2)
+* [Dart SDK](http://dartlang.org) installed on the path (Tested with: 1.2, 1.3, 1.3.3)
 * [NodeJS](http://nodejs.org/)
 * [NPM](https://www.npmjs.org/)
-* [Cordova NPM package](https://www.npmjs.org/package/cordova) (Minimum version: 3.4.0-0.1.3)
+* [Cordova NPM package](https://www.npmjs.org/package/cordova) (Tested with: 3.4.0-0.1.3)
 * [XCode](https://developer.apple.com/xcode/) (Tested with 5.0.2)
 
 
@@ -176,59 +176,125 @@ Executing the test runner will do the following:
 
 ```
 try {
-  function createBeacon(index) {
-    var addition = parseInt(index);
-    addition = isFinite(addition) ? addition : 0;
-    var identifier = 'cordova-ibeacon-plugin-test'; // optional
-    var major = 1111; // mandatory
-    var minor = 1111 + addition; // mandatory
-    var uuid = '11111111-1111-1111-1111-111111111111'; // mandatory
+	function createBeacon(index) {
+		var addition = parseInt(index);
+		addition = isFinite(addition) ? addition : 0;
+		var identifier = 'cordova-ibeacon-plugin-test'; // optional
+		var major = 1111; // optional
+		var minor = 1111 + addition; // optional
+		var uuid = '9C3B7561-1B5E-4B80-B7E9-31183E73B0FB'; // mandatory
 
-    // throws an error if the parameters are not valid
-    var beacon = new IBeacon.CLBeaconRegion(uuid, major, minor, identifier);
-    return beacon;
-  }
+		// throws an error if the parameters are not valid
+		var beacon = new IBeacon.CLBeaconRegion(uuid, major, minor, identifier);
+		return beacon;
+	}
 
-  var b1 = createBeacon();
-  var b2 = createBeacon();
-  var b3 = createBeacon();
+	// should not throw any errors since the major and minor parameters are optional
+	var beaconWithoutMajorOrMinor = new IBeacon.CLBeaconRegion('dummyUuid', null, null, 'dummyIdentifier');
+	if (!(beaconWithoutMajorOrMinor instanceof IBeacon.CLBeaconRegion)) {
+		throw new Error('Test failed. CLBeaconRegion constructor did not return an instance of CLBeaconRegion');
+	}
 
-  var arrayOfBeacons = [b1, b2, b3];
+	// should not throw any errors since the major and minor parameters are optional
+	var beaconWithoutMajorOrMinor2 = new IBeacon.CLBeaconRegion('dummyUuid', undefined, undefined, 'dummyIdentifier');
+	if (!(beaconWithoutMajorOrMinor2 instanceof IBeacon.CLBeaconRegion)) {
+		throw new Error('Test failed. CLBeaconRegion constructor did not return an instance of CLBeaconRegion');
+	}
 
-  var onDidDetermineStateCallback = function(result) {
-    console.log(result.state);
-  };
+	// should throw an error, because major and minor has to be integers, if they were defined
+	var exceptionThrown = false;
+	try {
+		new IBeacon.CLBeaconRegion('dummyUuid', '', '', 'dummyIdentifier');
+	} catch (error) {
+		exceptionThrown = true;
+	}
+	if (exceptionThrown !== true) {
+		throw new Error('Test failed. CLBeaconRegion constructor accepted major/minor to be String');
+	}
 
-  var beacon = createBeacon();
- IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
- IBeacon.stopMonitoringForRegion(beacon);
+	// should throw an error, because major and minor has to be integers, if they were defined
+	var exceptionThrown = false;
+	try {
+		new IBeacon.CLBeaconRegion('dummyUuid', NaN, NaN, 'dummyIdentifier');
+	} catch (error) {
+		exceptionThrown = true;
+	}
+	if (exceptionThrown !== true) {
+		throw new Error('Test failed. CLBeaconRegion constructor accepted major/minor to be NaN');
+	}
 
- IBeacon.startMonitoringForRegions(arrayOfBeacons, onDidDetermineStateCallback);
- IBeacon.stopMonitoringForRegions(arrayOfBeacons);
+	var b1 = createBeacon();
+	var b2 = createBeacon();
+	var b3 = createBeacon();
 
- var onDidRangeBeacons = function(result) {
-   console.log('onDidRangeBeacons() ', result);
- };
- IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
- IBeacon.stopRangingBeaconsInRegion(beacon);
+	var arrayOfBeacons = [b1, b2, b3];
 
- IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
- IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
+	var onDidDetermineStateCallback = function (result) {
+		console.log(result.state);
+	};
 
-  var onPeripheralManagerDidStartAdvertising = function(pluginResult) {
-    console.log('onPeripheralManagerDidStartAdvertising() pluginResult: ', pluginResult);
-  }
-  IBeacon.startAdvertising(createBeacon(), onPeripheralManagerDidStartAdvertising);
+	var beacon = createBeacon();
+	IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
+	IBeacon.stopMonitoringForRegion(beacon);
 
-  if (app && app.receivedEvent) {
-    app.receivedEvent('deviceready');  
-  } else {
-    alert('Tests were successful.');
-  }
-  
+	IBeacon.startMonitoringForRegions(arrayOfBeacons, onDidDetermineStateCallback);
+	IBeacon.stopMonitoringForRegions(arrayOfBeacons);
+
+	var onDidRangeBeacons = function (result) {
+		console.log('onDidRangeBeacons() ', result);
+	};
+	IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
+	IBeacon.stopRangingBeaconsInRegion(beacon);
+
+	IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
+	IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
+
+	IBeacon.isAdvertising(function (pluginResult) {
+		var isAdvertising = pluginResult.isAdvertising;
+		console.log('isAdvertising:' + isAdvertising);
+		if (isAdvertising === true) {
+			throw new Error('Test case failed for `isAdvertising` #1');
+		}
+
+		// TODO This is ugly, define more top level callbacks to make it cleaner.
+		var onPeripheralManagerDidStartAdvertising = function (pluginResult) {
+			console.log('onPeripheralManagerDidStartAdvertising() pluginResult: ', pluginResult);
+
+			IBeacon.isAdvertising(function (pluginResult) {
+				var isAdvertising = pluginResult.isAdvertising;
+				console.log('isAdvertising:' + isAdvertising);
+				if (isAdvertising !== true) {
+					throw new Error('Test case failed for `isAdvertising` #2');
+				}
+				IBeacon.stopAdvertising(function () {
+
+					IBeacon.isAdvertising(function (pluginResult) {
+						var isAdvertising = pluginResult.isAdvertising;
+						console.log('isAdvertising:' + isAdvertising);
+						// FIXME The CBPeripheralManager is not KVO compilant and provides no way to
+						// get notified when the advertising really shut down.
+						// if (isAdvertising === true) {
+						//   throw new Error('Test case failed for `isAdvertising` #3');
+						// }
+					});
+
+				});
+			});
+		}
+
+		IBeacon.startAdvertising(createBeacon(), onPeripheralManagerDidStartAdvertising);
+	});
+
+
+	if (app && app.receivedEvent) {
+		app.receivedEvent('deviceready');
+	} else {
+		alert('Tests were successful.');
+	}
+
 
 } catch (error) {
-  alert('There were test failures. \n' + error.message);
+	alert('There were test failures. \n' + error.message);
 }
 
 ```
