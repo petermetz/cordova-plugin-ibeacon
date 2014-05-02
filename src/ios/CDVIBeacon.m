@@ -297,16 +297,18 @@
 - (NSDictionary*) mapOfRegion: (CLRegion*) region {
     NSMutableDictionary* dict;
     
-    if ([region isKindOfClass:[CLBeaconRegion class]]) {
-        CLBeaconRegion* beaconRegion = (CLBeaconRegion*) region;
-        dict = [[NSMutableDictionary alloc] initWithDictionary:[self mapOfBeaconRegion:beaconRegion]];
-    } else {
-        dict = [[NSMutableDictionary alloc] init];
-    }
-    
-    // identifier
-    [dict setObject:region.identifier forKey:@"identifier"];
-    
+     // identifier
+     if (region.identifier != nil) {
+         [dict setObject:region.identifier forKey:@"identifier"];
+     }
+
+     if ([region isKindOfClass:[CLBeaconRegion class]]) {
+         CLBeaconRegion* beaconRegion = (CLBeaconRegion*) region;
+         return [[NSMutableDictionary alloc] initWithDictionary:[self mapOfBeaconRegion:beaconRegion]];
+     } else {
+         dict = [[NSMutableDictionary alloc] init];
+     }
+
     // radius
     NSNumber* radius = [[NSNumber alloc] initWithDouble:region.radius ];
     [dict setObject:radius forKey:@"radius"];
@@ -326,8 +328,14 @@
     
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     [dict setObject:region.proximityUUID.UUIDString forKey:@"uuid"];
-    [dict setObject:region.major forKey:@"major"];
-    [dict setObject:region.minor forKey:@"minor"];
+
+    if (region.major != nil) {
+        [dict setObject:region.major forKey:@"major"];
+    }
+
+    if (region.minor != nil) {
+        [dict setObject:region.minor forKey:@"minor"];
+    }
     
     
     return dict;
