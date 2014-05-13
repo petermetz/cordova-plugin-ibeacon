@@ -91,9 +91,9 @@ LocationManager.methods({
      * Handles asynchronous calls from the native layer. In this context async
      * means that message is not a response to a request of the DOM.
      * 
-     * @param {type} deferred: {promise, resolve, reject} object.
+     * @param {type} deferred : {promise, resolve, reject} object.
      * 
-     * @param {type} pluginResult: The PluginResult object constructed by the
+     * @param {type} pluginResult : The PluginResult object constructed by the
      * native layer as the payload of the message it wishes to send to the DOM
      * asynchronously.
      *  
@@ -154,13 +154,13 @@ LocationManager.methods({
      * Wraps a Cordova exec call into a promise, allowing the client code to
      * operate with those promises instead of callbacks.
      * 
-     * @param {String} method: The name of the method in the native layer to be
+     * @param {String} method : The name of the method in the native layer to be
      * called by Cordova.
      * 
-     * @param {Array} commandArgs: An array of arguments to be passed for the
+     * @param {Array} commandArgs : An array of arguments to be passed for the
      * native layer. Defaults to an empty array if omitted.
      * 
-     * @param {Array} preProcessors: An array of callback functions all of which 
+     * @param {Array} preProcessors : An array of callback functions all of which 
      * takes an iterable (array) as it's parameter and applies a certain 
      * operation to the elements of that iterable.
      * 
