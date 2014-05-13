@@ -60,9 +60,11 @@ Regions.statics({
     },
     fromJsonArray: function(jsonArray) {
         if (!_.isArray(jsonArray)) throw new TypeError('Expected an array.');
-        return _.each(jsonArray, function(region, index) {
-            jsonArray[index] = Regions.fromJson(region);
+        var result = [];
+        _.each(jsonArray, function(region) {
+            result.push(Regions.fromJson(region));
         });
+        return result;
     },
     /**
      * Validates the input parameter [region] to be an instance of {Region}.
