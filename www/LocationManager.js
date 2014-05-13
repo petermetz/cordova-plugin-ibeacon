@@ -178,8 +178,6 @@ LocationManager.methods({
 
 
         var resolveWrap = function(pluginResult) {
-            console.log("RESOLVE WRAP ARGS", arguments, pluginResult);
-            window.pluginResult = pluginResult;
             self.preProcessorExecutor(d.resolve, pluginResult, preProcessors);
         };
 
