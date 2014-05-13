@@ -1,29 +1,62 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="org.apache.cordova.ibeacon" version="2.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
 
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-    id="org.apache.cordova.ibeacon"
-    version="1.0.0">
     <name>iBeacon</name>
     <description>Cordova iBeacon Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
     <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
 
-    <js-module src="www/IBeacon.js" name="device">
-        <clobbers target="IBeacon" />
+    <!-- Third party libraries -->
+    <js-module name="underscorejs" src="www/lib/underscore-min-1.6.js">
+        <runs/>
+    </js-module>
+    
+    <js-module name="klass" src="www/lib/klass.min.js">
+        <clobber/>
+    </js-module>
+    
+    <js-module name="Q" src="www/lib/q.min.js">
+        <runs/>
+    </js-module>
+    
+    <!-- Plugin source code: Core -->
+    <js-module name="LocationManager" src="www/LocationManager.js">
+        <clobbers target="cordova.plugins"/>
+    </js-module>
+    
+    <js-module name="Delegate" src="www/Delegate.js">
+        <runs/>
+    </js-module>
+    
+    <!-- Plugin source code: Model -->
+    <js-module name="Region" src="www/model/Region.js">
+        <runs/>
+    </js-module>
+        
+    <js-module name="Regions" src="www/Regions.js">
+        <runs/>
+    </js-module>
+    
+    <js-module name="CircularRegion" src="www/model/CircularRegion.js">
+        <runs/>
     </js-module>
 
-    <!-- ios -->
+    <js-module name="BeaconRegion" src="www/model/BeaconRegion.js">
+        <runs/>
+    </js-module>
+
+
     <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="IBeacon">
-                <param name="ios-package" value="CDVIBeacon"/>
+        <config-file parent="/*" target="config.xml">
+            <feature name="LocationManager">
+                <param name="ios-package" value="CDVLocationManager"/>
             </feature>
         </config-file>
 
-        <header-file src="src/ios/CDVIBeacon.h" />
-        <source-file src="src/ios/CDVIBeacon.m" />
+        <header-file src="src/ios/CDVLocationManager.h"/>
+        <source-file src="src/ios/CDVLocationManager.m"/>
 
-        <framework src="CoreBluetooth.framework" />
     </platform>
+
 </plugin>

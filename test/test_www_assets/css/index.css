@@ -97,6 +97,10 @@ h1 {
     display:none;
 }
 
+.event.testsFailed {
+    background-color:red;
+}
+
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
