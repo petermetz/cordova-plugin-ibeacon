@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com.thinketg.plugin.ibeacongap" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+	<name>iBeaconGap</name>
+	<js-module name="iBeaconGap" src="www/iBeaconGap.js">
+		<clobbers target="iBeaconGap" />
+	</js-module>
+	<platform name="android">
+		<source-file src="libs/androidibeaconlibrary.jar" target-dir="libs" />
+		<source-file src="libs/classes.jar" target-dir="libs" />
+		<source-file src="src/android/iBeaconGap.java" target-dir="src/com/thinketg/plugin/ibeacongap" />
+		<source-file src="src/android/BeaconUtils.java" target-dir="src/com/thinketg/plugin/ibeacongap" />
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="iBeaconGap">
+				<param name="android-package" value="com.thinketg.plugin.ibeacongap.iBeaconGap" />
+			</feature>
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:enabled="true"
+		        android:exported="true"
+		        android:isolatedProcess="false"
+		        android:label="iBeacon"
+		        android:name="com.radiusnetworks.ibeacon.service.IBeaconService">
+		    </service>    
+		    <service android:enabled="true" 
+		        android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
+		            <meta-data android:name="background" android:value="true" />
+		        <intent-filter 
+		           android:priority="1" >
+		            <action android:name="com.thinketg.plugin.ibeacongap.DID_RANGING" />
+		            <action android:name="com.thinketg.plugin.ibeacongap.DID_MONITORING" />
+		        </intent-filter>
+		    </service>
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest">
+		    <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+        </config-file>
+	</platform>
+</plugin>
