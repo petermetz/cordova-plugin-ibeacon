@@ -22,14 +22,22 @@ var CircularRegion = require('org.apache.cordova.ibeacon.CircularRegion');
 var BeaconRegion = require('org.apache.cordova.ibeacon.BeaconRegion');
 
 var klass = require('org.apache.cordova.ibeacon.klass');
+
+/**
+ * Utility class for un-marshalling {Region} instances from JSON objects,
+ * checking their types.
+ * 
+ * @type {Regions}
+ */
 var Regions = klass();
 
 Regions.statics({
     /**
-     * Creates an instance of {@link CLRegion} from the provided map of parameters.
+     * Creates an instance of {@link Region} from the provided map of parameters.
      *
      * @param jsonMap The JSON object which is used to construct the return value.
-     * @returns {CLRegion} Returns a subclass of {@link CLRegion}.
+     * 
+     * @returns {Region} Returns a subclass of {@link Region}.
      */
     fromJson: function(jsonMap) {
 
@@ -59,7 +67,10 @@ Regions.statics({
         return region;
     },
     fromJsonArray: function(jsonArray) {
-        if (!_.isArray(jsonArray)) throw new TypeError('Expected an array.');
+        if (!_.isArray(jsonArray)) {
+            throw new TypeError('Expected an array.');
+        }
+            
         var result = [];
         _.each(jsonArray, function(region) {
             result.push(Regions.fromJson(region));
@@ -68,7 +79,9 @@ Regions.statics({
     },
     /**
      * Validates the input parameter [region] to be an instance of {Region}.
-     * @param {Region} region
+     * 
+     * @param {Region} region : The object that's type will be checked.
+     * 
      * @returns {undefined} If [region] is an instance of {Region}, throws otherwise.
      */
     checkRegionType: function(region) {
