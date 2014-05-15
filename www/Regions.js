@@ -20,6 +20,7 @@
 var _ = require('org.apache.cordova.ibeacon.underscorejs');
 var CircularRegion = require('org.apache.cordova.ibeacon.CircularRegion');
 var BeaconRegion = require('org.apache.cordova.ibeacon.BeaconRegion');
+var Region = require('org.apache.cordova.ibeacon.Region');
 
 var klass = require('org.apache.cordova.ibeacon.klass');
 
