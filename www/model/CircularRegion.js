@@ -37,16 +37,65 @@ var Region = require('org.apache.cordova.ibeacon.Region');
  * 
  * @param {Number} radius A distance measurement (in meters) from an existing location.
  *
+ * @throws {TypeError} if any of the parameters are passed with an incorrect type.
+ * @throws {Error} if any of the parameters are containing invalid values.
  */
 var CircularRegion = Region.extend(function(identifier, latitude, longitude, radius) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.radius = radius;
+
+	Region.checkIdentifier(identifier);
+	CircularRegion.checkLatitude(latitude);
+	CircularRegion.checkLongitude(longitude);
+	CircularRegion.checkRadius(radius);
+
+	this.latitude = latitude;
+	this.longitude = longitude;
+	this.radius = radius;
 
 
-    // {String} typeName A String holding the name of the Objective-C type that the value
+	// {String} typeName A String holding the name of the Objective-C type that the value
     //    this will get converted to once the data is in the Objective-C runtime.
     this.typeName = 'CircularRegion';
+});
+
+CircularRegion.statics({
+
+	checkRadius: function (radius) {
+		if (_.isNaN(radius)) {
+			throw new TypeError("'radius' is not a number.");
+		}
+		if (!_.isNumber(radius)) {
+			throw new TypeError("'radius'" + radius + ' is not number.');
+		}
+		if (radius < 0) {
+			throw new Error("'radius' has to be a finite, positive number.");
+		}
+	},
+
+	checkLongitude: function (longitude) {
+		if (_.isNaN(longitude)) {
+			throw new TypeError("'longitude' is not a number.");
+		}
+		if (!_.isNumber(longitude)) {
+			throw new TypeError(longitude + ' is not a Number.');
+		}
+
+		if (longitude > 180 || longitude < -180) {
+			throw new Error(longitude + ' has to be a value between -180 and +180');
+		}
+	},
+
+	checkLatitude: function (latitude) {
+		if (_.isNaN(latitude)) {
+			throw new TypeError("'latitude' is not a number.");
+		}
+		if (!_.isNumber(latitude)) {
+			throw new TypeError(latitude + ' is not a Number.');
+		}
+
+		if (latitude > 90 || latitude < -90) {
+			throw new Error(latitude + ' has to be a value between -90 and +90');
+		}
+	}
 });
 
 module.exports = CircularRegion;

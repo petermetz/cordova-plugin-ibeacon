@@ -37,11 +37,51 @@ var Region = require('org.apache.cordova.ibeacon.Region');
  * @returns {CLBeaconRegion} An instance of {CLBeaconRegion}.
  */
 var BeaconRegion = Region.extend(function(identifier, uuid, major, minor) {
-    this.uuid = uuid;
+
+	Region.checkIdentifier(identifier);
+
+	BeaconRegion.checkUuid(uuid);
+	BeaconRegion.checkMajorOrMinor(major);
+	BeaconRegion.checkMajorOrMinor(minor);
+
+	this.uuid = uuid;
     this.major = major;
     this.minor = minor;
 
     this.typeName = 'BeaconRegion';
+});
+
+BeaconRegion.statics({
+	isValidUuid: function (uuid) {
+		var uuidValidatorRegex = this.getUuidValidatorRegex();
+		return uuid.match(uuidValidatorRegex) != null;
+	},
+
+	getUuidValidatorRegex: function () {
+		return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+	},
+
+	checkUuid: function (uuid) {
+		if (!BeaconRegion.isValidUuid(uuid)) {
+			throw new TypeError(uuid + ' is not a valid UUID');
+		}
+	},
+
+	checkMajorOrMinor: function (majorOrMinor) {
+		if (!_.isUndefined(majorOrMinor)) {
+			if (!_.isFinite(majorOrMinor)) {
+				throw new TypeError(majorOrMinor + ' is not a finite value');
+			}
+
+			if (majorOrMinor > BeaconRegion.U_INT_16_MAX_VALUE ||
+				majorOrMinor < BeaconRegion.U_INT_16_MIN_VALUE) {
+				throw new TypeError(majorOrMinor + ' is out of valid range of values.');
+			}
+		}
+	},
+
+	U_INT_16_MAX_VALUE: (1 << 16) - 1,
+	U_INT_16_MIN_VALUE: 0
 });
 
 module.exports = BeaconRegion;

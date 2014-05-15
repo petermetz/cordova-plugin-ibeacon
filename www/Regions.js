@@ -53,7 +53,7 @@ Regions.statics({
             var longitude = jsonMap.longitude;
             var radius = jsonMap.radius;
             var identifier = jsonMap.identifier;
-            region = new CircularRegion(latitude, longitude, radius, identifier);
+            region = new CircularRegion(identifier, latitude, longitude, radius);
 
         } else if (typeName === 'BeaconRegion') {
 
@@ -61,7 +61,7 @@ Regions.statics({
             var major = jsonMap.major;
             var minor = jsonMap.minor;
             var identifier = jsonMap.identifier;
-            region = new BeaconRegion(uuid, identifier, major, minor);
+            region = new BeaconRegion(identifier, uuid, major, minor);
         }
 
         return region;

@@ -30,8 +30,9 @@ describe('Regions', function() {
 
     it('converts valid JSON maps to BeaconRegion instances.', function() {
         var jsonMap = {
-            typeName: 'BeaconRegion',
-            uuid: '116ABDD3-3B07-4257-BBB8-CB24794CB066',
+			identifier: 'ValidIdentifierString',
+			typeName: 'BeaconRegion',
+			uuid: '116ABDD3-3B07-4257-BBB8-CB24794CB066',
             major: 12345
         };
 
@@ -40,8 +41,27 @@ describe('Regions', function() {
         expect(beaconRegion instanceof BeaconRegion).toBe(true);
     });
 
-    it('validates JSON maps to be valid input for creating regions.', function() {
-        expect(Regions.checkRegionType(new Region('id'))).toBe(undefined);
+	it('has a method which throws if a non Region object is passed in', function () {
+		expect(function () {
+			Regions.checkRegionType(new Object())
+		}).toThrow();
+	});
+
+	it('throws if invalid JSON map is provided by the caller as a BeaconRegion.', function () {
+		var jsonMap = {
+			identifier: '', // invalid
+			typeName: 'BeaconRegion',
+			uuid: '116ABDD3-3B07-4257-BBB8-CB24794CB066',
+			major: 12345
+		};
+
+		expect(function () {
+			Regions.fromJson(jsonMap);
+		}).toThrow();
+	});
+
+	it('validates JSON maps to be valid input for creating regions.', function () {
+		expect(Regions.checkRegionType(new Region('id'))).toBe(undefined);
     });
 
     it('throws if an array is passed instead of a Region instance', function() {

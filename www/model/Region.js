@@ -29,22 +29,21 @@ var klass = require('org.apache.cordova.ibeacon.klass');
  *    This value must not be nil.
  */
 var Region = klass(function(identifier) {
+	Region.checkIdentifier(identifier);
     this.identifier = identifier;
 });
 
-//var Foo = klass({
-//    foo: 0,
-//    initialize: function() {
-//        this.foo = 1;
-//    },
-//    getFoo: function() {
-//        return this.foo;
-//    },
-//    setFoo: function(x) {
-//        this.foo = x;
-//        return this.getFoo();
-//    }
-//});
+Region.statics({
+
+	checkIdentifier: function (identifier) {
+		if (!_.isString(identifier)) {
+			throw new TypeError(identifier + ' is not a String.');
+		}
+		if (_.isEmpty(identifier)) {
+			throw new Error("'identifier' cannot be an empty string.");
+		}
+	}
+});
 
 module.exports = Region;
 
