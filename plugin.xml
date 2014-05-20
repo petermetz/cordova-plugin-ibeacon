@@ -7,7 +7,7 @@
     <description>Cordova iBeacon Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
-    <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
+    <repo>https://github.com/themattray/cordova-plugin-ibeacon.git</repo>
 
     <js-module src="www/IBeacon.js" name="device">
         <clobbers target="IBeacon" />
@@ -25,5 +25,38 @@
         <source-file src="src/ios/CDVIBeacon.m" />
 
         <framework src="CoreBluetooth.framework" />
+    </platform>
+
+    <platform name="android">
+        <source-file src="libs/androidibeaconlibrary.jar" target-dir="libs" />
+        <source-file src="libs/classes.jar" target-dir="libs" />
+        <source-file src="src/android/iBeaconGap.java" target-dir="src/com/thinketg/plugin/ibeacongap" />
+        <source-file src="src/android/BeaconUtils.java" target-dir="src/com/thinketg/plugin/ibeacongap" />
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="iBeaconGap">
+                <param name="android-package" value="com.thinketg.plugin.ibeacongap.iBeaconGap" />
+            </feature>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:enabled="true"
+                android:exported="true"
+                android:isolatedProcess="false"
+                android:label="iBeacon"
+                android:name="com.radiusnetworks.ibeacon.service.IBeaconService">
+            </service>    
+            <service android:enabled="true" 
+                android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
+                    <meta-data android:name="background" android:value="true" />
+                <intent-filter 
+                   android:priority="1" >
+                    <action android:name="com.thinketg.plugin.ibeacongap.DID_RANGING" />
+                    <action android:name="com.thinketg.plugin.ibeacongap.DID_MONITORING" />
+                </intent-filter>
+            </service>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+        </config-file>
     </platform>
 </plugin>
