@@ -134,13 +134,14 @@ LocationManager.methods({
      * When the pre-processing is done, [resolve] is called with the pre-
      * processed results. The raw input is discarded.
      * 
-     * @param {type} resolve A callback which will get called upon completeion.
+     * @param {Function} resolve A callback which will get called upon completion.
      *
      * @param {Array} pluginResult The PluginResult object constructed by the
      * native layer as the payload of the message it wishes to send to the DOM.
      * This function expects the [pluginResult] to be an array of elements.
      *
-     * @param {type} preProcessors
+     * @param {Array} preProcessors : An array of {Function}s which will be applied
+	 * to [pluginResult], in order.
      *
      * @returns {undefined}
      */
