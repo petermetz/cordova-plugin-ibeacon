@@ -42,9 +42,9 @@ var LocationManager = klass({
     delegate: null,
     initialize: function() {
         this.delegate = new Delegate();
-        this.registerDelegateCallbackId();
+		this._registerDelegateCallbackId();
 
-        this.bindMethodContexts();
+		this.bindMethodContexts();
     },
     /**
      * Binds the contexts of instance methods to the actual {LocationManager}
@@ -65,10 +65,8 @@ var LocationManager = klass({
         this.delegate = newDelegate;
         return this.getDelegate();
     }
-});
-
-LocationManager.methods({
-    /**
+}).methods({
+	/**
      * Calls the method 'registerDelegateCallbackId' in the native layer which
      * saves the callback ID for later use. 
      * 
@@ -78,34 +76,34 @@ LocationManager.methods({
      * 
      * @returns {Q.Promise}
      */
-    registerDelegateCallbackId: function() {
-        this.appendToDeviceLog('registerDelegateCallbackId()');
+	_registerDelegateCallbackId: function () {
+		this.appendToDeviceLog('registerDelegateCallbackId()');
         var d = Q.defer();
 
-        exec(_.bind(this.onDelegateCallback, this, d), d.reject, "LocationManager",
-                "registerDelegateCallbackId", []);
+		exec(_.bind(this._onDelegateCallback, this, d), d.reject, "LocationManager",
+			"registerDelegateCallbackId", []);
 
         return d.promise;
     },
     /**
      * Handles asynchronous calls from the native layer. In this context async
      * means that message is not a response to a request of the DOM.
-     * 
-     * @param {type} deferred : {promise, resolve, reject} object.
-     * 
-     * @param {type} pluginResult : The PluginResult object constructed by the
-     * native layer as the payload of the message it wishes to send to the DOM
+     *
+	 * @param {type} deferred {promise, resolve, reject} object.
+	 *
+	 * @param {type} pluginResult The PluginResult object constructed by the
+	 * native layer as the payload of the message it wishes to send to the DOM
      * asynchronously.
      *  
      * @returns {undefined}
      */
-    onDelegateCallback: function(deferred, pluginResult) {
-        this.appendToDeviceLog('onDelegateCallback() ' + JSON.stringify(pluginResult));
-        if (Q.isPending(deferred.promise)) {
+	_onDelegateCallback: function (deferred, pluginResult) {
+		this.appendToDeviceLog('_onDelegateCallback() ' + JSON.stringify(pluginResult));
+		if (Q.isPending(deferred.promise)) {
             deferred.resolve();
-        } else if (_.isString(pluginResult.eventType)) {
-            this.mapDelegateCallback(pluginResult);
-        } else {
+		} else if (_.isString(pluginResult['eventType'])) {
+			this._mapDelegateCallback(pluginResult);
+		} else {
             console.error('Delegate registration promise is already been resolved, all subsequent callbacks should provide an "eventType" field.');
         }
     },
@@ -118,10 +116,10 @@ LocationManager.methods({
      * 
      * @returns {undefined}
      */
-    mapDelegateCallback: function(pluginResult) {
-        var eventType = pluginResult.eventType; // the Objective-C selector's name
+	_mapDelegateCallback: function (pluginResult) {
+		var eventType = pluginResult['eventType']; // the Objective-C selector's name
 
-        if (_.isFunction(Delegate[eventType])) {
+		if (_.isFunction(Delegate[eventType])) {
             Delegate[eventType](pluginResult);
             this.delegate[eventType](pluginResult);
         } else {
@@ -140,35 +138,35 @@ LocationManager.methods({
      * native layer as the payload of the message it wishes to send to the DOM.
      * This function expects the [pluginResult] to be an array of elements.
      *
-     * @param {Array} preProcessors : An array of {Function}s which will be applied
+	 * @param {Array} preProcessors An array of {Function}s which will be applied
 	 * to [pluginResult], in order.
      *
      * @returns {undefined}
      */
-    preProcessorExecutor: function(resolve, pluginResult, preProcessors) {
-        _.each(preProcessors, function(preProcessor, index, list) {
-            pluginResult = preProcessor(pluginResult);
+	_preProcessorExecutor: function (resolve, pluginResult, preProcessors) {
+		_.each(preProcessors, function (preProcessor) {
+			pluginResult = preProcessor(pluginResult);
         });
         resolve(pluginResult);
     },
     /**
      * Wraps a Cordova exec call into a promise, allowing the client code to
      * operate with those promises instead of callbacks.
-     * 
-     * @param {String} method : The name of the method in the native layer to be
-     * called by Cordova.
-     * 
-     * @param {Array} commandArgs : An array of arguments to be passed for the
-     * native layer. Defaults to an empty array if omitted.
-     * 
-     * @param {Array} preProcessors : An array of callback functions all of which 
-     * takes an iterable (array) as it's parameter and applies a certain 
+     *
+	 * @param {String} method The name of the method in the native layer to be
+	 * called by Cordova.
+     *
+	 * @param {Array} commandArgs An array of arguments to be passed for the
+	 * native layer. Defaults to an empty array if omitted.
+     *
+	 * @param {Array} preProcessors An array of callback functions all of which
+	 * takes an iterable (array) as it's parameter and applies a certain
      * operation to the elements of that iterable.
      * 
      * @returns {Q.Promise}
      */
-    promisedExec: function(method, commandArgs, preProcessors) {
-        var self = this;
+	_promisedExec: function (method, commandArgs, preProcessors) {
+		var self = this;
         commandArgs = _.isArray(commandArgs) ? commandArgs : [];
         preProcessors = _.isArray(preProcessors) ? preProcessors : [];
         preProcessors = _.filter(preProcessors, function(preProcessor) {
@@ -179,8 +177,8 @@ LocationManager.methods({
 
 
         var resolveWrap = function(pluginResult) {
-            self.preProcessorExecutor(d.resolve, pluginResult, preProcessors);
-        };
+			self._preProcessorExecutor(d.resolve, pluginResult, preProcessors);
+		};
 
         exec(resolveWrap, d.reject, "LocationManager", method, commandArgs);
 
@@ -196,20 +194,17 @@ LocationManager.methods({
      * regions by their size, favoring smaller regions over larger regions.
      *
      * This is done asynchronously and may not be immediately reflected in monitoredRegions.
-     * 
-     * @param {Region} region : An instance of {Region} which will be monitored
-     * by the operating system.
+     *
+	 * @param {Region} region An instance of {Region} which will be monitored
+	 * by the operating system.
      * 
      * @return {Q.Promise} Returns a promise which is resolved as soon as the
      * native layer acknowledged the dispatch of the monitoring request.
      */
     startMonitoringForRegion: function(region) {
         Regions.checkRegionType(region);
-
-        var d = Q.defer();
-        exec(d.resolve, d.reject, "LocationManager", "startMonitoringForRegion", [region]);
-        return d.promise;
-    },
+		return this._promisedExec('startMonitoringForRegion', [region], []);
+	},
     /**
      * Stop monitoring the specified region.  It is valid to call 
      * stopMonitoringForRegion: for a region that was registered for monitoring 
@@ -217,17 +212,17 @@ LocationManager.methods({
      * launches of your application.
      *
      * This is done asynchronously and may not be immediately reflected in monitoredRegions.
-     * 
-     * @param {Region} region : An instance of {Region} which will be monitored
-     * by the operating system.
+     *
+	 * @param {Region} region An instance of {Region} which will be monitored
+	 * by the operating system.
      * 
      * @return {Q.Promise} Returns a promise which is resolved as soon as the
      * native layer acknowledged the dispatch of the request to stop monitoring.
      */
     stopMonitoringForRegion: function(region) {
         Regions.checkRegionType(region);
-        return this.promisedExec('stopMonitoringForRegion', [region]);
-    },
+		return this._promisedExec('stopMonitoringForRegion', [region], []);
+	},
     /**
      * Queries the native layer to determine the current authorization in effect.
      * 
@@ -235,8 +230,8 @@ LocationManager.methods({
      * requested authorization status.
      */
     getAuthorizationStatus: function() {
-        return this.promisedExec('getAuthorizationStatus');
-    },
+		return this._promisedExec('getAuthorizationStatus', [], []);
+	},
     /** 
      * 
      * @returns {Q.Promise} Returns a promise which is resolved with an {Array}
@@ -244,8 +239,8 @@ LocationManager.methods({
      */
     getMonitoredRegions: function() {
         var preProcessors = [Regions.fromJsonArray];
-        return this.promisedExec('getMonitoredRegions', [], preProcessors);
-    },
+		return this._promisedExec('getMonitoredRegions', [], preProcessors);
+	},
     /** 
      * 
      * @returns {Q.Promise} Returns a promise which is resolved with an {Array}
@@ -253,16 +248,16 @@ LocationManager.methods({
      */
     getRangedRegions: function() {
         var preProcessors = [Regions.fromJsonArray];
-        return this.promisedExec('getRangedRegions', [], preProcessors);
-    },
+		return this._promisedExec('getRangedRegions', [], preProcessors);
+	},
     /**
      * Determines if ranging is available or not, according to the native layer.
      * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
-     * indicating wether ranging is available or not.
-     */
+	 * indicating whether ranging is available or not.
+	 */
     isRangingAvailable: function() {
-        return this.promisedExec('isRangingAvailable');
-    },
+		return this._promisedExec('isRangingAvailable', [], []);
+	},
     /**
      * Disables debug logging in the native layer. Use this method if you want
      * to prevent this plugin from writing to the device logs.
@@ -271,8 +266,8 @@ LocationManager.methods({
      * native layer has set the logging level accordingly.
      */
     disableDebugLogs: function() {
-        return this.promisedExec('disableDebugLogs');
-    },
+		return this._promisedExec('disableDebugLogs', [], []);
+	},
     /**
      * Enables debug logging in the native layer. Use this method if you want
      * a debug the inner workings of this plugin.
@@ -281,21 +276,21 @@ LocationManager.methods({
      * native layer has set the logging level accordingly.
      */
     enableDebugLogs: function() {
-        return this.promisedExec('enableDebugLogs');
-    },
+		return this._promisedExec('enableDebugLogs', [], []);
+	},
     /**
      * Appends the provided [message] to the device logs.
      * Note: If debug logging is turned off, this won't do anything.
-     * 
-     * @param {String} message : The message to append to the device logs.
-     * 
+     *
+	 * @param {String} message The message to append to the device logs.
+	 *
      * @returns {Q.Promise} Returns a promise which is resolved with the log
      * message received by the native layer for appending. The returned message
      * is expected to be equivalent to the one provided in the original call.
      */
     appendToDeviceLog: function(message) {
-        return this.promisedExec('appendToDeviceLog', [message]);
-    }
+		return this._promisedExec('appendToDeviceLog', [message], []);
+	}
 });
 
 
