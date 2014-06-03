@@ -98,14 +98,16 @@ var LocationManager = klass({
      * @returns {undefined}
      */
 	_onDelegateCallback: function (deferred, pluginResult) {
+
 		this.appendToDeviceLog('_onDelegateCallback() ' + JSON.stringify(pluginResult));
-		if (Q.isPending(deferred.promise)) {
-            deferred.resolve();
-		} else if (_.isString(pluginResult['eventType'])) {
+
+		if (_.isString(pluginResult['eventType'])) { // The native layer calling the DOM with a delegate event.
 			this._mapDelegateCallback(pluginResult);
-		} else {
-            console.error('Delegate registration promise is already been resolved, all subsequent callbacks should provide an "eventType" field.');
-        }
+		} else if (Q.isPending(deferred.promise)) { // The callback ID registration finished, runs only once.
+			deferred.resolve();
+		} else { // The native layer calls back the delegate without specifying an event, coding error.
+			console.error('Delegate registration promise is already been resolved, all subsequent callbacks should provide an "eventType" field.');
+		}
     },
     /**
      * Routes async messages arriving from the native layer to the appropriate
