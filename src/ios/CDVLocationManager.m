@@ -211,6 +211,7 @@
         CLRegion* region = [self parseRegion:command returningError:&error];
         if (region == nil) {
             if (error != nil) {
+                [self debugLog:@"ERROR %@", error];
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
             } else {
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
@@ -232,6 +233,7 @@
         CLRegion* region = [self parseRegion:command returningError:&error];
         if (region == nil) {
             if (error != nil) {
+                [self debugLog:@"ERROR %@", error];
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
             } else {
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
@@ -373,11 +375,8 @@
     CLLocationDistance radius = [radiusAsNumber doubleValue];
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
     
-    if ([self isBelowIos7]) {
-        region = [[CLCircularRegion alloc]initCircularRegionWithCenter:center radius:radius identifier:identifier];
-    } else {
-        region = [[CLRegion alloc] initCircularRegionWithCenter:center radius:radius identifier:identifier];
-    }
+    region = [[CLRegion alloc] initCircularRegionWithCenter:center radius:radius identifier:identifier];
+
     if (region == nil) {
         *error = [self parseErrorWithDescription:@"CLCircularRegion parsing failed for unknown reason."];
     }
@@ -562,6 +561,7 @@
     
     // typeName - First two characters are cut down to remove the "CL" prefix.
     NSString *typeName = [NSStringFromClass([region class]) substringFromIndex:2];
+    typeName = [typeName isEqualToString:@"Region"] ? @"CircularRegion" : typeName;
     [dict setObject:typeName forKey:@"typeName"];
     
     return dict;
