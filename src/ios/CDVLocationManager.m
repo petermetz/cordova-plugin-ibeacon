@@ -273,7 +273,15 @@
 - (void)getRangedRegions:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
-        NSArray* arrayOfRegions = [self mapsOfRegions:self.locationManager.rangedRegions];
+        NSArray* arrayOfRegions;
+        
+        if ([self isBelowIos7]) {
+            [self debugLog:@"WARNING Ranging is an iOS 7+ feature."];
+            arrayOfRegions = [NSArray new];
+        } else {
+            arrayOfRegions = [self mapsOfRegions:self.locationManager.rangedRegions];
+        }
+
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:arrayOfRegions];
     } :command];
 }
@@ -282,7 +290,15 @@
 - (void)isRangingAvailable:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
         
-        BOOL isRangingAvailable = [CLLocationManager isRangingAvailable];
+        BOOL isRangingAvailable;
+        
+        if ([self isBelowIos7]) {
+            [self debugLog:@"WARNING Ranging is an iOS 7+ feature."];
+            isRangingAvailable = false;
+        } else {
+            isRangingAvailable = [CLLocationManager isRangingAvailable];
+        }
+        
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool: isRangingAvailable];
         
     } :command];
