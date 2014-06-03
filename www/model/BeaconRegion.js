@@ -34,7 +34,7 @@ var Region = require('org.apache.cordova.ibeacon.Region');
  
  * @param {Number} minor The minor value that you use to identify a specific beacon.
  * 
- * @returns {CLBeaconRegion} An instance of {CLBeaconRegion}.
+ * @returns {BeaconRegion} An instance of {BeaconRegion}.
  */
 var BeaconRegion = Region.extend(function(identifier, uuid, major, minor) {
 
