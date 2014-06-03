@@ -24,7 +24,6 @@ describe('Delegate', function() {
     });
 
     it('has a constructor to create instances.', function() {
-        console.log('delegate test...');
         var delegate = new Delegate();
         expect(delegate).toBeDefined();
         expect(delegate instanceof Delegate).toBe(true);
