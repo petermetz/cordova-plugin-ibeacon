@@ -36,10 +36,10 @@ describe('LocationManager', function() {
         var charingCross = new CircularRegion(id, latitude, longitude, radius);
 
         locationManager.stopMonitoringForRegion(charingCross)
-                .then(done).fail(console.error)
-                .done();
+			.then(done).fail(window.failJasmineTest)
+			.done();
 
-    });
+	});
 
     it('starts the monitoring of circular regions', function(done) {
 
@@ -72,7 +72,7 @@ describe('LocationManager', function() {
 
         locationManager.setDelegate(delegate);
         locationManager.startMonitoringForRegion(charingCross)
-			.fail(console.error)
+			.fail(window.failJasmineTest)
 			.done();
     });
 
@@ -110,13 +110,27 @@ describe('LocationManager', function() {
 
         locationManager.setDelegate(delegate);
         locationManager.startMonitoringForRegion(appleHq)
-			.fail(console.error)
+			.fail(window.failJasmineTest)
 			.done();
     });
 
+	it('starts monitoring of beacon regions.', function () {
 
-    it('turns debug logging on and off', function(done) {
-        locationManager.enableDebugLogs()
+		// You can't test the iBeacon monitoring properly in the emulator, thus the crippled test.
+		var uuid = '328B8BF6-B6ED-4DBF-88F3-287E3B3F16B6';
+		var identifier = 'asdf';
+		var minor = 12345;
+		var major = 23455;
+		var beaconRegion = new BeaconRegion(identifier, uuid, major, minor);
+
+		locationManager.startMonitoringForRegion(beaconRegion)
+			.fail(window.failJasmineTest)
+			.done();
+
+	});
+
+	it('turns debug logging on and off', function (done) {
+		locationManager.enableDebugLogs()
                 .then(locationManager.disableDebugLogs)
                 .then(function() {
                     done();
