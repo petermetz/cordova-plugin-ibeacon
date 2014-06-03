@@ -36,7 +36,7 @@ describe('LocationManager', function() {
         var charingCross = new CircularRegion(id, latitude, longitude, radius);
 
         locationManager.stopMonitoringForRegion(charingCross)
-                .then(done)
+                .then(done).fail(console.error)
                 .done();
 
     });
@@ -71,7 +71,9 @@ describe('LocationManager', function() {
         });
 
         locationManager.setDelegate(delegate);
-        locationManager.startMonitoringForRegion(charingCross).done();
+        locationManager.startMonitoringForRegion(charingCross)
+			.fail(console.error)
+			.done();
     });
 
 
@@ -107,7 +109,9 @@ describe('LocationManager', function() {
         });
 
         locationManager.setDelegate(delegate);
-        locationManager.startMonitoringForRegion(appleHq).done();
+        locationManager.startMonitoringForRegion(appleHq)
+			.fail(console.error)
+			.done();
     });
 
 
