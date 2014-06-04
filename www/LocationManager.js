@@ -62,7 +62,14 @@ var LocationManager = klass({
         return this.delegate;
     },
     setDelegate: function(newDelegate) {
+		if (!(newDelegate instanceof Delegate)) {
+			console.error('newDelegate parameter has to be an instance of Delegate.');
+			return;
+		}
         this.delegate = newDelegate;
+
+		this.onDomDelegateReady();
+
         return this.getDelegate();
     }
 }).methods({
@@ -186,6 +193,29 @@ var LocationManager = klass({
 
         return d.promise;
     },
+	/**
+	 * Signals the native layer that the client side is ready to consume messages.
+	 * Readiness here means that it has a {Delegate} set by the consumer javascript
+	 * code.
+	 * <p>
+	 * The {LocationManager.setDelegate()} will implicitly call this method as well,
+	 * therefore the only case when you have to call this manually is if you don't
+	 * wish to specify a {Delegate} of yours.
+	 * <p>
+	 * The purpose of this signaling mechanism is to make the events work when the
+	 * app is being woken up by the Operating System to give it a chance to handle
+	 * region monitoring events for example.
+	 * <p>
+	 * If you don't set a {Delegate} and don't call this method manually, an error
+	 * message get emitted in the native runtime and the DOM as well after a certain
+	 * period of time.
+	 *
+	 * @return {Q.Promise} Returns a promise which is resolved as soon as the
+	 * native layer acknowledged the request and started to send events.
+	 */
+	onDomDelegateReady: function() {
+		return this._promisedExec('onDomDelegateReady', [], []);
+	},
     /**
      * Start monitoring the specified region.
      *

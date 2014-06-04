@@ -29,21 +29,66 @@
 {
     NSLog(@"[LocationManager Plugin] pluginInitialize()");
 
-    self.queue = [NSOperationQueue new];
-    [self.queue setSuspended:YES]; // Before the DOM is loaded we'll just keep collecting the events and fire them later.
-    self.queue.maxConcurrentOperationCount = 1; // Don't hit the DOM too hard.
-    
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
+    [self initEventQueue];
+    [self pauseEventPropagationToDom]; // Before the DOM is loaded we'll just keep collecting the events and fire them later.
+
+    [self initLocationManager];
     
     self.debugEnabled = true;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
+    
+    
 }
 
 - (void) pageDidLoad: (NSNotification*)notification{
     NSLog(@"[LocationManager Plugin] pageDidLoad()");
 }
+
+- (void) initLocationManager {
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+}
+
+- (void) pauseEventPropagationToDom {
+    [self checkEventQueue];
+    [self.queue setSuspended:YES];
+}
+
+- (void) resumeEventPropagationToDom {
+    [self checkEventQueue];
+    [self.queue setSuspended:NO];
+}
+
+- (void) initEventQueue {
+    
+    self.queue = [NSOperationQueue new];
+    self.queue.maxConcurrentOperationCount = 1; // Don't hit the DOM too hard.
+    
+    [self performSelector:@selector(checkIfDomSignaldDelegateReady) withObject:nil afterDelay:CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT];
+}
+
+- (void) checkEventQueue {
+    if (self.queue != nil) {
+        return;
+    }
+    [self debugLog:@"WARNING event queue should not be null."];
+    self.queue = [NSOperationQueue new];
+}
+
+- (void) checkIfDomSignaldDelegateReady {
+
+    if (self.queue != nil && !self.queue.isSuspended) {
+        return;
+    }
+    NSString *warnMsg = [NSString stringWithFormat:@"[Cordova-Plugin-IBeacon] WARNING did not receive delegate ready callback from DOM after %f seconds!", CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT];
+    
+    NSLog(@"%@", warnMsg);
+    
+    NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error(%@)", warnMsg];
+    [self writeJavascript:javascriptErrorLoggingStatement];
+}
+
 
 # pragma mark CLLocationManagerDelegate
 
@@ -175,6 +220,16 @@
 
 
 # pragma mark Javascript Plugin API
+
+- (void)onDomDelegateReady:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
+
+        // Starts propagating the events.
+        [self resumeEventPropagationToDom];
+        
+        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } :command];
+}
 
 - (void)disableDebugLogs:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
@@ -314,9 +369,6 @@
 
         CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [result setKeepCallbackAsBool:YES];
-
-        // Start firing the DOM callbacks when the delegate callback ID is registered.
-        [self.queue setSuspended:NO];
 
         return result;
     } :command];

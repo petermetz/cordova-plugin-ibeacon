@@ -56,7 +56,17 @@ Delegate.statics({
     },
     didEnterRegion: function(pluginResult) {
         pluginResult.region = Regions.fromJson(pluginResult.region);
-    }
+    },
+	safeTraceLogging: function(message) {
+		if (!_.isString(message)) {
+			return;
+		}
+		try {
+			cordova.plugins.locationManager.appendToDeviceLog(message);
+		} catch (e) {
+			console.error('Fail in safeTraceLogging()' + e.message, e);
+		}
+	}
 
 });
 
@@ -65,12 +75,16 @@ Delegate.statics({
  */
 Delegate.methods({
     didDetermineStateForRegion: function() {
+		Delegate.safeTraceLogging('DEFAULT didDetermineStateForRegion()');
     },
     didStartMonitoringForRegion: function() {
+		Delegate.safeTraceLogging('DEFAULT didStartMonitoringForRegion()');
     },
     didExitRegion: function() {
+		Delegate.safeTraceLogging('DEFAULT didExitRegion()');
     },
     didEnterRegion: function() {
+		Delegate.safeTraceLogging('DEFAULT didEnterRegion()');
     }
 });
 
