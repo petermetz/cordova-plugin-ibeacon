@@ -15,7 +15,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="IBeacon" >
-                <param name="android-package" value="org.apache.cordova.ibeacon.IBeacon"/>
+                <param name="android-package" value="org.apache.cordova.ibeacon.IBeaconPlugin"/>
             </feature>
         </config-file>
 
@@ -24,7 +24,7 @@
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
         </config-file>
 
-        <source-file src="src/android/IBeacon.java" target-dir="src/org/apache/cordova/ibeacon" />
+        <source-file src="src/android/IBeaconPlugin.java" target-dir="src/org/apache/cordova/ibeacon" />
         <source-file src="src/android/com/radiusnetworks/bluetooth/BluetoothCrashResolver.java" target-dir="src/com/radiusnetworks/bluetooth" />
         <source-file src="src/android/com/radiusnetworks/ibeacon/BleNotAvailableException.java" target-dir="src/com/radiusnetworks/ibeacon" />
         <source-file src="src/android/com/radiusnetworks/ibeacon/IBeacon.java" target-dir="src/com/radiusnetworks/ibeacon" />
