@@ -24,34 +24,34 @@
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
         </config-file>
 
-        <source-file src="src/android/IBeacon.java" target-dir="org/apache/cordova/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/bluetooth/BluetoothCrashResolver.java" target-dir="com/radiusnetworks/bluetooth" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/BleNotAvailableException.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeacon.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconConsumer.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconData.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconDataNotifier.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconIntentProcessor.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconManager.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/MonitorNotifier.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/RangeNotifier.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/Region.java" target-dir="com/radiusnetworks/ibeacon" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/client/DataProviderException.java" target-dir="com/radiusnetworks/ibeacon/client" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/client/IBeaconDataFactory.java" target-dir="com/radiusnetworks/ibeacon/client" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/client/NullIBeaconDataFactory.java" target-dir="com/radiusnetworks/ibeacon/client" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/client/RangedIBeacon.java" target-dir="com/radiusnetworks/ibeacon/client" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/client/RangingTracker.java" target-dir="com/radiusnetworks/ibeacon/client" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/Callback.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/IBeaconData.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/IBeaconService.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/MonitoringData.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/MonitorState.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/RangeState.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/RangingData.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/RegionData.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/service/StartRMData.java" target-dir="com/radiusnetworks/ibeacon/service" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/simulator/BeaconSimulator.java" target-dir="com/radiusnetworks/ibeacon/simulator" />
-        <source-file src="src/android/com/radiusnetworks/ibeacon/simulator/StaticBeaconSimulator.java" target-dir="com/radiusnetworks/ibeacon/simulator" />
+        <source-file src="src/android/IBeacon.java" target-dir="src/org/apache/cordova/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/bluetooth/BluetoothCrashResolver.java" target-dir="src/com/radiusnetworks/bluetooth" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/BleNotAvailableException.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeacon.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconConsumer.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconData.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconDataNotifier.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconIntentProcessor.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/IBeaconManager.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/MonitorNotifier.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/RangeNotifier.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/Region.java" target-dir="src/com/radiusnetworks/ibeacon" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/client/DataProviderException.java" target-dir="src/com/radiusnetworks/ibeacon/client" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/client/IBeaconDataFactory.java" target-dir="src/com/radiusnetworks/ibeacon/client" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/client/NullIBeaconDataFactory.java" target-dir="src/com/radiusnetworks/ibeacon/client" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/client/RangedIBeacon.java" target-dir="src/com/radiusnetworks/ibeacon/client" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/client/RangingTracker.java" target-dir="src/com/radiusnetworks/ibeacon/client" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/Callback.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/IBeaconData.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/IBeaconService.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/MonitoringData.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/MonitorState.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/RangeState.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/RangingData.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/RegionData.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/service/StartRMData.java" target-dir="src/com/radiusnetworks/ibeacon/service" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/simulator/BeaconSimulator.java" target-dir="src/com/radiusnetworks/ibeacon/simulator" />
+        <source-file src="src/android/com/radiusnetworks/ibeacon/simulator/StaticBeaconSimulator.java" target-dir="src/com/radiusnetworks/ibeacon/simulator" />
 
         <js-module src="www/IBeacon.js" name="device">
             <clobbers target="IBeacon" />
