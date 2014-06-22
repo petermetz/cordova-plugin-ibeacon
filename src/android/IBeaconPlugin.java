@@ -19,7 +19,6 @@
 package org.apache.cordova.ibeacon;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
@@ -177,11 +176,11 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
 
         try {
             iBeaconManager.startMonitoringBeaconsInRegion(region);
-            callbackContext.success("OK");
         } catch (RemoteException e) {   
+        	Log.e(TAG, "'startMonitoringForRegion' service error " + e.getCause());
         	callbackContext.error("RemoteException"+e);
         }
-   	
+  	
     }
     
 
@@ -192,7 +191,6 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
 
         try {
             iBeaconManager.stopMonitoringBeaconsInRegion(region);
-            callbackContext.success("OK");
         } catch (RemoteException e) {   
         	callbackContext.error("RemoteException"+e);
         }
@@ -246,15 +244,11 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
 
         try {
             iBeaconManager.startRangingBeaconsInRegion(region);
-            callbackContext.success("OK");
         } catch (RemoteException e) {   
+        	Log.e(TAG, "'startRangingBeaconsInRegion' service error " + e.getCause());
         	callbackContext.error("RemoteException"+e);
         }
-        
-
-        JSONObject r = new JSONObject();
-        callbackContext.success(r);
-   	
+  	
     }
     
     private void stopRangingBeaconsInRegion(JSONObject arguments, CallbackContext callbackContext) throws JSONException {
@@ -262,7 +256,6 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
 
         try {
             iBeaconManager.stopRangingBeaconsInRegion(region);
-            callbackContext.success("OK");
         } catch (RemoteException e) {   
         	callbackContext.error("RemoteException"+e);
         }
@@ -273,9 +266,9 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
     /* Helper methods */
     private Region parseRegion(JSONObject json) throws JSONException {
     	String identifier = json.getString("identifier");
-    	String uuid = json.getString("uuid");
-    	Integer major = json.getInt("major");
-    	Integer minor = json.getInt("minor");
+    	String uuid = json.has("uuid")&&!json.isNull("uuid") ? json.getString("uuid") : null;
+    	Integer major = json.has("major")&&!json.isNull("major") ? json.getInt("major") : null;
+    	Integer minor = json.has("minor")&&!json.isNull("minor") ? json.getInt("minor") : null;
     	
     	return new Region(identifier,uuid,major,minor);
     }
@@ -305,11 +298,11 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
 
      	dict.put("uuid", region.getProximityUuid());
 
-        if (region.getMajor() != 0) {
+        if (region.getMajor()!=null) {
             dict.put("major", region.getMajor());
         }
 
-        if (region.getMinor() != 0) {
+        if (region.getMinor()!=null) {
         	dict.put("minor", region.getMinor());
         }
 
@@ -326,22 +319,6 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
         return dict;
     }
 
-    private JSONObject mapOfBeaconRegion(IBeacon region) throws JSONException {
-    	JSONObject dict = new JSONObject();
-        
-    	dict.put("uuid", region.getProximityUuid());
-
-        if (region.getMajor() != 0) {
-            dict.put("major", region.getMajor());
-        }
-
-        if (region.getMinor() != 0) {
-        	dict.put("minor", region.getMinor());
-        }
-        
-        return dict;
-    }
-
     private JSONObject mapOfBeacon(IBeacon region) throws JSONException {
     	JSONObject dict = new JSONObject();
         
@@ -353,7 +330,7 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
         // proximity
         dict.put("proximity", nameOfProximity(region.getProximity()));
         // rssi
-        dict.put("minor", region.getRssi());
+        dict.put("rssi", region.getRssi());
         
         return dict;
     }
@@ -388,14 +365,16 @@ public class IBeaconPlugin extends CordovaPlugin implements IBeaconConsumer {
 	@Override
 	public void unbindService(ServiceConnection connection) {
 		serviceRunning = false;
+		cordova.getActivity().unbindService(connection);
 	}
 
 	@Override
 	public boolean bindService(Intent intent, ServiceConnection connection,
 			int mode) {
 
+		
 		serviceRunning = true;
-		return false;
+		return cordova.getActivity().bindService(intent, connection, mode);
 	}
     
     boolean serviceRunning = false;
