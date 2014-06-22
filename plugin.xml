@@ -3,14 +3,12 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.apache.cordova.ibeacon"
-    version="1.0.0">
+    version="1.1.0">
     <name>iBeacon</name>
     <description>Cordova iBeacon Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
-    <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
-
-
+    <repo>https://github.com/mrtree/cordova-plugin-ibeacon.git</repo>
 
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
@@ -22,6 +20,23 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:enabled="true"
+                     android:exported="true"
+                     android:isolatedProcess="false"
+                     android:label="iBeacon"
+                     android:name="com.radiusnetworks.ibeacon.service.IBeaconService">
+            </service>
+            <service android:enabled="true"
+                     android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
+                <meta-data android:name="background" android:value="true" />
+                <intent-filter android:priority="1" >
+                    <action android:name="org.apache.cordova.ibeacon.IBeaconPlugin.DID_RANGING" />
+                    <action android:name="org.apache.cordova.ibeacon.IBeaconPlugin.DID_MONITORING" />
+                </intent-filter>
+            </service>
         </config-file>
 
         <source-file src="src/android/IBeaconPlugin.java" target-dir="src/org/apache/cordova/ibeacon" />
@@ -53,7 +68,7 @@
         <source-file src="src/android/com/radiusnetworks/ibeacon/simulator/BeaconSimulator.java" target-dir="src/com/radiusnetworks/ibeacon/simulator" />
         <source-file src="src/android/com/radiusnetworks/ibeacon/simulator/StaticBeaconSimulator.java" target-dir="src/com/radiusnetworks/ibeacon/simulator" />
 
-        <js-module src="www/IBeacon.js" name="device">
+        <js-module src="www/IBeacon.js" name="ibeacon">
             <clobbers target="IBeacon" />
         </js-module>
     </platform>
@@ -69,7 +84,7 @@
         <header-file src="src/ios/CDVIBeacon.h" />
         <source-file src="src/ios/CDVIBeacon.m" />
 
-        <js-module src="www/IBeacon.js" name="device">
+        <js-module src="www/IBeacon.js" name="ibeacon">
             <clobbers target="IBeacon" />
         </js-module>
 
