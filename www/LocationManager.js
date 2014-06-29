@@ -256,42 +256,43 @@ var LocationManager = klass({
 		return this._promisedExec('stopMonitoringForRegion', [region], []);
 	},
     /**
-     * Start ranging the specified region.
+     * Start ranging the specified beacon region.
      *
      * If a region of the same type with the same identifier is already being
-     * monitored for this application,
-     * it will be removed from monitoring. For circular regions, the region
-     * monitoring service will prioritize
-     * regions by their size, favoring smaller regions over larger regions.
+     * monitored for this application, it will be removed from monitoring.
      *
-     * This is done asynchronously and may not be immediately reflected in monitoredRegions.
+     * This is done asynchronously and may not be immediately reflected in rangedRegions.
      *
-     * @param {Region} region An instance of {Region} which will be monitored
+     * @param {Region} region An instance of {BeaconRegion} which will be monitored
      * by the operating system.
      *
      * @return {Q.Promise} Returns a promise which is resolved as soon as the
      * native layer acknowledged the dispatch of the monitoring request.
      */
     startRangingBeaconsInRegion: function(region) {
-        Regions.checkRegionType(region);
+        if (!Regions.isBeaconRegion(region))
+            throw new TypeError('The region parameter has to be an instance of BeaconRegion');
+
         return this._promisedExec('startRangingBeaconsInRegion', [region], []);
     },
     /**
      * Stop ranging the specified region.  It is valid to call
-     * stopMonitoringForRegion: for a region that was registered for monitoring
+     * stopMonitoringForRegion: for a region that was registered for ranging
      * with a different location manager object, during this or previous
      * launches of your application.
      *
-     * This is done asynchronously and may not be immediately reflected in monitoredRegions.
+     * This is done asynchronously and may not be immediately reflected in rangedRegions.
      *
-     * @param {Region} region An instance of {Region} which will be monitored
+     * @param {Region} region An instance of {BeaconRegion} which will be monitored
      * by the operating system.
      *
      * @return {Q.Promise} Returns a promise which is resolved as soon as the
      * native layer acknowledged the dispatch of the request to stop monitoring.
      */
     stopRangingBeaconsInRegion: function(region) {
-        Regions.checkRegionType(region);
+        if (!Regions.isBeaconRegion(region))
+            throw new TypeError('The region parameter has to be an instance of BeaconRegion');
+
         return this._promisedExec('stopRangingBeaconsInRegion', [region], []);
     },
     /**

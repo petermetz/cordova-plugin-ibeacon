@@ -316,7 +316,7 @@
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
             }
         } else {
-            [_locationManager startRangingBeaconsInRegion:region];
+            [_locationManager startRangingBeaconsInRegion:(CLBeaconRegion*)region];
             
             CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [result setKeepCallbackAsBool:YES];
@@ -338,7 +338,7 @@
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
             }
         } else {
-            [_locationManager stopRangingBeaconsInRegion:region];
+            [_locationManager stopRangingBeaconsInRegion:(CLBeaconRegion*)region];
             CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [result setKeepCallbackAsBool:YES];
             return result;
