@@ -24,12 +24,13 @@
 
  * Ranging
  * Monitoring
- * Advertising as iBeacon (only works in foreground mode)
+ * Advertising as iBeacon (only works in foreground mode - iOS only)
+ * Android support : Forked from [PeterMetz](https://github.com/petermetz/cordova-plugin-ibeacon) plugin and [RadiusNetworks](https://github.com/RadiusNetworks/android-ibeacon-service) Android iBeacon service.
 
 ### Installation
 
 ```
-cordova plugin add https://github.com/petermetz/cordova-plugin-ibeacon.git
+cordova plugin add https://github.com/mrtree/cordova-plugin-ibeacon.git
 ```
 
 ### Usage
