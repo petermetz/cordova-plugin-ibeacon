@@ -23,6 +23,7 @@
  */
 package com.radiusnetworks.ibeacon.service;
 
+import com.radiusnetworks.ibeacon.IBeaconManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -58,7 +59,7 @@ public class Callback {
 	 */
 	public boolean call(Context context, String dataName, Parcelable data) {
 		if (intent != null) {
-			Log.d(TAG, "attempting callback via intent: "+intent.getComponent());
+			if (IBeaconManager.debug) Log.d(TAG, "attempting callback via intent: "+intent.getComponent());
 			intent.putExtra(dataName, data);
 			context.startService(intent);		
 			return true;			

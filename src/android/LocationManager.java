@@ -508,6 +508,8 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			@Override
 			public PluginResult run() {
 				debugEnabled = false;
+				iBeaconManager.setDebug(false);
+				//android.bluetooth.BluetoothAdapter.DBG = false;
 				return new PluginResult(PluginResult.Status.OK);
 			}
     	});
@@ -519,6 +521,8 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			@Override
 			public PluginResult run() {
 				debugEnabled = true;
+				//android.bluetooth.BluetoothAdapter.DBG = true;
+				iBeaconManager.setDebug(true);
 				return new PluginResult(PluginResult.Status.OK);
 			}
     	});		
