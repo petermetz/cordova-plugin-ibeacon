@@ -21,6 +21,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
+#import "LMLogger.h"
+
 typedef CDVPluginResult* (^CDVPluginCommandHandler)(CDVInvokedUrlCommand*);
 
 const double CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30.0;
@@ -36,7 +38,11 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 
 @property (retain) NSString* delegateCallbackId;
 
-@property BOOL debugEnabled;
+@property (retain, readonly) LMLogger *logger;
+
+@property BOOL debugLogEnabled;
+
+@property BOOL debugNotificationsEnabled;
 
 /*
  *  onDomDelegateReady:
@@ -61,12 +67,17 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 - (void)getMonitoredRegions:(CDVInvokedUrlCommand*)command;
 - (void)getRangedRegions:(CDVInvokedUrlCommand*)command;
 
+- (void)disableDebugNotifications:(CDVInvokedUrlCommand*)command;
+- (void)enableDebugNotifications:(CDVInvokedUrlCommand*)command;
 
 - (void)disableDebugLogs:(CDVInvokedUrlCommand*)command;
 - (void)enableDebugLogs:(CDVInvokedUrlCommand*)command;
+
 - (void)appendToDeviceLog:(CDVInvokedUrlCommand*)command;
 
 - (void)registerDelegateCallbackId:(CDVInvokedUrlCommand*)command;
+
+- (LMLogger*) getLogger;
 
 @end
 

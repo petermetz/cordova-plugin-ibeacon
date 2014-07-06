@@ -57,6 +57,12 @@
         <header-file src="src/ios/CDVLocationManager.h"/>
         <source-file src="src/ios/CDVLocationManager.m"/>
 
+        <header-file src="src/ios/AppDelegate+CDVLocationManager.h"/>
+        <source-file src="src/ios/AppDelegate+CDVLocationManager.m"/>
+
+        <header-file src="src/ios/LMLogger.h"/>
+        <source-file src="src/ios/LMLogger.m"/>
+
     </platform>
 
 </plugin>

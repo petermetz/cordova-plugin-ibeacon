@@ -18,6 +18,7 @@
  */
 
 #import "CDVLocationManager.h"
+#import "LMLogger.h"
 
 @implementation CDVLocationManager {
 
@@ -34,7 +35,8 @@
 
     [self initLocationManager];
     
-    self.debugEnabled = true;
+    self.debugLogEnabled = true;
+    self.debugNotificationsEnabled = false;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
     
@@ -72,7 +74,7 @@
     if (self.queue != nil) {
         return;
     }
-    [self debugLog:@"WARNING event queue should not be null."];
+    [[self getLogger] debugLog:@"WARNING event queue should not be null."];
     self.queue = [NSOperationQueue new];
 }
 
@@ -96,7 +98,7 @@
     
     [self.commandDelegate runInBackground:^{
         
-        [self debugLog:@"didDetermineState: %@ for region: %@", [self regionStateAsString:state], region];
+        [[self getLogger] debugLog:@"didDetermineState: %@ for region: %@", [self regionStateAsString:state], region];
         
         NSMutableDictionary* dict = [NSMutableDictionary new];
         
@@ -116,7 +118,8 @@
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
             
-            [self debugLog:@"didEnterRegion: %@", region.identifier];
+            [[self getLogger] debugLog:@"didEnterRegion: %@", region.identifier];
+            [[self getLogger] debugNotification:@"didEnterRegion: %@", region.identifier];
             
             NSMutableDictionary* dict = [NSMutableDictionary new];
             [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
@@ -136,7 +139,8 @@
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
             
-            [self debugLog:@"didExitRegion: %@", region.identifier];
+            [[self getLogger] debugLog:@"didExitRegion: %@", region.identifier];
+            [[self getLogger] debugNotification:@"didExitRegion: %@", region.identifier];
             
             NSMutableDictionary* dict = [NSMutableDictionary new];
             [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
@@ -156,7 +160,7 @@
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
             
-            [self debugLog:@"didStartMonitoringForRegion: %@", region];
+            [[self getLogger] debugLog:@"didStartMonitoringForRegion: %@", region];
             
             NSMutableDictionary* dict = [NSMutableDictionary new];
             [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
@@ -176,7 +180,7 @@
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
             
-            [self debugLog:@"monitoringDidFailForRegion: %@", error.description];
+            [[self getLogger] debugLog:@"monitoringDidFailForRegion: %@", error.description];
             
             NSMutableDictionary* dict = [NSMutableDictionary new];
             [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
@@ -203,7 +207,7 @@
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
             
-            [self debugLog:@"didRangeBeacons: %@", beacons];
+            [[self getLogger] debugLog:@"didRangeBeacons: %@", beacons];
             
             NSMutableDictionary* dict = [[NSMutableDictionary alloc]init];
             [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
@@ -233,7 +237,10 @@
 
 - (void)disableDebugLogs:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
-        _debugEnabled = false;
+
+        self.debugLogEnabled = false;
+        [self.logger setDebugLogEnabled:false];
+        
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } :command];
 
@@ -241,7 +248,30 @@
 
 - (void)enableDebugLogs:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
-        _debugEnabled = true;
+        
+        self.debugLogEnabled = true;
+        [self.logger setDebugLogEnabled:true];
+        
+        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } :command];
+}
+
+- (void)disableDebugNotifications:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
+        
+        self.debugNotificationsEnabled = false;
+        [self.logger setDebugNotificationsEnabled:false];
+        
+        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } :command];
+}
+
+- (void)enableDebugNotifications:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
+
+        self.debugNotificationsEnabled = true;
+        [self.logger setDebugNotificationsEnabled:true];
+        
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } :command];
 }
@@ -251,7 +281,7 @@
         
         NSString* message = [command.arguments objectAtIndex:0];
         if (message != nil && [message length] > 0) {
-            [self debugLog:[@"[DOM] " stringByAppendingString:message]];
+            [[self getLogger] debugLog:[@"[DOM] " stringByAppendingString:message]];
             return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
         } else {
             return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
@@ -266,7 +296,7 @@
         CLRegion* region = [self parseRegion:command returningError:&error];
         if (region == nil) {
             if (error != nil) {
-                [self debugLog:@"ERROR %@", error];
+                [[self getLogger] debugLog:@"ERROR %@", error];
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
             } else {
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
@@ -288,7 +318,7 @@
         CLRegion* region = [self parseRegion:command returningError:&error];
         if (region == nil) {
             if (error != nil) {
-                [self debugLog:@"ERROR %@", error];
+                [[self getLogger] debugLog:@"ERROR %@", error];
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
             } else {
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
@@ -333,7 +363,7 @@
         NSArray* arrayOfRegions;
         
         if ([self isBelowIos7]) {
-            [self debugLog:@"WARNING Ranging is an iOS 7+ feature."];
+            [[self getLogger] debugLog:@"WARNING Ranging is an iOS 7+ feature."];
             arrayOfRegions = [NSArray new];
         } else {
             arrayOfRegions = [self mapsOfRegions:self.locationManager.rangedRegions];
@@ -350,7 +380,7 @@
         BOOL isRangingAvailable;
         
         if ([self isBelowIos7]) {
-            [self debugLog:@"WARNING Ranging is an iOS 7+ feature."];
+            [[self getLogger] debugLog:@"WARNING Ranging is an iOS 7+ feature."];
             isRangingAvailable = false;
         } else {
             isRangingAvailable = [CLLocationManager isRangingAvailable];
@@ -364,7 +394,7 @@
 - (void)registerDelegateCallbackId:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
         
-        [self debugLog:@"Registering delegate callback ID: %@", command.callbackId];
+        [[self getLogger] debugLog:@"Registering delegate callback ID: %@", command.callbackId];
         self.delegateCallbackId = command.callbackId;
 
         CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -562,18 +592,6 @@
     return [dict objectForKey:[NSNumber numberWithInteger:proximity]];
 }
 
-- (void) debugLog: (NSString*) format, ... {
-    if (!self.debugEnabled) {
-        return;
-    }
-    va_list args;
-    va_start(args, format);
-    NSString *msg = [[NSString alloc] initWithFormat:format arguments:args];
-    va_end(args);
-    
-    NSLog(@"%@", msg);
-}
-
 - (NSArray*) mapsOfRegions: (NSSet*) regions {
     NSMutableArray* array = [NSMutableArray new];
     for(CLRegion* region in regions) {
@@ -584,18 +602,22 @@
 
 
 - (NSDictionary*) mapOfRegion: (CLRegion*) region {
-    NSMutableDictionary* dict;
-    
+
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+
     // identifier
-    if (region.identifier != nil) {
-        [dict setObject:region.identifier forKey:@"identifier"];
-    }
-    
+    [dict setObject:region.identifier forKey:@"identifier"];
+
+    // typeName - First two characters are cut down to remove the "CL" prefix.
+    NSString *typeName = [NSStringFromClass([region class]) substringFromIndex:2];
+    typeName = [typeName isEqualToString:@"Region"] ? @"CircularRegion" : typeName;
+    [dict setObject:typeName forKey:@"typeName"];
+
     if ([region isKindOfClass:[CLBeaconRegion class]]) {
         CLBeaconRegion* beaconRegion = (CLBeaconRegion*) region;
-        return [[NSMutableDictionary alloc] initWithDictionary:[self mapOfBeaconRegion:beaconRegion]];
-    } else {
-        dict = [[NSMutableDictionary alloc] init];
+        NSDictionary * beaconRegionDict = [self mapOfBeaconRegion:beaconRegion];
+        [dict addEntriesFromDictionary: beaconRegionDict];
+        return dict;
     }
     
     // radius
@@ -608,14 +630,7 @@
     // center
     [dict setObject: latitude forKey:@"latitude"];
     [dict setObject: longitude forKey:@"longitude"];
-    
-    [dict setObject:region.identifier forKey:@"identifier"];
-    
-    // typeName - First two characters are cut down to remove the "CL" prefix.
-    NSString *typeName = [NSStringFromClass([region class]) substringFromIndex:2];
-    typeName = [typeName isEqualToString:@"Region"] ? @"CircularRegion" : typeName;
-    [dict setObject:typeName forKey:@"typeName"];
-    
+
     return dict;
 }
 
@@ -661,6 +676,18 @@
     return dict;
 }
 
+- (LMLogger*) getLogger {
+    
+    if (self.logger == nil) {
+        _logger = [[LMLogger alloc] init];
+    }
+    
+    [self.logger setDebugLogEnabled:self.debugLogEnabled];
+    [self.logger setDebugNotificationsEnabled:self.debugNotificationsEnabled];
+    
+    return self.logger;
+}
+
 - (NSString*) jsCallbackNameForSelector: (SEL) selector {
     NSString* fullName = NSStringFromSelector(selector);
     
@@ -678,7 +705,7 @@
         range = [shortName rangeOfString:@":"];
     };
     
-    [self debugLog:@"Converted %@ into %@", fullName, shortName];
+    [[self getLogger] debugLog:@"Converted %@ into %@", fullName, shortName];
     return shortName;
 }
 

@@ -300,14 +300,35 @@ var LocationManager = klass({
     disableDebugLogs: function() {
 		return this._promisedExec('disableDebugLogs', [], []);
 	},
-    /**
-     * Enables debug logging in the native layer. Use this method if you want
-     * a debug the inner workings of this plugin.
-     * 
-     * @returns {Q.Promise} Returns a promise which is resolved as soon as the
-     * native layer has set the logging level accordingly.
-     */
-    enableDebugLogs: function() {
+	/**
+	 * Enables the posting of debug notifications in the native layer. Use this method if you want
+	 * to allow the plugin the posting local notifications.
+	 * This can be very helpful when debugging how to apps behave when launched into the background.
+	 *
+	 * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+	 * native layer has set the flag to enabled.
+	 */
+	enableDebugNotifications: function() {
+		return this._promisedExec('enableDebugNotifications', [], []);
+	},
+	/**
+	 * Disables the posting of debug notifications in the native layer. Use this method if you want
+	 * to prevent the plugin from posting local notifications.
+	 *
+	 * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+	 * native layer has set the flag to disabled.
+	 */
+	disableDebugNotifications: function() {
+		return this._promisedExec('disableDebugNotifications', [], []);
+	},
+	/**
+	 * Enables debug logging in the native layer. Use this method if you want
+	 * a debug the inner workings of this plugin.
+	 *
+	 * @returns {Q.Promise} Returns a promise which is resolved as soon as the
+	 * native layer has set the logging level accordingly.
+	 */
+	enableDebugLogs: function() {
 		return this._promisedExec('enableDebugLogs', [], []);
 	},
     /**
