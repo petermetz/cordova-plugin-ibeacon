@@ -340,7 +340,7 @@
         CLRegion* region = [self parseRegion:command returningError:&error];
         if (region == nil) {
             if (error != nil) {
-                [self debugLog:@"ERROR %@", error];
+                [[self getLogger] debugLog:@"ERROR %@", error];
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
             } else {
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
@@ -362,7 +362,7 @@
         CLRegion* region = [self parseRegion:command returningError:&error];
         if (region == nil) {
             if (error != nil) {
-                [self debugLog:@"ERROR %@", error];
+                [[self getLogger] debugLog:@"ERROR %@", error];
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
             } else {
                 return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
