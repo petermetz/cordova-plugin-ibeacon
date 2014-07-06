@@ -22,9 +22,15 @@
 
 ### Features
 
+#### Features available on both Android and iOS
+
  * Ranging
  * Monitoring
- * Advertising as iBeacon (only works in foreground mode)
+ 
+#### Features exclusive to iOS
+
+ * Advertising as iBeacon (only on iOS devices, when the app is in the foreground)
+ * Region Monitoring (or geo fencing), works in all app states. 
 
 ### Installation
 
@@ -34,47 +40,96 @@ cordova plugin add https://github.com/petermetz/cordova-plugin-ibeacon.git
 
 ### Usage
 
-The plugin's API closely mimics the one exposed through the [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) in iOS 7. There is some added sugar as well, like the ability to interact with multiple iBeacons through a single call.
+The plugin's API closely mimics the one exposed through the [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) introduced in iOS 7.
+
+Since version 2, the main ```IBeacon``` facade of the DOM is called ```LocationManager``` and it's API is based on promises instead of callbacks.
+Another important change of version 2 is that it no longer pollutes the global namespace, instead all the model classes and utilities are accessible
+through the ```cordova.plugins.locationManager``` reference chain.
 
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
 ##### Creating CLBeaconRegion DTOs
+
 ```
 /**
- * Function that creates a CLBeaconRegion data transfer object.
+ * Function that creates a BeaconRegion data transfer object.
  * 
- * @throws Error if the CLBeaconRegion cannot be created.
+ * @throws Error if the BeaconRegion parameters are not valid.
  */
 function createBeacon() {
-   var identifier = 'beaconAtTheMacBooks'; // optional
-   var major = 1111; // optional
-   var minor = 2222; // optional
-   var uuid = '9C3B7561-1B5E-4B80-B7E9-31183E73B0FB'; // mandatory
 
-   // throws an error if the parameters are not valid
-   var beacon = new IBeacon.CLBeaconRegion(uuid, major, minor, identifier);
-   return beacon;   
+    var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9'; // mandatory
+    var identifier = 'beaconAtTheMacBooks'; // mandatory
+    var minor = 1000; // optional, defaults to wildcard if left empty
+    var major = 5; // optional, defaults to wildcard if left empty
+
+    // throws an error if the parameters are not valid
+    var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+   
+    return beaconRegion;   
 } 
 ```
  
 ##### Start monitoring a single iBeacon
 ```
+		var logToDom = function (message) {
+			var e = document.createElement('label');
+			e.innerText = message;
 
-var onDidDetermineStateCallback = function (result) {
-     console.log(result.state);
-};
+			var br = document.createElement('br');
+			var br2 = document.createElement('br');
+			document.body.appendChild(e);
+			document.body.appendChild(br);
+			document.body.appendChild(br2);
+		};
 
-var beacon = createBeacon();
-IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
+		var delegate = new cordova.plugins.locationManager.Delegate().implement({
+			
+			didDetermineStateForRegion: function (pluginResult) {
+
+				logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+
+				cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+					+ JSON.stringify(pluginResult));
+			},
+
+			didStartMonitoringForRegion: function (pluginResult) {
+				console.log('didStartMonitoringForRegion:', pluginResult);
+
+				logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+			},
+
+			didRangeBeaconsInRegion: function (pluginResult) {
+				logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+			}
+
+		});
+
+		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+		var identifier = 'beaconOnTheMacBooksShelf';
+		var minor = 1000;
+		var major = 5;
+		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+		cordova.plugins.locationManager.setDelegate(delegate);
+		cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
+			.fail(console.error)
+			.done();
 
 ```
  
 
 ##### Stop monitoring a single iBeacon
 ```
+		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+		var identifier = 'beaconOnTheMacBooksShelf';
+		var minor = 1000;
+		var major = 5;
+		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
-var beacon = createBeacon();
-IBeacon.stopMonitoringForRegion(beacon);
+		cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
+			.fail(console.error)
+			.done();
 
 ```
  
@@ -82,63 +137,89 @@ IBeacon.stopMonitoringForRegion(beacon);
 ##### Start ranging a single iBeacon
 ```
 
-var onDidRangeBeacons = function (result) {
-   console.log('onDidRangeBeacons() ', result);
-};
+		var logToDom = function (message) {
+			var e = document.createElement('label');
+			e.innerText = message;
 
-var beacon = createBeacon();
-IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
+			var br = document.createElement('br');
+			var br2 = document.createElement('br');
+			document.body.appendChild(e);
+			document.body.appendChild(br);
+			document.body.appendChild(br2);
+		};
 
+		var delegate = new cordova.plugins.locationManager.Delegate().implement({
+			
+			didDetermineStateForRegion: function (pluginResult) {
+
+				logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+
+				cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+					+ JSON.stringify(pluginResult));
+			},
+
+			didStartMonitoringForRegion: function (pluginResult) {
+				console.log('didStartMonitoringForRegion:', pluginResult);
+
+				logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+			},
+
+			didRangeBeaconsInRegion: function (pluginResult) {
+				logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+			}
+
+		});
+
+		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+		var identifier = 'beaconOnTheMacBooksShelf';
+		var minor = 1000;
+		var major = 5;
+		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+		cordova.plugins.locationManager.setDelegate(delegate);
+		cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
+			.fail(console.error)
+			.done();
 
 ```
  
 ##### Stop ranging a single iBeacon
 ```
 
-var beacon = createBeacon();
-IBeacon.stopRangingBeaconsInRegion(beacon);
+		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+		var identifier = 'beaconOnTheMacBooksShelf';
+		var minor = 1000;
+		var major = 5;
+		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+		cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
+			.fail(console.error)
+			.done();
+
 
 ```
 
 ##### Determine if advertising is turned on.
 
 ```
-IBeacon.isAdvertising(function(pluginResult) {
-    var isAdvertising = pluginResult.isAdvertising;
-    console.log('isAdvertising:' + isAdvertising);
-});
+
+This is not yet integrated into version 2. Coming soon!
+
 ```
 
 ##### Start advertising device as an iBeacon
 ```
-var beacon = createBeacon();
-var onPeripheralManagerDidStartAdvertising = function(pluginResult) {
-    console.log('onPeripheralManagerDidStartAdvertising() pluginResult: ', pluginResult);
-}
 
-IBeacon.startAdvertising(beacon, onPeripheralManagerDidStartAdvertising);
+This is not yet integrated into version 2. Coming soon!
 
 ```
 
 ##### Stopping the advertising
 ```
-IBeacon.stopAdvertising(); // optionally you can specify a success callback as the first parameter
+
+This is not yet integrated into version 2. Coming soon!
+
 ```
-
-#### Convenience methods
-
-##### Handle multiple beacons with the same call:
-```
-
-var beacon1 = createBeacon(); 
-var beacon2 = createBeacon(); 
-var beacon3 = createBeacon(); 
-var beacons = [beacon1, beacon2, beacon3]; 
-
-IBeacon.startMonitoringForRegions(beacons); 
-IBeacon.startRangingBeaconsInRegions(beacons);
-```
-
 
 ## Contributions
 
@@ -165,136 +246,10 @@ Executing the test runner will do the following:
 * Installs the iBeacon plugin from the local file-system.
 * Launches XCode by opening the project.
 
-### How to execute the tests - Non OS X
+### How to execute the tests - Without the Dart SDK
 
 * Open an app which has Cordova iBeacon plugin installed in XCode
 * Install it onto a device or simulator
 * Open Safari
 * Go to the dev tools window
-* Paste the code below (the contents of ```test/test_www_assets/js/tests.js```) into the Javascript console
-* Run the snippet, there should not be any errors.
-
-```
-try {
-	function createBeacon(index) {
-		var addition = parseInt(index);
-		addition = isFinite(addition) ? addition : 0;
-		var identifier = 'cordova-ibeacon-plugin-test'; // optional
-		var major = 1111; // optional
-		var minor = 1111 + addition; // optional
-		var uuid = '9C3B7561-1B5E-4B80-B7E9-31183E73B0FB'; // mandatory
-
-		// throws an error if the parameters are not valid
-		var beacon = new IBeacon.CLBeaconRegion(uuid, major, minor, identifier);
-		return beacon;
-	}
-
-	// should not throw any errors since the major and minor parameters are optional
-	var beaconWithoutMajorOrMinor = new IBeacon.CLBeaconRegion('dummyUuid', null, null, 'dummyIdentifier');
-	if (!(beaconWithoutMajorOrMinor instanceof IBeacon.CLBeaconRegion)) {
-		throw new Error('Test failed. CLBeaconRegion constructor did not return an instance of CLBeaconRegion');
-	}
-
-	// should not throw any errors since the major and minor parameters are optional
-	var beaconWithoutMajorOrMinor2 = new IBeacon.CLBeaconRegion('dummyUuid', undefined, undefined, 'dummyIdentifier');
-	if (!(beaconWithoutMajorOrMinor2 instanceof IBeacon.CLBeaconRegion)) {
-		throw new Error('Test failed. CLBeaconRegion constructor did not return an instance of CLBeaconRegion');
-	}
-
-	// should throw an error, because major and minor has to be integers, if they were defined
-	var exceptionThrown = false;
-	try {
-		new IBeacon.CLBeaconRegion('dummyUuid', '', '', 'dummyIdentifier');
-	} catch (error) {
-		exceptionThrown = true;
-	}
-	if (exceptionThrown !== true) {
-		throw new Error('Test failed. CLBeaconRegion constructor accepted major/minor to be String');
-	}
-
-	// should throw an error, because major and minor has to be integers, if they were defined
-	var exceptionThrown = false;
-	try {
-		new IBeacon.CLBeaconRegion('dummyUuid', NaN, NaN, 'dummyIdentifier');
-	} catch (error) {
-		exceptionThrown = true;
-	}
-	if (exceptionThrown !== true) {
-		throw new Error('Test failed. CLBeaconRegion constructor accepted major/minor to be NaN');
-	}
-
-	var b1 = createBeacon();
-	var b2 = createBeacon();
-	var b3 = createBeacon();
-
-	var arrayOfBeacons = [b1, b2, b3];
-
-	var onDidDetermineStateCallback = function (result) {
-		console.log(result.state);
-	};
-
-	var beacon = createBeacon();
-	IBeacon.startMonitoringForRegion(beacon, onDidDetermineStateCallback);
-	IBeacon.stopMonitoringForRegion(beacon);
-
-	IBeacon.startMonitoringForRegions(arrayOfBeacons, onDidDetermineStateCallback);
-	IBeacon.stopMonitoringForRegions(arrayOfBeacons);
-
-	var onDidRangeBeacons = function (result) {
-		console.log('onDidRangeBeacons() ', result);
-	};
-	IBeacon.startRangingBeaconsInRegion(beacon, onDidRangeBeacons);
-	IBeacon.stopRangingBeaconsInRegion(beacon);
-
-	IBeacon.startRangingBeaconsInRegions(arrayOfBeacons, onDidRangeBeacons);
-	IBeacon.stopRangingBeaconsInRegions(arrayOfBeacons);
-
-	IBeacon.isAdvertising(function (pluginResult) {
-		var isAdvertising = pluginResult.isAdvertising;
-		console.log('isAdvertising:' + isAdvertising);
-		if (isAdvertising === true) {
-			throw new Error('Test case failed for `isAdvertising` #1');
-		}
-
-		// TODO This is ugly, define more top level callbacks to make it cleaner.
-		var onPeripheralManagerDidStartAdvertising = function (pluginResult) {
-			console.log('onPeripheralManagerDidStartAdvertising() pluginResult: ', pluginResult);
-
-			IBeacon.isAdvertising(function (pluginResult) {
-				var isAdvertising = pluginResult.isAdvertising;
-				console.log('isAdvertising:' + isAdvertising);
-				if (isAdvertising !== true) {
-					throw new Error('Test case failed for `isAdvertising` #2');
-				}
-				IBeacon.stopAdvertising(function () {
-
-					IBeacon.isAdvertising(function (pluginResult) {
-						var isAdvertising = pluginResult.isAdvertising;
-						console.log('isAdvertising:' + isAdvertising);
-						// FIXME The CBPeripheralManager is not KVO compilant and provides no way to
-						// get notified when the advertising really shut down.
-						// if (isAdvertising === true) {
-						//   throw new Error('Test case failed for `isAdvertising` #3');
-						// }
-					});
-
-				});
-			});
-		}
-
-		IBeacon.startAdvertising(createBeacon(), onPeripheralManagerDidStartAdvertising);
-	});
-
-
-	if (app && app.receivedEvent) {
-		app.receivedEvent('deviceready');
-	} else {
-		alert('Tests were successful.');
-	}
-
-
-} catch (error) {
-	alert('There were test failures. \n' + error.message);
-}
-
-```
+* Paste the code from the examples into the javascript console, it should run without any errors.
