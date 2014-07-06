@@ -29,7 +29,6 @@
  
 #### Features exclusive to iOS
 
- * Advertising as iBeacon (only on iOS devices, when the app is in the foreground)
  * Region Monitoring (or geo fencing), works in all app states. 
 
 ### Installation
@@ -48,7 +47,7 @@ through the ```cordova.plugins.locationManager``` reference chain.
 
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
-##### Creating CLBeaconRegion DTOs
+##### Creating BeaconRegion DTOs
 
 ```
 /**
