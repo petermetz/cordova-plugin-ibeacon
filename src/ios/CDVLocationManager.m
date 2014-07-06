@@ -333,6 +333,50 @@
     } :command];
 }
 
+- (void)startRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        NSError* error;
+        CLRegion* region = [self parseRegion:command returningError:&error];
+        if (region == nil) {
+            if (error != nil) {
+                [self debugLog:@"ERROR %@", error];
+                return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
+            } else {
+                return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
+            }
+        } else {
+            [_locationManager startRangingBeaconsInRegion:(CLBeaconRegion*)region];
+            
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            [result setKeepCallbackAsBool:YES];
+            return result;
+        }
+    } :command];
+}
+
+- (void)stopRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        NSError* error;
+        CLRegion* region = [self parseRegion:command returningError:&error];
+        if (region == nil) {
+            if (error != nil) {
+                [self debugLog:@"ERROR %@", error];
+                return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
+            } else {
+                return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
+            }
+        } else {
+            [_locationManager stopRangingBeaconsInRegion:(CLBeaconRegion*)region];
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            [result setKeepCallbackAsBool:YES];
+            return result;
+        }
+        
+    } :command];
+}
+
 - (void)getAuthorizationStatus:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         

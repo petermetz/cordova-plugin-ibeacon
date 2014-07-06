@@ -57,6 +57,9 @@ Delegate.statics({
     didEnterRegion: function(pluginResult) {
         pluginResult.region = Regions.fromJson(pluginResult.region);
     },
+    didRangeBeaconsInRegion: function(pluginResult) {
+        pluginResult.region = Regions.fromJson(pluginResult.region);
+    },
 	safeTraceLogging: function(message) {
 		if (!_.isString(message)) {
 			return;
@@ -85,7 +88,11 @@ Delegate.methods({
     },
     didEnterRegion: function() {
 		Delegate.safeTraceLogging('DEFAULT didEnterRegion()');
+    },
+    didRangeBeaconsInRegion: function() {
+        Delegate.safeTraceLogging('DEFAULT didRangeBeaconsInRegion()');
     }
+
 });
 
 module.exports = Delegate;
