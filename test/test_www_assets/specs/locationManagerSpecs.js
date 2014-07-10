@@ -65,7 +65,8 @@ describe('LocationManager', function() {
                 console.log('didStartMonitoringForRegion:', pluginResult);
 
                 var region = pluginResult.region;
-                expect(region instanceof CircularRegion).toBe(true);
+				expect(region).toBeDefined();
+                expect(region instanceof Region).toBe(true);
                 done();
             }
         });
@@ -103,7 +104,8 @@ describe('LocationManager', function() {
                 console.log('didStartMonitoringForRegion:', pluginResult);
 
                 var region = pluginResult.region;
-                expect(region instanceof CircularRegion).toBe(true);
+				expect(region).toBeDefined();
+                expect(region instanceof Region).toBe(true);
                 done();
             }
         });

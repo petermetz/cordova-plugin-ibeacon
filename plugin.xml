@@ -5,7 +5,7 @@
     <description>Cordova iBeacon Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
-    <repo>https://github.com/mrtree/cordova-plugin-ibeacon.git</repo>
+    <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
 
     <!-- Third party libraries -->
     <js-module name="underscorejs" src="www/lib/underscore-min-1.6.js">
@@ -56,6 +56,12 @@
 
         <header-file src="src/ios/CDVLocationManager.h"/>
         <source-file src="src/ios/CDVLocationManager.m"/>
+
+        <header-file src="src/ios/AppDelegate+CDVLocationManager.h"/>
+        <source-file src="src/ios/AppDelegate+CDVLocationManager.m"/>
+
+        <header-file src="src/ios/LMLogger.h"/>
+        <source-file src="src/ios/LMLogger.m"/>
 
     </platform>
 
