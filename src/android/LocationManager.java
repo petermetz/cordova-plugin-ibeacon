@@ -130,6 +130,10 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
         if (action.equals("onDomDelegateReady")) {
         	onDomDelegateReady(callbackContext);
+        } else if (action.equals("disableDebugNotifications")) {
+        	disableDebugNotifications(callbackContext);
+        } else if (action.equals("enableDebugNotifications")) {
+        	enableDebugNotifications(callbackContext);
         } else if (action.equals("disableDebugLogs")) {
         	disableDebugLogs(callbackContext);
         } else if (action.equals("enableDebugLogs")) {
@@ -152,15 +156,23 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         	getMonitoredRegions(callbackContext);
         } else if (action.equals("getRangedRegions")) {
         	getRangedRegions(callbackContext);
-       } else if (action.equals("registerDelegateCallbackId")) {
+        } else if (action.equals("registerDelegateCallbackId")) {
         	registerDelegateCallbackId(args.optJSONObject(0), callbackContext);
+        } else if (action.equals("isRegionTypeAvailable")) {
+        	isRegionTypeAvailable(args.optJSONObject(0),callbackContext);
+        } else if (action.equals("isAdvertisingAvailable")) {
+        	isAdvertisingAvailable(callbackContext);
+        } else if (action.equals("startAdvertising")) {
+        	startAdvertising(args.optJSONObject(0), callbackContext);
+        } else if (action.equals("stopAdvertising")) {
+        	stopAdvertising(callbackContext);
         } else {
             return false;
         }
         return true;
     }
 
-    ///////////////// SETUP AND VALIDATION /////////////////////////////////
+	///////////////// SETUP AND VALIDATION /////////////////////////////////
     
     private void initLocationManager() {
         iBeaconManager = IBeaconManager.getInstanceForApplication(cordova.getActivity());
@@ -282,7 +294,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 		String warning = "WARNING did not receive delegate ready callback from DOM after "+CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT+" seconds!";
 		debugWarn(warning);
 		
-		webView.sendJavascript("console.error("+warning+")");
+		webView.sendJavascript("console.warn('"+warning+"')");
 	}	
 	
 	///////// CALLBACKS ////////////////////////////
@@ -468,11 +480,6 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 		};
 	}
 
-
-
-
-
-
 	//--------------------------------------------------------------------------
     // PLUGIN METHODS
     //--------------------------------------------------------------------------
@@ -501,6 +508,34 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     	});
     }
     
+	private void disableDebugNotifications(CallbackContext callbackContext) {
+
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+			@Override
+			public PluginResult run() {
+				debugEnabled = false;
+				IBeaconManager.setDebug(false);
+				//android.bluetooth.BluetoothAdapter.DBG = false;
+				return new PluginResult(PluginResult.Status.OK);
+			}
+    	});
+	}
+
+	private void enableDebugNotifications(CallbackContext callbackContext) {
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+			@Override
+			public PluginResult run() {
+				debugEnabled = true;
+				//android.bluetooth.BluetoothAdapter.DBG = true;
+				IBeaconManager.setDebug(true);
+				return new PluginResult(PluginResult.Status.OK);
+			}
+    	});		
+	}
+
+    
 	private void disableDebugLogs(CallbackContext callbackContext) {
 
 		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
@@ -508,7 +543,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			@Override
 			public PluginResult run() {
 				debugEnabled = false;
-				iBeaconManager.setDebug(false);
+				IBeaconManager.setDebug(false);
 				//android.bluetooth.BluetoothAdapter.DBG = false;
 				return new PluginResult(PluginResult.Status.OK);
 			}
@@ -522,7 +557,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			public PluginResult run() {
 				debugEnabled = true;
 				//android.bluetooth.BluetoothAdapter.DBG = true;
-				iBeaconManager.setDebug(true);
+				IBeaconManager.setDebug(true);
 				return new PluginResult(PluginResult.Status.OK);
 			}
     	});		
@@ -760,7 +795,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     	});
 	}
 
-	private void registerDelegateCallbackId(JSONObject optJSONObject, final CallbackContext callbackContext) {
+	private void registerDelegateCallbackId(JSONObject arguments, final CallbackContext callbackContext) {
 	   	
 		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
 
@@ -780,6 +815,79 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     	});
 		
 	}
+
+	/*
+	 * Checks if the region is supported, both for type and content
+	 */
+	private void isRegionTypeAvailable(final JSONObject arguments,final CallbackContext callbackContext) {
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+    		@Override
+			public PluginResult run() {
+    			
+    			boolean isValid = true;
+    			try {
+    				parseRegion(arguments);
+    			} catch (Exception e) {
+    				//will fail is the region is circular or some expected structure is missing 
+    				isValid = false;
+    			}
+    			
+    			PluginResult result = new PluginResult(PluginResult.Status.OK, isValid);
+				result.setKeepCallback(true);
+				return result;
+ 				
+			}
+    	});		
+	}
+
+    private void isAdvertisingAvailable(CallbackContext callbackContext) {
+    	
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+    		@Override
+			public PluginResult run() {
+    			
+    			//not supported at all on Android
+    			PluginResult result = new PluginResult(PluginResult.Status.OK, false);
+				result.setKeepCallback(true);
+				return result;
+ 				
+			}
+    	});
+		
+	}
+
+	private void startAdvertising(JSONObject arguments, CallbackContext callbackContext) {
+		
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+    		@Override
+			public PluginResult run() {
+    			
+    			//not supported at all on Android
+    			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
+				result.setKeepCallback(true);
+				return result;
+ 				
+			}
+    	});
+		
+	}
+
+	private void stopAdvertising(CallbackContext callbackContext) {
+		
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+    		@Override
+			public PluginResult run() {
+    			
+    			//not supported at all on Android
+    			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
+				result.setKeepCallback(true);
+				return result;
+ 				
+			}
+    	});
+	}
+
 
      
     /////////// SERIALISATION /////////////////////
@@ -807,13 +915,13 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     /* NOT SUPPORTED, a possible enhancement later */
     private Region parseCircularRegion(JSONObject json) throws JSONException, InvalidKeyException, UnsupportedOperationException {
     	
-     	if (json.has("latitude")) 
+     	if (!json.has("latitude")) 
      		throw new InvalidKeyException("'latitude' is missing, cannot parse CircularRegion."); 
     
-     	if (json.has("longitude")) 
+     	if (!json.has("longitude")) 
      		throw new InvalidKeyException("'longitude' is missing, cannot parse CircularRegion."); 
     
-     	if (json.has("radius")) 
+     	if (!json.has("radius")) 
      		throw new InvalidKeyException("'radius' is missing, cannot parse CircularRegion."); 
     
      	/*String identifier = json.getString("identifier");
