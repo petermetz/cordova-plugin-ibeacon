@@ -331,6 +331,54 @@ var LocationManager = klass({
 		return this._promisedExec('isRangingAvailable', [], []);
 	},
     /**
+     * Determines if region type is supported or not, according to the native layer.
+     *
+     * @param {Region} region An instance of {Region} which will be checked
+     * by the operating system.
+     *
+     * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+     * indicating whether the region type is supported or not.
+     */
+    isRegionTypeAvailable: function(region) {
+        Regions.checkRegionType(region);
+        return this._promisedExec('isRegionTypeAvailable', [region], []);
+    },
+    /**
+     * Start advertising the specified region.
+     *
+     * If a region a different identifier is already being advertised for
+     * this application, it will be replaced with the new identifier.
+     *
+     * @param {Region} region An instance of {Region} which will be advertised
+     * by the operating system.
+     *
+     * @return {Q.Promise} Returns a promise which is resolved as soon as the
+     * native layer acknowledged the dispatch of the advertising request.
+     */
+    startAdvertising: function(region) {
+        Regions.checkRegionType(region);
+        return this._promisedExec('startAdvertising', [region], []);
+    },
+    /**
+     * Stop advertising as a beacon.
+     *
+     * This is done asynchronously and may not be immediately reflected in monitoredRegions.
+     *
+     * @return {Q.Promise} Returns a promise which is resolved as soon as the
+     * native layer acknowledged the dispatch of the request to stop advertising.
+     */
+    stopAdvertising: function() {
+        return this._promisedExec('stopAdvertising', [], []);
+    },
+    /**
+     * Determines if advertising is available or not, according to the native layer.
+     * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+     * indicating whether advertising is available or not.
+     */
+    isAdvertisingAvailable: function() {
+        return this._promisedExec('isAdvertisingAvailable', [], []);
+    },
+    /**
      * Disables debug logging in the native layer. Use this method if you want
      * to prevent this plugin from writing to the device logs.
      * 

@@ -77,6 +77,12 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 
 - (void)registerDelegateCallbackId:(CDVInvokedUrlCommand*)command;
 
+- (void)isAdvertisingAvailable:(CDVInvokedUrlCommand*)command;
+- (void)startAdvertising:(CDVInvokedUrlCommand*)command;
+- (void)stopAdvertising:(CDVInvokedUrlCommand*)command;
+
+- (void)isRegionTypeAvailable:(CDVInvokedUrlCommand*)command;
+
 - (LMLogger*) getLogger;
 
 @end

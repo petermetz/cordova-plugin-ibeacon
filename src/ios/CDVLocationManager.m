@@ -448,6 +448,57 @@
     } :command];
 }
 
+- (void)isAdvertisingAvailable:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        //advertising supported on all iOS?
+        BOOL isAvailable = true;
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isAvailable];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
+- (void)startAdvertising: (CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        //TODO
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
+- (void)stopAdvertising: (CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        //TODO
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
+- (void)isRegionTypeAvailable:(CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        NSError* error;
+        CLRegion* region = [self parseRegion:command returningError:&error];
+        BOOL isAvailable = region != nil;
+
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isAvailable];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
 #pragma mark Parsing 
 
 - (CLRegion*) parseRegion:(CDVInvokedUrlCommand*) command returningError:(out NSError **)error {
