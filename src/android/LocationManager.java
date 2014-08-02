@@ -1026,6 +1026,9 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 
         // rssi
         dict.put("rssi", region.getRssi());
+
+        // accuracy
+        dict.put("accuracy", region.getAccuracy());
         
         return dict;
     }
