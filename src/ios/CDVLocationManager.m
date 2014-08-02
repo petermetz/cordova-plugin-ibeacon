@@ -768,6 +768,10 @@
     NSNumber * rssi = [[NSNumber alloc] initWithInteger:beacon.rssi];
     [dict setObject:rssi forKey:@"rssi"];
     
+    // accuracy
+    NSNumber *accuracy = [NSNumber numberWithDouble:beacon.accuracy];
+    [dict setObject:accuracy forKey:@"accuracy"];
+    
     return dict;
 }
 
