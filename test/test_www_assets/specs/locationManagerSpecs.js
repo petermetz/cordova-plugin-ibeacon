@@ -41,6 +41,29 @@ describe('LocationManager', function() {
 
 	});
 
+	it('starts the ranging of beacon regions', function(done) {
+
+		var delegate = new cordova.plugins.locationManager.Delegate().implement({
+
+			didRangeBeaconsInRegion: function (pluginResult) {
+				logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult.region));
+			}
+
+		});
+
+		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+		var identifier = 'beaconOnTheMacBooksShelf';
+		var minor = 1000;
+		var major = 5;
+		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+		cordova.plugins.locationManager.setDelegate(delegate);
+		cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
+			.then(done)
+			.fail(console.error)
+			.done();
+	});
+
     it('starts the monitoring of circular regions', function(done) {
 
         // Coordinates for London, Charing Cross
