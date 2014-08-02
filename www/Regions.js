@@ -47,13 +47,14 @@ Regions.statics({
             throw new TypeError('jsonMap need to have a key "typeName"');
         }
 
+		var identifier = jsonMap.identifier;
+
         var region = null;
         if (typeName === 'CircularRegion') {
 
             var latitude = jsonMap.latitude;
             var longitude = jsonMap.longitude;
             var radius = jsonMap.radius;
-            var identifier = jsonMap.identifier;
             region = new CircularRegion(identifier, latitude, longitude, radius);
 
         } else if (typeName === 'BeaconRegion') {
@@ -61,9 +62,10 @@ Regions.statics({
             var uuid = jsonMap.uuid;
             var major = jsonMap.major;
             var minor = jsonMap.minor;
-            var identifier = jsonMap.identifier;
             region = new BeaconRegion(identifier, uuid, major, minor);
-        }
+        } else {
+			console.error('Unrecognized Region typeName: ' + typeName);
+		}
 
         return region;
     },
