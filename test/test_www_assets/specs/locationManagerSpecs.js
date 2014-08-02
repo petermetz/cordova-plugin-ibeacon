@@ -46,7 +46,7 @@ describe('LocationManager', function() {
 		var delegate = new cordova.plugins.locationManager.Delegate().implement({
 
 			didRangeBeaconsInRegion: function (pluginResult) {
-				logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult.region));
+				console.debug('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult.region));
 			}
 
 		});
