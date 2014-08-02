@@ -80,6 +80,8 @@ function createBeacon() {
 			document.body.appendChild(e);
 			document.body.appendChild(br);
 			document.body.appendChild(br2);
+			
+			window.scrollTo(0, window.document.height);
 		};
 
 		var delegate = new cordova.plugins.locationManager.Delegate().implement({
@@ -145,6 +147,8 @@ function createBeacon() {
 			document.body.appendChild(e);
 			document.body.appendChild(br);
 			document.body.appendChild(br2);
+			
+			window.scrollTo(0, window.document.height);
 		};
 
 		var delegate = new cordova.plugins.locationManager.Delegate().implement({
