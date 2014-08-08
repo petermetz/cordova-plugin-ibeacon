@@ -1024,11 +1024,13 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         // proximity
         dict.put("proximity", nameOfProximity(region.getProximity()));
 
-        // rssi
+        // signal strength and transmission power
         dict.put("rssi", region.getRssi());
+        dict.put("tx", region.getTxPower());
 
-        // accuracy
-        dict.put("accuracy", region.getAccuracy());
+        // accuracy = rough distance estimate limited to two decimal places (in metres)
+        // NO NOT ASSUME THIS IS ACCURATE - it is effected by radio interference and obstacles
+        dict.put("accuracy", Math.round(region.getAccuracy()*100.0)/100.0);
         
         return dict;
     }

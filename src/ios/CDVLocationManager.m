@@ -767,6 +767,8 @@
     // rssi
     NSNumber * rssi = [[NSNumber alloc] initWithInteger:beacon.rssi];
     [dict setObject:rssi forKey:@"rssi"];
+    // TODO: Tx value not available from CLBeacon, but possible from CBCentralManager scan on detection
+    
     
     // accuracy
     NSNumber *accuracy = [NSNumber numberWithDouble:beacon.accuracy];
