@@ -158,10 +158,12 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         	getRangedRegions(callbackContext);
         } else if (action.equals("registerDelegateCallbackId")) {
         	registerDelegateCallbackId(args.optJSONObject(0), callbackContext);
-        } else if (action.equals("isRegionTypeAvailable")) {
-        	isRegionTypeAvailable(args.optJSONObject(0),callbackContext);
+        } else if (action.equals("isMonitoringAvailableForClass")) {
+        	isMonitoringAvailableForClass(args.optJSONObject(0),callbackContext);
         } else if (action.equals("isAdvertisingAvailable")) {
         	isAdvertisingAvailable(callbackContext);
+        } else if (action.equals("isAdvertising")) {
+        	isAdvertising(callbackContext);
         } else if (action.equals("startAdvertising")) {
         	startAdvertising(args.optJSONObject(0), callbackContext);
         } else if (action.equals("stopAdvertising")) {
@@ -819,7 +821,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 	/*
 	 * Checks if the region is supported, both for type and content
 	 */
-	private void isRegionTypeAvailable(final JSONObject arguments,final CallbackContext callbackContext) {
+	private void isMonitoringAvailableForClass(final JSONObject arguments,final CallbackContext callbackContext) {
 		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
 
     		@Override
@@ -847,7 +849,23 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     		@Override
 			public PluginResult run() {
     			
-    			//not supported at all on Android
+    			//not supported at Android yet (see Android L)
+    			PluginResult result = new PluginResult(PluginResult.Status.OK, false);
+				result.setKeepCallback(true);
+				return result;
+ 				
+			}
+    	});
+		
+	}
+    
+    private void isAdvertising(CallbackContext callbackContext) {
+    	
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+    		@Override
+			public PluginResult run() {
+    			
+    			//not supported on Android
     			PluginResult result = new PluginResult(PluginResult.Status.OK, false);
 				result.setKeepCallback(true);
 				return result;
@@ -863,11 +881,10 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     		@Override
 			public PluginResult run() {
     			
-    			//not supported at all on Android
+    			//not supported on Android
     			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
 				result.setKeepCallback(true);
 				return result;
- 				
 			}
     	});
 		
@@ -879,7 +896,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     		@Override
 			public PluginResult run() {
     			
-    			//not supported at all on Android
+    			//not supported on Android
     			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
 				result.setKeepCallback(true);
 				return result;

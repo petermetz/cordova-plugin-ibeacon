@@ -60,6 +60,12 @@ Delegate.statics({
     didRangeBeaconsInRegion: function(pluginResult) {
         pluginResult.region = Regions.fromJson(pluginResult.region);
     },
+    bluetoothManagerDidStartAdvertising: function(pluginResult) {
+        pluginResult.region = Regions.fromJson(pluginResult.region);
+    },
+    bluetoothManagerDidUpdateState: function(pluginResult) {
+
+    },
 	safeTraceLogging: function(message) {
 		if (!_.isString(message)) {
 			return;
@@ -91,8 +97,13 @@ Delegate.methods({
     },
     didRangeBeaconsInRegion: function() {
         Delegate.safeTraceLogging('DEFAULT didRangeBeaconsInRegion()');
+    },
+    bluetoothManagerDidStartAdvertising: function() {
+        Delegate.safeTraceLogging('DEFAULT bluetoothManagerDidStartAdvertising()');
+    },
+    bluetoothManagerDidUpdateState: function() {
+        Delegate.safeTraceLogging('DEFAULT bluetoothManagerDidUpdateState()');
     }
-
 });
 
 module.exports = Delegate;

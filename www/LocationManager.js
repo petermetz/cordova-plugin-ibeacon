@@ -339,9 +339,9 @@ var LocationManager = klass({
      * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
      * indicating whether the region type is supported or not.
      */
-    isRegionTypeAvailable: function(region) {
+    isMonitoringAvailableForClass: function(region) {
         Regions.checkRegionType(region);
-        return this._promisedExec('isRegionTypeAvailable', [region], []);
+        return this._promisedExec('isMonitoringAvailableForClass', [region], []);
     },
     /**
      * Start advertising the specified region.
@@ -349,20 +349,28 @@ var LocationManager = klass({
      * If a region a different identifier is already being advertised for
      * this application, it will be replaced with the new identifier.
      *
+     * This call will accept a valid beacon even when no BlueTooth is available,
+     * and will start when BlueTooth is powered on. See {Delegate.}
+     *
      * @param {Region} region An instance of {Region} which will be advertised
      * by the operating system.
+     * @param {Integer} measuredPower: Optional parameter, if left empty, the device will
+     * use it's own default value.
      *
      * @return {Q.Promise} Returns a promise which is resolved as soon as the
      * native layer acknowledged the dispatch of the advertising request.
      */
-    startAdvertising: function(region) {
+    startAdvertising: function(region, measuredPower) {
         Regions.checkRegionType(region);
-        return this._promisedExec('startAdvertising', [region], []);
+        if (measuredPower)
+            return this._promisedExec('startAdvertising', [region, measuredPower], []);
+        else
+            return this._promisedExec('startAdvertising', [region], []);
     },
     /**
      * Stop advertising as a beacon.
      *
-     * This is done asynchronously and may not be immediately reflected in monitoredRegions.
+     * This is done asynchronously and may not be immediately reflected in isAdvertising.
      *
      * @return {Q.Promise} Returns a promise which is resolved as soon as the
      * native layer acknowledged the dispatch of the request to stop advertising.
@@ -377,6 +385,14 @@ var LocationManager = klass({
      */
     isAdvertisingAvailable: function() {
         return this._promisedExec('isAdvertisingAvailable', [], []);
+    },
+    /**
+     * Determines if advertising is currently active, according to the native layer.
+     * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+     * indicating whether advertising is active.
+     */
+    isAdvertising: function() {
+        return this._promisedExec('isAdvertising', [], []);
     },
     /**
      * Disables debug logging in the native layer. Use this method if you want

@@ -34,13 +34,12 @@
     [self pauseEventPropagationToDom]; // Before the DOM is loaded we'll just keep collecting the events and fire them later.
 
     [self initLocationManager];
+    [self initPeripheralManager];
     
     self.debugLogEnabled = true;
     self.debugNotificationsEnabled = false;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
-    
-    
 }
 
 - (void) pageDidLoad: (NSNotification*)notification{
@@ -50,6 +49,10 @@
 - (void) initLocationManager {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
+}
+
+- (void) initPeripheralManager {
+    self.peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil options:nil];
 }
 
 - (void) pauseEventPropagationToDom {
@@ -90,7 +93,6 @@
     NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error(%@)", warnMsg];
     [self writeJavascript:javascriptErrorLoggingStatement];
 }
-
 
 # pragma mark CLLocationManagerDelegate
 
@@ -448,10 +450,81 @@
     } :command];
 }
 
+# pragma mark CBPeripheralManagerDelegate
+
+- (void) peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral {
+    
+    [self.queue addOperationWithBlock:^{
+        
+        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+            
+            NSString *stateName = [self peripherialStateAsString:peripheral.state];
+            
+            [[self getLogger] debugLog:@"peripheralManagerDidUpdateState: %@",stateName];
+            [[self getLogger] debugNotification:@"peripheralManagerDidUpdateState: %@",stateName];
+            
+            //Start advertising is a beacon definition is already set
+            if (_advertisedPeripheralData && peripheral.state == CBPeripheralManagerStatePoweredOn) {
+                [[self getLogger] debugLog:@"Start advertising."];
+                [peripheral startAdvertising:_advertisedPeripheralData];
+            }
+            
+            NSMutableDictionary* dict = [NSMutableDictionary new];
+            [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
+            [dict setObject:stateName forKey:@"state"];
+            
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+            [pluginResult setKeepCallbackAsBool:YES];
+            return pluginResult;
+            
+        } :nil :NO :self.delegateCallbackId];
+    }];
+    
+    NSString *stateName = [self peripherialStateAsString:peripheral.state];
+    [[self getLogger] debugLog:@"peripheralManagerDidUpdateState() state: %@", stateName];
+    
+    if (peripheral.state != CBPeripheralManagerStatePoweredOn) {
+        return;
+    }
+    
+}
+
+- (void)peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheral error:(NSError *)error{
+    
+    [self.queue addOperationWithBlock:^{
+        
+        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+            
+            NSString *stateName = [self peripherialStateAsString:peripheral.state];
+            
+            NSMutableDictionary* dict = [NSMutableDictionary new];
+            [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
+            [dict setObject:stateName forKey:@"state"];
+            
+            if (error) {
+                [[self getLogger] debugLog:@"Error Advertising: %@", [error localizedDescription]];
+                [[self getLogger] debugNotification:@"Error Advertising: %@", [error localizedDescription]];
+                [dict setObject:[error localizedDescription] forKey:@"error"];
+            } else {
+                [[self getLogger] debugLog:@"peripheralManagerDidStartAdvertising"];
+                [[self getLogger] debugNotification:@"peripheralManagerDidStartAdvertising"];
+                [dict setObject:[self mapOfRegion:_advertisedBeaconRegion] forKey:@"region"];
+            }
+            
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+            [pluginResult setKeepCallbackAsBool:YES];
+            return pluginResult;
+            
+        } :nil :NO :self.delegateCallbackId];
+    }];
+}
+
+#pragma mark Advertising
+
 - (void)isAdvertisingAvailable:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
-        //advertising supported on all iOS?
+        //advertising supported since iOS6
         BOOL isAvailable = true;
         
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isAvailable];
@@ -461,22 +534,76 @@
     } :command];
 }
 
-- (void)startAdvertising: (CDVInvokedUrlCommand*)command {
+- (void)isAdvertising:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
-        //TODO
+        BOOL isAdvertising = [_peripheralManager isAdvertising];
         
-        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isAdvertising];
         [result setKeepCallbackAsBool:YES];
         return result;
         
+    } :command];
+}
+
+- (void)startAdvertising: (CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        NSError* error;
+        CLRegion* region = [self parseRegion:command returningError:&error];
+        if (region == nil) {
+            if (error != nil) {
+                [[self getLogger] debugLog:@"ERROR %@", error];
+                return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo];
+            } else {
+                return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unknown error."];
+            }
+        } else if (![region isKindOfClass:[CLBeaconRegion class]]) {
+            [[self getLogger] debugLog:@"ERROR Cannot advertise with that Region. Must be a Beacon"];
+            return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Cannot advertise with that Region. Must be a BeaconRegion"];
+        } else {
+           
+            BOOL measuredPowerSpecifiedByUser = command.arguments.count > 1;
+            NSNumber *measuredPower = nil;
+            if (measuredPowerSpecifiedByUser) {
+                measuredPower = [command.arguments objectAtIndex: 1];
+                [[self getLogger] debugLog:@"Custom measuredPower specified by caller: %@", measuredPower];
+            } else {
+                [[self getLogger] debugLog:@"[Default measuredPower will be used."];
+            }
+
+            CLBeaconRegion* beaconRegion = (CLBeaconRegion*)region;
+            _advertisedBeaconRegion = beaconRegion;
+            _advertisedPeripheralData = [beaconRegion peripheralDataWithMeasuredPower:measuredPower];
+
+            NSMutableDictionary* dict = [[NSMutableDictionary alloc]init];
+            [dict setObject:[self peripherialStateAsString:_peripheralManager.state] forKey:@"state"];
+            
+            if (_peripheralManager.state == CBPeripheralManagerStatePoweredOn) {
+                [_peripheralManager startAdvertising:_advertisedPeripheralData];
+            } else {
+                [[self getLogger] debugLog:@"Advertising is accepted, but won't start until peripheral manager is powered on."];
+            }
+            
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+            [result setKeepCallbackAsBool:YES];
+            return result;
+        }
     } :command];
 }
 
 - (void)stopAdvertising: (CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
-        //TODO
+        if (_peripheralManager.state == CBPeripheralManagerStatePoweredOn) {
+            [[self getLogger] debugLog:@"Stopping the advertising. The peripheral manager might report isAdvertising true even after this, for a short period of time."];
+
+            [_peripheralManager stopAdvertising];
+            _advertisedBeaconRegion = nil;
+            _advertisedPeripheralData = nil;
+        } else {
+            [[self getLogger] debugLog:@"Peripheral manager isn`t powered on. There is nothing to stop."];
+        }
         
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [result setKeepCallbackAsBool:YES];
@@ -485,12 +612,19 @@
     } :command];
 }
 
-- (void)isRegionTypeAvailable:(CDVInvokedUrlCommand*)command {
+- (void)isMonitoringAvailableForClass:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
         NSError* error;
         CLRegion* region = [self parseRegion:command returningError:&error];
-        BOOL isAvailable = region != nil;
+        BOOL isValidRegion = region != nil;
+        
+        BOOL isAvailable;
+        if (![self isBelowIos7]) {
+            isAvailable = isValidRegion && [CLLocationManager isMonitoringAvailableForClass:[region class]];
+        } else {
+            isAvailable = isValidRegion;
+        }
 
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isAvailable];
         [result setKeepCallbackAsBool:YES];
@@ -687,6 +821,16 @@
     return [dict objectForKey:[NSNumber numberWithInteger:proximity]];
 }
 
+- (NSString*) peripherialStateAsString: (CBPeripheralManagerState) state {
+    NSDictionary *dict = @{@(CBPeripheralManagerStatePoweredOff): @"PeripheralManagerStatePoweredOff",
+                           @(CBPeripheralManagerStatePoweredOn): @"PeripheralManagerStatePoweredOn",
+                           @(CBPeripheralManagerStateResetting): @"PeripheralManagerStateResetting",
+                           @(CBPeripheralManagerStateUnauthorized): @"PeripheralManagerStateUnauthorized",
+                           @(CBPeripheralManagerStateUnknown): @"PeripheralManagerStateUnknown",
+                           @(CBPeripheralManagerStateUnsupported): @"PeripheralManagerStateUnsupported"};
+    return [dict objectForKey:[NSNumber numberWithInteger:state]];
+}
+
 - (NSArray*) mapsOfRegions: (NSSet*) regions {
     NSMutableArray* array = [NSMutableArray new];
     for(CLRegion* region in regions) {
@@ -769,9 +913,8 @@
     [dict setObject:rssi forKey:@"rssi"];
     // TODO: Tx value not available from CLBeacon, but possible from CBCentralManager scan on detection
     
-    
-    // accuracy
-    NSNumber *accuracy = [NSNumber numberWithDouble:beacon.accuracy];
+    // accuracy is a rough estimate of distance in metres. capped to two decimal places
+    NSNumber *accuracy = [NSNumber numberWithDouble:round(100*beacon.accuracy)/100];
     [dict setObject:accuracy forKey:@"accuracy"];
     
     return dict;
@@ -793,6 +936,9 @@
     NSString* fullName = NSStringFromSelector(selector);
     
     NSString* shortName = [fullName stringByReplacingOccurrencesOfString:@"locationManager:" withString:@""];
+    shortName = [shortName stringByReplacingOccurrencesOfString:@"peripheralManager" withString:@"bluetoothManager"];
+    shortName = [shortName stringByReplacingOccurrencesOfString:@":error:" withString:@""];
+    
 
     NSRange range = [shortName rangeOfString:@":"];
     

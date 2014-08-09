@@ -20,6 +20,7 @@
 #import <Cordova/CDV.h>
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <CoreBluetooth/CoreBluetooth.h>
 
 #import "LMLogger.h"
 
@@ -28,7 +29,7 @@ typedef CDVPluginResult* (^CDVPluginCommandHandler)(CDVInvokedUrlCommand*);
 const double CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30.0;
 const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 
-@interface CDVLocationManager : CDVPlugin<CLLocationManagerDelegate> {
+@interface CDVLocationManager : CDVPlugin<CLLocationManagerDelegate, CBPeripheralManagerDelegate> {
 
 }
 
@@ -43,6 +44,11 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 @property BOOL debugLogEnabled;
 
 @property BOOL debugNotificationsEnabled;
+
+@property (retain) CBPeripheralManager *peripheralManager;
+@property (retain) CLRegion *advertisedBeaconRegion;
+@property (retain) NSDictionary *advertisedPeripheralData;
+
 
 /*
  *  onDomDelegateReady:
@@ -61,7 +67,6 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 - (void)startMonitoringForRegion:(CDVInvokedUrlCommand*)command;
 - (void)stopMonitoringForRegion:(CDVInvokedUrlCommand*)command;
 
-
 - (void)isRangingAvailable:(CDVInvokedUrlCommand*)command;
 - (void)getAuthorizationStatus:(CDVInvokedUrlCommand*)command;
 - (void)getMonitoredRegions:(CDVInvokedUrlCommand*)command;
@@ -78,10 +83,11 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 - (void)registerDelegateCallbackId:(CDVInvokedUrlCommand*)command;
 
 - (void)isAdvertisingAvailable:(CDVInvokedUrlCommand*)command;
+- (void)isAdvertising:(CDVInvokedUrlCommand*)command;
 - (void)startAdvertising:(CDVInvokedUrlCommand*)command;
 - (void)stopAdvertising:(CDVInvokedUrlCommand*)command;
 
-- (void)isRegionTypeAvailable:(CDVInvokedUrlCommand*)command;
+- (void)isMonitoringAvailableForClass:(CDVInvokedUrlCommand*)command;
 
 - (LMLogger*) getLogger;
 
