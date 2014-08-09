@@ -63,6 +63,9 @@
         <header-file src="src/ios/LMLogger.h"/>
         <source-file src="src/ios/LMLogger.m"/>
 
+        <framework src="CoreBluetooth.framework" />
+        <framework src="CoreLocation.framework" />
+
     </platform>
 
     <platform name="android">
