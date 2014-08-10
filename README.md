@@ -30,6 +30,7 @@
 #### Features exclusive to iOS
 
  * Region Monitoring (or geo fencing), works in all app states. 
+ * Advertising device as an iBeacon
 
 ### Installation
 
