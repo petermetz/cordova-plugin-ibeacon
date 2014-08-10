@@ -822,12 +822,12 @@
 }
 
 - (NSString*) peripherialStateAsString: (CBPeripheralManagerState) state {
-    NSDictionary *dict = @{@(CBPeripheralManagerStatePoweredOff): @"PeripheralManagerStatePoweredOff",
-                           @(CBPeripheralManagerStatePoweredOn): @"PeripheralManagerStatePoweredOn",
-                           @(CBPeripheralManagerStateResetting): @"PeripheralManagerStateResetting",
-                           @(CBPeripheralManagerStateUnauthorized): @"PeripheralManagerStateUnauthorized",
-                           @(CBPeripheralManagerStateUnknown): @"PeripheralManagerStateUnknown",
-                           @(CBPeripheralManagerStateUnsupported): @"PeripheralManagerStateUnsupported"};
+    NSDictionary *dict = @{@(CBPeripheralManagerStatePoweredOff): @"BluetoothManagerStatePoweredOff",
+                           @(CBPeripheralManagerStatePoweredOn): @"BluetoothManagerStatePoweredOn",
+                           @(CBPeripheralManagerStateResetting): @"BluetoothManagerStateResetting",
+                           @(CBPeripheralManagerStateUnauthorized): @"BluetoothManagerStateUnauthorized",
+                           @(CBPeripheralManagerStateUnknown): @"BluetoothManagerStateUnknown",
+                           @(CBPeripheralManagerStateUnsupported): @"BluetoothManagerStateUnsupported"};
     return [dict objectForKey:[NSNumber numberWithInteger:state]];
 }
 
