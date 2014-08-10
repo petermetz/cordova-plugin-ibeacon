@@ -71,156 +71,204 @@ function createBeacon() {
  
 ##### Start monitoring a single iBeacon
 ```
-		var logToDom = function (message) {
-			var e = document.createElement('label');
-			e.innerText = message;
+var logToDom = function (message) {
+	var e = document.createElement('label');
+	e.innerText = message;
 
-			var br = document.createElement('br');
-			var br2 = document.createElement('br');
-			document.body.appendChild(e);
-			document.body.appendChild(br);
-			document.body.appendChild(br2);
-			
-			window.scrollTo(0, window.document.height);
-		};
+	var br = document.createElement('br');
+	var br2 = document.createElement('br');
+	document.body.appendChild(e);
+	document.body.appendChild(br);
+	document.body.appendChild(br2);
+	
+	window.scrollTo(0, window.document.height);
+};
 
-		var delegate = new cordova.plugins.locationManager.Delegate().implement({
-			
-			didDetermineStateForRegion: function (pluginResult) {
+var delegate = new cordova.plugins.locationManager.Delegate().implement({
+	
+	didDetermineStateForRegion: function (pluginResult) {
 
-				logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+		logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
 
-				cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
-					+ JSON.stringify(pluginResult));
-			},
+		cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+			+ JSON.stringify(pluginResult));
+	},
 
-			didStartMonitoringForRegion: function (pluginResult) {
-				console.log('didStartMonitoringForRegion:', pluginResult);
+	didStartMonitoringForRegion: function (pluginResult) {
+		console.log('didStartMonitoringForRegion:', pluginResult);
 
-				logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
-			},
+		logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+	},
 
-			didRangeBeaconsInRegion: function (pluginResult) {
-				logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
-			}
+	didRangeBeaconsInRegion: function (pluginResult) {
+		logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+	}
 
-		});
+});
 
-		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
-		var identifier = 'beaconOnTheMacBooksShelf';
-		var minor = 1000;
-		var major = 5;
-		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var identifier = 'beaconOnTheMacBooksShelf';
+var minor = 1000;
+var major = 5;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
-		cordova.plugins.locationManager.setDelegate(delegate);
-		cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
-			.fail(console.error)
-			.done();
+cordova.plugins.locationManager.setDelegate(delegate);
+cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
+	.fail(console.error)
+	.done();
 
 ```
  
 
 ##### Stop monitoring a single iBeacon
 ```
-		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
-		var identifier = 'beaconOnTheMacBooksShelf';
-		var minor = 1000;
-		var major = 5;
-		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var identifier = 'beaconOnTheMacBooksShelf';
+var minor = 1000;
+var major = 5;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
-		cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
-			.fail(console.error)
-			.done();
+cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
+	.fail(console.error)
+	.done();
 
 ```
  
  
 ##### Start ranging a single iBeacon
 ```
+var logToDom = function (message) {
+	var e = document.createElement('label');
+	e.innerText = message;
 
-		var logToDom = function (message) {
-			var e = document.createElement('label');
-			e.innerText = message;
+	var br = document.createElement('br');
+	var br2 = document.createElement('br');
+	document.body.appendChild(e);
+	document.body.appendChild(br);
+	document.body.appendChild(br2);
+	
+	window.scrollTo(0, window.document.height);
+};
 
-			var br = document.createElement('br');
-			var br2 = document.createElement('br');
-			document.body.appendChild(e);
-			document.body.appendChild(br);
-			document.body.appendChild(br2);
-			
-			window.scrollTo(0, window.document.height);
-		};
+var delegate = new cordova.plugins.locationManager.Delegate().implement({
+	
+	didDetermineStateForRegion: function (pluginResult) {
 
-		var delegate = new cordova.plugins.locationManager.Delegate().implement({
-			
-			didDetermineStateForRegion: function (pluginResult) {
+		logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
 
-				logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+		cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+			+ JSON.stringify(pluginResult));
+	},
 
-				cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
-					+ JSON.stringify(pluginResult));
-			},
+	didStartMonitoringForRegion: function (pluginResult) {
+		console.log('didStartMonitoringForRegion:', pluginResult);
 
-			didStartMonitoringForRegion: function (pluginResult) {
-				console.log('didStartMonitoringForRegion:', pluginResult);
+		logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+	},
 
-				logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
-			},
+	didRangeBeaconsInRegion: function (pluginResult) {
+		logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+	}
 
-			didRangeBeaconsInRegion: function (pluginResult) {
-				logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
-			}
+});
 
-		});
+var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var identifier = 'beaconOnTheMacBooksShelf';
+var minor = 1000;
+var major = 5;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
-		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
-		var identifier = 'beaconOnTheMacBooksShelf';
-		var minor = 1000;
-		var major = 5;
-		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
-
-		cordova.plugins.locationManager.setDelegate(delegate);
-		cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
-			.fail(console.error)
-			.done();
+cordova.plugins.locationManager.setDelegate(delegate);
+cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
+	.fail(console.error)
+	.done();
 
 ```
  
 ##### Stop ranging a single iBeacon
 ```
+var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var identifier = 'beaconOnTheMacBooksShelf';
+var minor = 1000;
+var major = 5;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
-		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
-		var identifier = 'beaconOnTheMacBooksShelf';
-		var minor = 1000;
-		var major = 5;
-		var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
-
-		cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
-			.fail(console.error)
-			.done();
-
+cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
+	.fail(console.error)
+	.done();
 
 ```
 
-##### Determine if advertising is turned on.
+##### Determine if advertising is supported (iOS is supported, Android is not)
+
+```
+cordova.plugins.locationManager.isAdvertisingAvailable()
+    .then(function(isSupported){
+        console.log("isSupported: " + isSupported);
+    })
+    .fail(console.error)
+    .done();
 
 ```
 
-This is not yet integrated into version 2. Coming soon!
+##### Determine if advertising is currently turned on (iOS only)
+
+```        
+cordova.plugins.locationManager.isAdvertising()
+    .then(function(isAdvertising){
+        console.log("isAdvertising: " + isAdvertising);
+    })
+    .fail(console.error)
+    .done();
 
 ```
 
-##### Start advertising device as an iBeacon
+##### Start advertising device as an iBeacon (iOS only)
+```
+var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var identifier = 'advertisedBeacon';
+var minor = 2000;
+var major = 5;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+// The Delegate is optional
+var delegate = new cordova.plugins.locationManager.Delegate().implement({
+
+    // Event when advertising starts (there may be a short delay after the request)
+    // The property 'region' provides details of the broadcasting Beacon
+    bluetoothManagerDidStartAdvertising: function(pluginResult) {
+        console.log('bluetoothManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
+    },
+    // Event when bluetooth transmission state changes 
+    // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
+    bluetoothManagerDidUpdateState: function(pluginResult) {
+        console.log('bluetoothManagerDidUpdateState: '+ pluginResult.state);
+    }
+});
+cordova.plugins.locationManager.setDelegate(delegate);
+
+// Verify the platform supports transmitting as a beacon
+cordova.plugins.locationManager.isAdvertisingAvailable()
+    .then(function(isSupported){
+
+        if (isSupported) {
+            cordova.plugins.locationManager.startAdvertising(beaconRegion)
+                .fail(conole.error)
+                .done();
+        } else {
+            console.log("Advertising not supported");
+        }
+    })
+    .fail(console.error)
+    .done();
+
 ```
 
-This is not yet integrated into version 2. Coming soon!
-
+##### Stopping the advertising (iOS only)
 ```
-
-##### Stopping the advertising
-```
-
-This is not yet integrated into version 2. Coming soon!
+cordova.plugins.locationManager.stopAdvertising()
+    .fail(console.error)
+    .done();
 
 ```
 

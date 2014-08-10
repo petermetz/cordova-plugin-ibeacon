@@ -25,3 +25,17 @@
 
 ### 0.2.0 (20.03.2014)
 * Wrote proper documentation and retested all the functionality. No API change introduced.
+
+### 1.0.0 (05.04.2014)
+* iOS API for Advertising, Ranging and Monitoring on iOS.
+
+### 2.0.0 (06.07.2014)
+* Redesigned to use **Promise** .then() .fail(), .done() for method callbacks
+* Singleton **Delegate** object implementation for event handling
+* Android support added 
+* Monitoring and Ranging support for iOS and Android
+
+### 2.1.0 (10.08.2014)
+* API for Advertising added to 2.0 design (support for iOS only).
+* Distance approximation called 'accuracy' added to Ranging callback
+* Beacon Tx value added (Android only)
