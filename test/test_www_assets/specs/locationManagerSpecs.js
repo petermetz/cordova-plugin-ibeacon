@@ -228,4 +228,52 @@ describe('LocationManager', function() {
                 .done();
     });
 
+    it('determines if advertising is supported', function(done) {
+
+        locationManager.isAdvertisingAvailable()
+            .then(function(isSupported) {
+                expect(isSupported).toBe(true);
+                done();
+            })
+            .done();
+    });
+
+    it('starts advertising as a beacon', function () {
+
+        var delegate = new cordova.plugins.locationManager.Delegate().implement({
+
+            // Event when advertising starts (there may be a short delay after the request)
+            // The property 'region' provides details of the broadcasting Beacon
+            bluetoothManagerDidStartAdvertising: function(pluginResult) {
+                console.log('bluetoothManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
+            },
+            // Event when bluetooth transmission state changes
+            // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
+            bluetoothManagerDidUpdateState: function(pluginResult) {
+                console.log('bluetoothManagerDidUpdateState: '+ pluginResult.state);
+            }
+        });
+        cordova.plugins.locationManager.setDelegate(delegate);
+
+        // You can't test the iBeacon monitoring properly in the emulator, thus the crippled test.
+        var uuid = '328B8BF6-B6ED-4DBF-88F3-287E3B3F16B6';
+        var identifier = 'advertisedBeacon';
+        var minor = 2;
+        var major = 1;
+        var beaconRegion = new BeaconRegion(identifier, uuid, major, minor);
+
+
+        locationManager.startAdvertising(beaconRegion)
+            .fail(window.failJasmineTest)
+            .done();
+
+    });
+
+    it('stops advertising as a beacon.', function () {
+
+        locationManager.stopAdvertising()
+            .fail(window.failJasmineTest)
+            .done();
+
+    });
 });
