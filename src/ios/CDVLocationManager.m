@@ -822,12 +822,12 @@
 }
 
 - (NSString*) peripherialStateAsString: (CBPeripheralManagerState) state {
-    NSDictionary *dict = @{@(CBPeripheralManagerStatePoweredOff): @"BluetoothManagerStatePoweredOff",
-                           @(CBPeripheralManagerStatePoweredOn): @"BluetoothManagerStatePoweredOn",
-                           @(CBPeripheralManagerStateResetting): @"BluetoothManagerStateResetting",
-                           @(CBPeripheralManagerStateUnauthorized): @"BluetoothManagerStateUnauthorized",
-                           @(CBPeripheralManagerStateUnknown): @"BluetoothManagerStateUnknown",
-                           @(CBPeripheralManagerStateUnsupported): @"BluetoothManagerStateUnsupported"};
+    NSDictionary *dict = @{@(CBPeripheralManagerStatePoweredOff): @"PeripheralManagerStatePoweredOff",
+                           @(CBPeripheralManagerStatePoweredOn): @"PeripheralManagerStatePoweredOn",
+                           @(CBPeripheralManagerStateResetting): @"PeripheralManagerStateResetting",
+                           @(CBPeripheralManagerStateUnauthorized): @"PeripheralManagerStateUnauthorized",
+                           @(CBPeripheralManagerStateUnknown): @"PeripheralManagerStateUnknown",
+                           @(CBPeripheralManagerStateUnsupported): @"PeripheralManagerStateUnsupported"};
     return [dict objectForKey:[NSNumber numberWithInteger:state]];
 }
 
@@ -936,9 +936,7 @@
     NSString* fullName = NSStringFromSelector(selector);
     
     NSString* shortName = [fullName stringByReplacingOccurrencesOfString:@"locationManager:" withString:@""];
-    shortName = [shortName stringByReplacingOccurrencesOfString:@"peripheralManager" withString:@"bluetoothManager"];
     shortName = [shortName stringByReplacingOccurrencesOfString:@":error:" withString:@""];
-    
 
     NSRange range = [shortName rangeOfString:@":"];
     

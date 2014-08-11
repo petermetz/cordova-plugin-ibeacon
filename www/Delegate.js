@@ -60,10 +60,10 @@ Delegate.statics({
     didRangeBeaconsInRegion: function(pluginResult) {
         pluginResult.region = Regions.fromJson(pluginResult.region);
     },
-    bluetoothManagerDidStartAdvertising: function(pluginResult) {
+    peripheralManagerDidStartAdvertising: function(pluginResult) {
         pluginResult.region = Regions.fromJson(pluginResult.region);
     },
-    bluetoothManagerDidUpdateState: function(pluginResult) {
+    peripheralManagerDidUpdateState: function(pluginResult) {
 
     },
 	safeTraceLogging: function(message) {
@@ -98,11 +98,11 @@ Delegate.methods({
     didRangeBeaconsInRegion: function() {
         Delegate.safeTraceLogging('DEFAULT didRangeBeaconsInRegion()');
     },
-    bluetoothManagerDidStartAdvertising: function() {
-        Delegate.safeTraceLogging('DEFAULT bluetoothManagerDidStartAdvertising()');
+    peripheralManagerDidStartAdvertising: function() {
+        Delegate.safeTraceLogging('DEFAULT peripheralManagerDidStartAdvertising()');
     },
-    bluetoothManagerDidUpdateState: function() {
-        Delegate.safeTraceLogging('DEFAULT bluetoothManagerDidUpdateState()');
+    peripheralManagerDidUpdateState: function() {
+        Delegate.safeTraceLogging('DEFAULT peripheralManagerDidUpdateState()');
     }
 });
 

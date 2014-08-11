@@ -244,13 +244,13 @@ describe('LocationManager', function() {
 
             // Event when advertising starts (there may be a short delay after the request)
             // The property 'region' provides details of the broadcasting Beacon
-            bluetoothManagerDidStartAdvertising: function(pluginResult) {
-                console.log('bluetoothManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
+            peripheralManagerDidStartAdvertising: function(pluginResult) {
+                console.log('peripheralManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
             },
             // Event when bluetooth transmission state changes
             // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
-            bluetoothManagerDidUpdateState: function(pluginResult) {
-                console.log('bluetoothManagerDidUpdateState: '+ pluginResult.state);
+            peripheralManagerDidUpdateState: function(pluginResult) {
+                console.log('peripheralManagerDidUpdateState: '+ pluginResult.state);
             }
         });
         cordova.plugins.locationManager.setDelegate(delegate);
