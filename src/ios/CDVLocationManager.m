@@ -28,8 +28,6 @@
 
 - (void)pluginInitialize
 {
-    NSLog(@"[LocationManager Plugin] pluginInitialize()");
-
     [self initEventQueue];
     [self pauseEventPropagationToDom]; // Before the DOM is loaded we'll just keep collecting the events and fire them later.
 
@@ -38,12 +36,6 @@
     
     self.debugLogEnabled = true;
     self.debugNotificationsEnabled = false;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
-}
-
-- (void) pageDidLoad: (NSNotification*)notification{
-    NSLog(@"[LocationManager Plugin] pageDidLoad()");
 }
 
 - (void) initLocationManager {
