@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova.ibeacon;
+package com.unarin.cordova.beacon;
 
 import java.security.InvalidKeyException;
 import java.util.Collection;
@@ -58,7 +58,7 @@ import com.radiusnetworks.ibeacon.Region;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 	
-    public static final String TAG = "org.apache.cordova.ibeacon";
+    public static final String TAG = "com.unarin.cordova.beacon";
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     
     private IBeaconManager iBeaconManager;
