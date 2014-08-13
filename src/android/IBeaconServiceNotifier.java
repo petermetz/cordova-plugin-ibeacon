@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova.ibeacon;
+package com.unarin.cordova.beacon;
 
 import com.radiusnetworks.ibeacon.Region;
 

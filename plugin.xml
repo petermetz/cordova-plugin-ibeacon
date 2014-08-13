@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="org.apache.cordova.ibeacon" version="2.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="com.unarin.cordova.beacon" version="3.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <name>iBeacon</name>
-    <description>Cordova iBeacon Plugin</description>
+    <name>Beacon</name>
+    <description>Cordova Beacon Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
     <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
@@ -71,7 +71,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocationManager" >
-                <param name="android-package" value="org.apache.cordova.ibeacon.LocationManager"/>
+                <param name="android-package" value="com.unarin.cordova.beacon.LocationManager"/>
             </feature>
         </config-file>
 
@@ -91,8 +91,8 @@
                      android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
                 <meta-data android:name="background" android:value="true" />
                 <intent-filter android:priority="1" >
-                    <action android:name="org.apache.cordova.ibeacon.IBeaconPlugin.DID_RANGING" />
-                    <action android:name="org.apache.cordova.ibeacon.IBeaconPlugin.DID_MONITORING" />
+                    <action android:name="com.unarin.cordova.beacon.IBeaconPlugin.DID_RANGING" />
+                    <action android:name="com.unarin.cordova.beacon.IBeaconPlugin.DID_MONITORING" />
                 </intent-filter>
             </service>
         </config-file>

@@ -17,8 +17,8 @@
  under the License.
  */
 
-var _ = require('org.apache.cordova.ibeacon.underscorejs');
-var klass = require('org.apache.cordova.ibeacon.klass');
+var _ = require('com.unarin.cordova.beacon.underscorejs');
+var klass = require('com.unarin.cordova.beacon.klass');
 
 /**
  * Base class for different types of regions that the [LocationManager] can monitor.
