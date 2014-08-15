@@ -98,10 +98,10 @@
         </config-file>
 
 
-        <source-file src="src/android/LocationManager.java" target-dir="src/org/apache/cordova/ibeacon" />
-        <source-file src="src/android/IBeaconServiceNotifier.java" target-dir="src/org/apache/cordova/ibeacon" />
-        <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/org/apache/cordova/ibeacon" />
-        <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/org/apache/cordova/ibeacon" />
+        <source-file src="src/android/LocationManager.java" target-dir="src/com/unarin/cordova/beacon" />
+        <source-file src="src/android/IBeaconServiceNotifier.java" target-dir="src/com/unarin/cordova/beacon" />
+        <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/com/unarin/cordova/beacon" />
+        <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/com/unarin/cordova/beacon" />
 
         <source-file src="src/android/com/radiusnetworks/bluetooth/BluetoothCrashResolver.java" target-dir="src/com/radiusnetworks/bluetooth" />
         <source-file src="src/android/com/radiusnetworks/ibeacon/BleNotAvailableException.java" target-dir="src/com/radiusnetworks/ibeacon" />
