@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="com.unarin.cordova.beacon" version="3.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <name>Beacon</name>
-    <description>Cordova Beacon Plugin</description>
-    <license>Apache 2.0</license>
+    <name>Proximity Beacon Plugin</name>
+    <description>Proximity Beacon Monitoring and Transmission Plugin (supporting iBeacons)</description>
+    <license>Apache 2.0 license</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
     <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
 
