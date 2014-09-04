@@ -31,12 +31,13 @@ var Region = require('com.unarin.cordova.beacon.Region');
  * This value must not be blank nor invalid as a UUID.
  * 
  * @param {Number} major The major value that you use to identify one or more beacons.
- 
  * @param {Number} minor The minor value that you use to identify a specific beacon.
+ *
+ * @param {BOOL} notifyEntryStateOnDisplay
  * 
  * @returns {BeaconRegion} An instance of {BeaconRegion}.
  */
-var BeaconRegion = Region.extend(function(identifier, uuid, major, minor) {
+var BeaconRegion = Region.extend(function(identifier, uuid, major, minor, notifyEntryStateOnDisplay) {
 
 	Region.checkIdentifier(identifier);
 
@@ -47,6 +48,8 @@ var BeaconRegion = Region.extend(function(identifier, uuid, major, minor) {
 	this.uuid = uuid;
     this.major = major;
     this.minor = minor;
+    
+    this.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
 
     this.typeName = 'BeaconRegion';
 });

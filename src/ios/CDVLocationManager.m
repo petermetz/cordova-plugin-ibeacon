@@ -717,6 +717,15 @@
         *error = [self parseErrorWithDescription:@"Unsupported combination of 'major' and 'minor' parameters."];
         return nil;
     }
+
+    NSNumber *notifyFlag = [dict objectForKey:@"notifyEntryStateOnDisplay"];
+    
+    if (notifyFlag != nil) {
+        BOOL notify = [notifyFlag boolValue];
+        region.notifyEntryStateOnDisplay = notify;
+        NSString *notifyValue = notify ? @"Yes" : @"No";
+        NSLog(@"using notifyEntryStateOnDisplay BOOL for this region with value %@.", notifyValue);
+    }
     
     if (region == nil) {
         *error = [self parseErrorWithDescription:@"CLBeaconRegion parsing failed for unknown reason."];
