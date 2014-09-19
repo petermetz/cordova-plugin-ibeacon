@@ -48,11 +48,20 @@
 
 
     <platform name="ios">
+        
         <config-file parent="/*" target="config.xml">
             <feature name="LocationManager">
                 <param name="ios-package" value="CDVLocationManager"/>
             </feature>
         </config-file>
+        
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+            <string>This app would like to scan for iBeacons even when in the background.</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+            <string>This app would like to scan for iBeacons while it is in use.</string>
+        </config-file>
+         
 
         <header-file src="src/ios/CDVLocationManager.h"/>
         <source-file src="src/ios/CDVLocationManager.m"/>
