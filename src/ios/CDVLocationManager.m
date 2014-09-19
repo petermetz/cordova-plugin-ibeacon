@@ -385,6 +385,40 @@
     } :command];
 }
 
+- (void) requestAlwaysAuthorization:(CDVInvokedUrlCommand*)command {    
+    [self.locationManager requestAlwaysAuthorization];
+}
+
+- (void) requestWhenInUseAuthorization:(CDVInvokedUrlCommand*)command  {    
+    [self.locationManager requestWhenInUseAuthorization];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    NSLog(@"didChangeAuthorizationStatus");
+
+    [self.queue addOperationWithBlock:^{
+        
+        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+            
+            NSString *statusString = [self authorizationStatusAsString:status];
+            
+            [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %@", statusString];
+            [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %@", statusString];
+            
+            NSMutableDictionary* dict = [NSMutableDictionary new];
+            [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
+            [dict setObject:statusString forKey:@"status"];
+            
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+            [pluginResult setKeepCallbackAsBool:YES];
+            return pluginResult;
+
+        } :nil :NO :self.delegateCallbackId];
+    }];
+    
+}
+
+
 - (void)getMonitoredRegions:(CDVInvokedUrlCommand*)command {
     
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
