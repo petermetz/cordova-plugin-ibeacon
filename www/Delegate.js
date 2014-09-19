@@ -66,6 +66,9 @@ Delegate.statics({
     peripheralManagerDidUpdateState: function(pluginResult) {
 
     },
+    didChangeAuthorizationStatus: function(status) {
+        
+    },
 	safeTraceLogging: function(message) {
 		if (!_.isString(message)) {
 			return;
@@ -103,6 +106,9 @@ Delegate.methods({
     },
     peripheralManagerDidUpdateState: function() {
         Delegate.safeTraceLogging('DEFAULT peripheralManagerDidUpdateState()');
+    },
+    didChangeAuthorizationStatus: function() {
+        Delegate.safeTraceLogging('DEFAULT didChangeAuthorizationStatus()');
     }
 });
 
