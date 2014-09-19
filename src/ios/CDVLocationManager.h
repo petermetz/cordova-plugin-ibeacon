@@ -69,6 +69,8 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 
 - (void)isRangingAvailable:(CDVInvokedUrlCommand*)command;
 - (void)getAuthorizationStatus:(CDVInvokedUrlCommand*)command;
+- (void)requestAlwaysAuthorization:(CDVInvokedUrlCommand*)command;
+- (void)requestWhenInUseAuthorization:(CDVInvokedUrlCommand*)command;
 - (void)getMonitoredRegions:(CDVInvokedUrlCommand*)command;
 - (void)getRangedRegions:(CDVInvokedUrlCommand*)command;
 

@@ -304,6 +304,12 @@ var LocationManager = klass({
     getAuthorizationStatus: function() {
 		return this._promisedExec('getAuthorizationStatus', [], []);
 	},
+    requestWhenInUseAuthorization: function() {
+		return this._promisedExec('requestWhenInUseAuthorization', [], []);
+	},
+    requestAlwaysAuthorization: function() {
+		return this._promisedExec('requestAlwaysAuthorization', [], []);
+	},
     /** 
      * 
      * @returns {Q.Promise} Returns a promise which is resolved with an {Array}

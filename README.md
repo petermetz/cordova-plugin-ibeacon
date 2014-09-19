@@ -48,6 +48,7 @@ through the ```cordova.plugins.locationManager``` reference chain.
 
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
+
 ##### Creating BeaconRegion DTOs
 
 ```
@@ -114,6 +115,11 @@ var major = 5;
 var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
 cordova.plugins.locationManager.setDelegate(delegate);
+
+// required in iOS 8+
+cordova.plugins.locationManager.requestWhenInUseAuthorization(); 
+// or cordova.plugins.locationManager.requestAlwaysAuthorization()
+
 cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 	.fail(console.error)
 	.done();
@@ -180,6 +186,11 @@ var major = 5;
 var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
 cordova.plugins.locationManager.setDelegate(delegate);
+
+// required in iOS 8+
+cordova.plugins.locationManager.requestWhenInUseAuthorization(); 
+// or cordova.plugins.locationManager.requestAlwaysAuthorization()
+
 cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
 	.fail(console.error)
 	.done();
