@@ -304,9 +304,23 @@ var LocationManager = klass({
     getAuthorizationStatus: function() {
 		return this._promisedExec('getAuthorizationStatus', [], []);
 	},
+	/**
+	 * For iOS 8 and above only. The permission model has changed by Apple in iOS 8, making it necessary for apps to
+	 * explicitly request permissions via methods like these:
+	 * <a href="https://developer.apple.com/library/prerelease/iOS/documentation/CoreLocation/Reference/CLLocationManager_Class/index.html#//apple_ref/occ/instm/CLLocationManager/requestWhenInUseAuthorization">requestWhenInUseAuthorization</a>
+	 * <a href="https://developer.apple.com/library/prerelease/iOS/documentation/CoreLocation/Reference/CLLocationManager_Class/index.html#//apple_ref/occ/instm/CLLocationManager/requestAlwaysAuthorization">requestAlwaysAuthorization</a>
+	 *
+	 * If you are using this plugin on Android devices only, you will never have to use this, nor {@code requestAlwaysAuthorization}
+	 * @returns {Q.Promise}
+	 */
     requestWhenInUseAuthorization: function() {
 		return this._promisedExec('requestWhenInUseAuthorization', [], []);
 	},
+	/**
+	 * See the docuemntation of {@code requestWhenInUseAuthorization} for further details.
+	 *
+	 * @returns {Q.Promise}
+	 */
     requestAlwaysAuthorization: function() {
 		return this._promisedExec('requestAlwaysAuthorization', [], []);
 	},
