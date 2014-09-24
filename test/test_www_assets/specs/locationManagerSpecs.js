@@ -177,7 +177,9 @@ describe('LocationManager', function() {
             'AuthorizationStatusNotDetermined',
             'AuthorizationStatusRestricted',
             'AuthorizationStatusDenied',
-            'AuthorizationStatusAuthorized'
+            'AuthorizationStatusAuthorized',
+			'AuthorizationStatusAuthorizedWhenInUse',
+			'AuthorizationStatusAuthorizedAlways'
         ];
 
         locationManager.getAuthorizationStatus().then(function(pluginResult) {
@@ -276,4 +278,24 @@ describe('LocationManager', function() {
             .done();
 
     });
+
+	it('requests permission "when in use"', function(done) {
+
+		locationManager.requestWhenInUseAuthorization()
+			.then(function(pluginResult) {
+				expect(pluginResult).toBe('OK');
+				done();
+			})
+			.done();
+	});
+
+	it('requests permission "always"', function(done) {
+
+		locationManager.requestAlwaysAuthorization()
+			.then(function(pluginResult) {
+				expect(pluginResult).toBe('OK');
+				done();
+			})
+			.done();
+	});
 });
