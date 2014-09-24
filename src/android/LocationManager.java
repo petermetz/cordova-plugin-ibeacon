@@ -152,6 +152,10 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         	isRangingAvailable(callbackContext);
         } else if (action.equals("getAuthorizationStatus")) {
         	getAuthorizationStatus(callbackContext);
+        } else if (action.equals("requestWhenInUseAuthorization")) {
+        	requestWhenInUseAuthorization(callbackContext);
+        } else if (action.equals("requestAlwaysAuthorization")) {
+        	requestAlwaysAuthorization(callbackContext);
         } else if (action.equals("getMonitoredRegions")) {
         	getMonitoredRegions(callbackContext);
         } else if (action.equals("getRangedRegions")) {
@@ -724,6 +728,26 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 					return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
 		        }
 				
+			}
+    	});			
+	}
+	
+	private void requestWhenInUseAuthorization(CallbackContext callbackContext) {
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+			@Override
+			public PluginResult run() {
+				return new PluginResult(PluginResult.Status.OK);
+			}
+    	});			
+	}
+	
+	private void requestAlwaysAuthorization(CallbackContext callbackContext) {
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+			@Override
+			public PluginResult run() {
+				return new PluginResult(PluginResult.Status.OK);
 			}
     	});			
 	}

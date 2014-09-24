@@ -385,12 +385,42 @@
     } :command];
 }
 
-- (void) requestAlwaysAuthorization:(CDVInvokedUrlCommand*)command {    
-    [self.locationManager requestAlwaysAuthorization];
+- (void) requestAlwaysAuthorization:(CDVInvokedUrlCommand*)command {
+
+    // Under iOS 8, there is no need for these permissions, therefore we can
+    // send back OK to the calling DOM without any further ado.
+    if (!IsAtLeastiOSVersion(@"8.0")) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    } else {
+
+        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
+
+            [self.locationManager requestAlwaysAuthorization];
+
+            return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
+        } :command];
+    }
 }
 
-- (void) requestWhenInUseAuthorization:(CDVInvokedUrlCommand*)command  {    
-    [self.locationManager requestWhenInUseAuthorization];
+- (void) requestWhenInUseAuthorization:(CDVInvokedUrlCommand*)command  {
+
+    // Under iOS 8, there is no need for these permissions, therefore we can
+    // send back OK to the calling DOM without any further ado.
+    if (!IsAtLeastiOSVersion(@"8.0")) {
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    } else {
+
+        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
+
+            [self.locationManager requestWhenInUseAuthorization];
+
+            return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
+        } :command];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
@@ -402,8 +432,8 @@
             
             NSString *statusString = [self authorizationStatusAsString:status];
             
-            [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %@", statusString];
-            [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %@", statusString];
+            [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
+            [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
             
             NSMutableDictionary* dict = [NSMutableDictionary new];
             [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
@@ -843,7 +873,9 @@
     NSDictionary* statuses = @{@(kCLAuthorizationStatusNotDetermined) : @"AuthorizationStatusNotDetermined",
       @(kCLAuthorizationStatusAuthorized) : @"AuthorizationStatusAuthorized",
       @(kCLAuthorizationStatusDenied) : @"AuthorizationStatusDenied",
-      @(kCLAuthorizationStatusRestricted) : @"AuthorizationStatusRestricted"};
+      @(kCLAuthorizationStatusRestricted) : @"AuthorizationStatusRestricted",
+      @(kCLAuthorizationStatusAuthorizedWhenInUse) : @"AuthorizationStatusAuthorizedWhenInUse",
+      @(kCLAuthorizationStatusAuthorizedAlways) : @"AuthorizationStatusAuthorizedAlways"};
     
     return [statuses objectForKey:[NSNumber numberWithInt: authorizationStatus]];
 }
