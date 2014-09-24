@@ -46,6 +46,12 @@ Since version 2, the main ```IBeacon``` facade of the DOM is called ```LocationM
 Another important change of version 2 is that it no longer pollutes the global namespace, instead all the model classes and utilities are accessible
 through the ```cordova.plugins.locationManager``` reference chain.
 
+#### iOS 8 Permissions
+
+On iOS 8, you have to request permissions from the user of your app explicitly. You can do this through the plugin's API.
+See the [LocationManager](https://github.com/petermetz/cordova-plugin-ibeacon/blob/master/www/LocationManager.js)'s 
+related methods: ```requestWhenInUseAuthorization``` and ```requestWhenInUseAuthorization``` for further details.
+
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
 
@@ -287,7 +293,8 @@ cordova.plugins.locationManager.stopAdvertising()
 ## Contributions
 
 > Contributions are welcome at all times, please make sure that the tests are running without errors
-> before submitting a pull request.
+> before submitting a pull request. The current development branch that you should submit your pull requests against is
+> "v3.x".
 
 ### How to execute the tests - OS X
 
@@ -296,7 +303,7 @@ cordova.plugins.locationManager.stopAdvertising()
 * [NodeJS](http://nodejs.org/)
 * [NPM](https://www.npmjs.org/)
 * [Cordova NPM package](https://www.npmjs.org/package/cordova) (Tested with: 3.4.0-0.1.3)
-* [XCode](https://developer.apple.com/xcode/) (Tested with 5.0.2)
+* [XCode](https://developer.apple.com/xcode/) (Tested with 5.0.2 and 6.0)
 
 
 ```
