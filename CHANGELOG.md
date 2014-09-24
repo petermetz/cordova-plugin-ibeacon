@@ -1,3 +1,10 @@
+# 3.1.1
+
+## Fixed bugs
+
+* Fixed a bug when installing the plugin sometimes resulted in broken Javascript source files that contained syntax 
+errors and stopped apps from working after the plugin has been added to the project. 
+
 # 3.1.0
 
 ## Features
