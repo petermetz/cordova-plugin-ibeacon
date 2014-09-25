@@ -21,8 +21,8 @@
     </js-module>
     
     <!-- Plugin source code: Core -->
-    <js-module name="LocationManager" src="www/LocationManager.js">
-        <clobbers target="cordova.plugins"/>
+    <js-module name="locationManager" src="www/LocationManager.js">
+        <clobbers target="cordova.plugins.locationManager"/>
     </js-module>
     
     <js-module name="Delegate" src="www/Delegate.js">
