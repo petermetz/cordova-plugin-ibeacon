@@ -22,7 +22,9 @@
     
     <!-- Plugin source code: Core -->
     <js-module name="LocationManager" src="www/LocationManager.js">
-        <clobbers target="cordova.plugins"/>
+        <!-- see http://cordova.apache.org/docs/en/3.0.0/plugin_ref_spec.md#Plugin%20Specification_js_module_element -->
+        <!-- We have to use clobers but with cordova.plugins.locationManager or if you'd like to merge you need to user merges to make alle objects acessable -->
+        <merges target="cordova.plugins"/>
     </js-module>
     
     <js-module name="Delegate" src="www/Delegate.js">
