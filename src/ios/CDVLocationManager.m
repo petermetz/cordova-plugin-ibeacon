@@ -36,8 +36,6 @@
     
     self.debugLogEnabled = true;
     self.debugNotificationsEnabled = false;
-    
-    [self resumeEventPropagationToDom]; // Dirty workaround
 }
 
 - (void) initLocationManager {
