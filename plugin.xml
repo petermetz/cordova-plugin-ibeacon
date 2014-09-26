@@ -3,7 +3,7 @@
 
     <name>Proximity Beacon Plugin</name>
     <description>Proximity Beacon Monitoring and Transmission Plugin (supporting iBeacons)</description>
-    <license>Apache 2.0 license</license>
+    <license>Apache 2.0</license>
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
     <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
 
