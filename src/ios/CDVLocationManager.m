@@ -36,6 +36,8 @@
     
     self.debugLogEnabled = true;
     self.debugNotificationsEnabled = false;
+    
+    [self resumeEventPropagationToDom]; // DOM propagation when Location Manager, PeripheralManager initiated
 }
 
 - (void) initLocationManager {
@@ -425,27 +427,23 @@
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     NSLog(@"didChangeAuthorizationStatus");
-
-    [self.queue addOperationWithBlock:^{
-        
-        [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
-            
-            NSString *statusString = [self authorizationStatusAsString:status];
-            
-            [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
-            [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
-            
-            NSMutableDictionary* dict = [NSMutableDictionary new];
-            [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
-            [dict setObject:statusString forKey:@"status"];
-            
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-            [pluginResult setKeepCallbackAsBool:YES];
-            return pluginResult;
-
-        } :nil :NO :self.delegateCallbackId];
-    }];
     
+     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+         
+         NSString *statusString = [self authorizationStatusAsString:status];
+         
+         [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
+         [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
+         
+         NSMutableDictionary* dict = [NSMutableDictionary new];
+         [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
+         [dict setObject:statusString forKey:@"status"];
+         
+         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+         [pluginResult setKeepCallbackAsBool:YES];
+         return pluginResult;
+
+     } :nil :NO :self.delegateCallbackId];
 }
 
 
