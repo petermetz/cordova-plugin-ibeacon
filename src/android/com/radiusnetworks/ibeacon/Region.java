@@ -140,12 +140,18 @@ public class Region  {
 
 	@Override
 	public int hashCode() {
-		return this.uniqueId.hashCode();
+		// return this.uniqueId.hashCode();
+        return (this.uniqueId + this.proximityUuid + this.major + this.minor).hashCode();
 	}
 	
 	public boolean equals(Object other) {
 		 if (other instanceof Region) {
-			return ((Region)other).uniqueId.equals(this.uniqueId);
+             // return ((Region)other).uniqueId.equals(this.uniqueId);
+             Region r = (Region) other;
+             return r.uniqueId.equals(this.uniqueId) &&
+                 r.proximityUuid.equals(this.proximityUuid) &&
+                 r.major.equals(this.major) && 
+                 r.minor.equals(this.minor);
 		 }
 		 return false;
 	}
