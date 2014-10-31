@@ -11,11 +11,7 @@
     <js-module name="underscorejs" src="www/lib/underscore-min-1.6.js">
         <runs/>
     </js-module>
-    
-    <js-module name="klass" src="www/lib/klass.min.js">
-        <runs/>
-    </js-module>
-    
+  
     <js-module name="Q" src="www/lib/q.min.js">
         <runs/>
     </js-module>
