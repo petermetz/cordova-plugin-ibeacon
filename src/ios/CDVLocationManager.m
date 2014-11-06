@@ -838,8 +838,7 @@
 }
 
 - (void) _handleCallSafely: (CDVPluginCommandHandler) unsafeHandler : (CDVInvokedUrlCommand*) command : (BOOL) runInBackground {
-    [self _handleCallSafely:unsafeHandler :command :true :command.callbackId];
-    
+    [self _handleCallSafely:unsafeHandler :command :runInBackground :command.callbackId];
 }
 
 - (void) _handleExceptionOfCommand: (CDVInvokedUrlCommand*) command : (NSException*) exception {
