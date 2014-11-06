@@ -84,7 +84,7 @@
     
     NSLog(@"%@", warnMsg);
     
-    NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error(%@)", warnMsg];
+    NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error('%@')", warnMsg];
     [self writeJavascript:javascriptErrorLoggingStatement];
 }
 
