@@ -43,13 +43,11 @@ describe('LocationManager', function() {
 
 	it('starts the ranging of beacon regions', function(done) {
 
-		var delegate = new cordova.plugins.locationManager.Delegate().implement({
+		var delegate = new cordova.plugins.locationManager.Delegate();
 
-			didRangeBeaconsInRegion: function (pluginResult) {
-				console.debug('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult.region));
-			}
-
-		});
+        delegate.didRangeBeaconsInRegion = function (pluginResult) {
+            console.debug('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult.region));
+        };
 
 		var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
 		var identifier = 'beaconOnTheMacBooksShelf';
@@ -76,23 +74,23 @@ describe('LocationManager', function() {
         expect(charingCross).toBeDefined();
         expect(charingCross instanceof CircularRegion).toBe(true);
 
-        var delegate = new Delegate().implement({
-            didDetermineStateForRegion: function(pluginResult) {
-                expect(Delegate['didDetermineStateForRegion']).toHaveBeenCalled();
-                expect(pluginResult).toBeDefined();
-                expect(pluginResult.region).toBeDefined();
-                locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: ' 
-                        + JSON.stringify(pluginResult.region));
-            },
-            didStartMonitoringForRegion: function(pluginResult) {
-                console.log('didStartMonitoringForRegion:', pluginResult);
+        var delegate = new Delegate();
+        delegate.didDetermineStateForRegion = function(pluginResult) {
+            expect(Delegate['didDetermineStateForRegion']).toHaveBeenCalled();
+            expect(pluginResult).toBeDefined();
+            expect(pluginResult.region).toBeDefined();
+            locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+                    + JSON.stringify(pluginResult.region));
+        };
+        delegate.didStartMonitoringForRegion = function(pluginResult) {
+            console.log('didStartMonitoringForRegion:', pluginResult);
 
-                var region = pluginResult.region;
-				expect(region).toBeDefined();
-                expect(region instanceof Region).toBe(true);
-                done();
-            }
-        });
+            var region = pluginResult.region;
+            expect(region).toBeDefined();
+            expect(region instanceof Region).toBe(true);
+            done();
+        };
+
 
         locationManager.setDelegate(delegate);
         locationManager.startMonitoringForRegion(charingCross)
@@ -115,23 +113,22 @@ describe('LocationManager', function() {
         expect(appleHq).toBeDefined();
         expect(appleHq instanceof CircularRegion).toBe(true);
 
-        var delegate = new Delegate().implement({
-            didDetermineStateForRegion: function(pluginResult) {
-                expect(Delegate['didDetermineStateForRegion']).toHaveBeenCalled();
-                expect(pluginResult).toBeDefined();
-                expect(pluginResult.region).toBeDefined();
-                locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: ' 
-                        + JSON.stringify(pluginResult.region));
-            },
-            didStartMonitoringForRegion: function(pluginResult) {
-                console.log('didStartMonitoringForRegion:', pluginResult);
+        var delegate = new Delegate();
+        delegate.didDetermineStateForRegion = function(pluginResult) {
+            expect(Delegate['didDetermineStateForRegion']).toHaveBeenCalled();
+            expect(pluginResult).toBeDefined();
+            expect(pluginResult.region).toBeDefined();
+            locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+                    + JSON.stringify(pluginResult.region));
+        };
+        delegate.didStartMonitoringForRegion = function(pluginResult) {
+            console.log('didStartMonitoringForRegion:', pluginResult);
 
-                var region = pluginResult.region;
-				expect(region).toBeDefined();
-                expect(region instanceof Region).toBe(true);
-                done();
-            }
-        });
+            var region = pluginResult.region;
+            expect(region).toBeDefined();
+            expect(region instanceof Region).toBe(true);
+            done();
+        };
 
         locationManager.setDelegate(delegate);
         locationManager.startMonitoringForRegion(appleHq)
@@ -242,19 +239,19 @@ describe('LocationManager', function() {
 
     it('starts advertising as a beacon', function () {
 
-        var delegate = new cordova.plugins.locationManager.Delegate().implement({
+        var delegate = new cordova.plugins.locationManager.Delegate();
 
-            // Event when advertising starts (there may be a short delay after the request)
-            // The property 'region' provides details of the broadcasting Beacon
-            peripheralManagerDidStartAdvertising: function(pluginResult) {
-                console.log('peripheralManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
-            },
-            // Event when bluetooth transmission state changes
-            // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
-            peripheralManagerDidUpdateState: function(pluginResult) {
-                console.log('peripheralManagerDidUpdateState: '+ pluginResult.state);
-            }
-        });
+        // Event when advertising starts (there may be a short delay after the request)
+        // The property 'region' provides details of the broadcasting Beacon
+        delegate.peripheralManagerDidStartAdvertising = function(pluginResult) {
+            console.log('peripheralManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
+        };
+        // Event when bluetooth transmission state changes
+        // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
+        delegate.peripheralManagerDidUpdateState = function(pluginResult) {
+            console.log('peripheralManagerDidUpdateState: '+ pluginResult.state);
+        };
+
         cordova.plugins.locationManager.setDelegate(delegate);
 
         // You can't test the iBeacon monitoring properly in the emulator, thus the crippled test.

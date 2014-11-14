@@ -46,6 +46,8 @@ Since version 2, the main ```IBeacon``` facade of the DOM is called ```LocationM
 Another important change of version 2 is that it no longer pollutes the global namespace, instead all the model classes and utilities are accessible
 through the ```cordova.plugins.locationManager``` reference chain.
 
+Since version 3.2 the Klass dependency has been removed and therefore means creation of the delegate has changed.
+
 #### iOS 8 Permissions
 
 On iOS 8, you have to request permissions from the user of your app explicitly. You can do this through the plugin's API.
