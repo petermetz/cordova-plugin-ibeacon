@@ -112,7 +112,7 @@ LocationManager.prototype._onDelegateCallback = function (deferred, pluginResult
 
 	this.appendToDeviceLog('_onDelegateCallback() ' + JSON.stringify(pluginResult));
 
-	if (_.isString(pluginResult['eventType'])) { // The native layer calling the DOM with a delegate event.
+	if (pluginResult && _.isString(pluginResult['eventType'])) { // The native layer calling the DOM with a delegate event.
 		this._mapDelegateCallback(pluginResult);
 	} else if (Q.isPending(deferred.promise)) { // The callback ID registration finished, runs only once.
 		deferred.resolve();

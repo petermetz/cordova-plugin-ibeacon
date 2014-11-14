@@ -84,8 +84,8 @@
     
     NSLog(@"%@", warnMsg);
     
-    NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error(%@)", warnMsg];
-    [self writeJavascript:javascriptErrorLoggingStatement];
+    NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error('%@')", warnMsg];
+    [self.commandDelegate evalJs:javascriptErrorLoggingStatement];
 }
 
 # pragma mark CLLocationManagerDelegate
