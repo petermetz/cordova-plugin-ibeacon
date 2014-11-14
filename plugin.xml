@@ -20,28 +20,28 @@
     <js-module name="LocationManager" src="www/LocationManager.js">
         <!-- see http://cordova.apache.org/docs/en/3.0.0/plugin_ref_spec.md#Plugin%20Specification_js_module_element -->
         <!-- We have to use clobers but with cordova.plugins.locationManager or if you'd like to merge you need to user merges to make alle objects acessable -->
-        <clobbers  target="cordova.plugins.LocationManager"/>
+        <merges target="cordova.plugins"/>
     </js-module>
 
     <js-module name="Delegate" src="www/Delegate.js">
-         <clobbers  target="cordova.plugins.LocationManager.Delegate"/>
+        <runs/>
     </js-module>
 
     <!-- Plugin source code: Model -->
     <js-module name="Region" src="www/model/Region.js">
-         <clobbers  target="cordova.plugins.LocationManager.Region"/>
+        <runs/>
     </js-module>
 
     <js-module name="Regions" src="www/Regions.js">
-         <clobbers  target="cordova.plugins.LocationManager.Regions"/>
-   </js-module>
+        <runs/>
+    </js-module>
 
     <js-module name="CircularRegion" src="www/model/CircularRegion.js">
-         <clobbers  target="cordova.plugins.LocationManager.CircularRegion"/>
-   </js-module>
+        <runs/>
+    </js-module>
 
     <js-module name="BeaconRegion" src="www/model/BeaconRegion.js">
-          <clobbers  target="cordova.plugins.LocationManager.BeaconRegion"/>
+        <runs/>
     </js-module>
 
 

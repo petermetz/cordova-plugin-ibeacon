@@ -497,7 +497,15 @@ LocationManager.prototype.enableDebugLogs = function() {
 LocationManager.prototype.appendToDeviceLog = function(message) {
 	return this._promisedExec('appendToDeviceLog', [message], []);
 };
-	
 
-module.exports = new LocationManager();
+var locationManager = new LocationManager();
+locationManager.Regions = Regions;
+locationManager.Region = Region;
+locationManager.CircularRegion = CircularRegion;
+locationManager.BeaconRegion = BeaconRegion;
+locationManager.Delegate = Delegate;
+
+module.exports.LocationManager = LocationManager;
+module.exports.locationManager = locationManager;
+
 

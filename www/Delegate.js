@@ -88,7 +88,7 @@ Delegate.safeTraceLogging = function(message) {
 
 
 /**
-* Defualt implementations of the Delegate methods which are noop.
+* Default implementations of the Delegate methods which are noop.
 */
 
 Delegate.prototype.didDetermineStateForRegion = function() {
