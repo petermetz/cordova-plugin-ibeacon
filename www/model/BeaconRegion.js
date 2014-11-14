@@ -18,8 +18,6 @@
  */
 
 var _ = require('com.unarin.cordova.beacon.underscorejs');
-var klass = require('com.unarin.cordova.beacon.klass');
-
 var Region = require('com.unarin.cordova.beacon.Region');
 
 /**
@@ -37,9 +35,10 @@ var Region = require('com.unarin.cordova.beacon.Region');
  * 
  * @returns {BeaconRegion} An instance of {BeaconRegion}.
  */
-var BeaconRegion = Region.extend(function(identifier, uuid, major, minor, notifyEntryStateOnDisplay) {
-
-	Region.checkIdentifier(identifier);
+function BeaconRegion (identifier, uuid, major, minor, notifyEntryStateOnDisplay){
+	// Call the parent constructor, making sure (using Function#call)
+	// that "this" is set correctly during the call
+	Region.call(this, identifier);
 
 	BeaconRegion.checkUuid(uuid);
 	BeaconRegion.checkMajorOrMinor(major);
@@ -48,44 +47,53 @@ var BeaconRegion = Region.extend(function(identifier, uuid, major, minor, notify
 	this.uuid = uuid;
     this.major = major;
     this.minor = minor;
-    
     this.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
 
-    this.typeName = 'BeaconRegion';
-});
+    this.typeName = 'BeaconRegion';  
+};
 
-BeaconRegion.statics({
-	isValidUuid: function (uuid) {
-		var uuidValidatorRegex = this.getUuidValidatorRegex();
-		return uuid.match(uuidValidatorRegex) != null;
-	},
+// Create a BeaconRegion.prototype object that inherits from Region.prototype.
+// Note: A common error here is to use "new Region()" to create the
+// BeaconRegion.prototype. That's incorrect for several reasons, not least 
+// that we don't have anything to give Region for the "identifier" 
+// argument. The correct place to call Region is above, where we call 
+// it from BeaconRegion.
+BeaconRegion.prototype = Object.create(Region.prototype);
 
-	getUuidValidatorRegex: function () {
-		return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-	},
+// Set the "constructor" property to refer to BeaconRegion
+BeaconRegion.prototype.constructor = BeaconRegion;
 
-	checkUuid: function (uuid) {
-		if (!BeaconRegion.isValidUuid(uuid)) {
-			throw new TypeError(uuid + ' is not a valid UUID');
+BeaconRegion.isValidUuid = function (uuid) {
+	var uuidValidatorRegex = this.getUuidValidatorRegex();
+	return uuid.match(uuidValidatorRegex) != null;
+};
+
+BeaconRegion.getUuidValidatorRegex = function () {
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+};
+
+BeaconRegion.checkUuid = function (uuid) {
+	if (!BeaconRegion.isValidUuid(uuid)) {
+		throw new TypeError(uuid + ' is not a valid UUID');
+	}
+};
+
+BeaconRegion.checkMajorOrMinor = function (majorOrMinor) {
+	if (!_.isUndefined(majorOrMinor)) {
+		if (!_.isFinite(majorOrMinor)) {
+			throw new TypeError(majorOrMinor + ' is not a finite value');
 		}
-	},
 
-	checkMajorOrMinor: function (majorOrMinor) {
-		if (!_.isUndefined(majorOrMinor)) {
-			if (!_.isFinite(majorOrMinor)) {
-				throw new TypeError(majorOrMinor + ' is not a finite value');
-			}
-
-			if (majorOrMinor > BeaconRegion.U_INT_16_MAX_VALUE ||
-				majorOrMinor < BeaconRegion.U_INT_16_MIN_VALUE) {
-				throw new TypeError(majorOrMinor + ' is out of valid range of values.');
-			}
+		if (majorOrMinor > BeaconRegion.U_INT_16_MAX_VALUE ||
+			majorOrMinor < BeaconRegion.U_INT_16_MIN_VALUE) {
+			throw new TypeError(majorOrMinor + ' is out of valid range of values.');
 		}
-	},
+	}
+};
 
-	U_INT_16_MAX_VALUE: (1 << 16) - 1,
-	U_INT_16_MIN_VALUE: 0
-});
+BeaconRegion.U_INT_16_MAX_VALUE = (1 << 16) - 1;
+BeaconRegion.U_INT_16_MIN_VALUE = 0;
+
 
 module.exports = BeaconRegion;
 
