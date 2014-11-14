@@ -92,27 +92,25 @@ var logToDom = function (message) {
 	window.scrollTo(0, window.document.height);
 };
 
-var delegate = new cordova.plugins.locationManager.Delegate().implement({
+var delegate = new cordova.plugins.locationManager.Delegate();
 	
-	didDetermineStateForRegion: function (pluginResult) {
+delegate.didDetermineStateForRegion = function (pluginResult) {
 
-		logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+    logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
 
-		cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
-			+ JSON.stringify(pluginResult));
-	},
+    cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+        + JSON.stringify(pluginResult));
+};
 
-	didStartMonitoringForRegion: function (pluginResult) {
-		console.log('didStartMonitoringForRegion:', pluginResult);
+delegate.didStartMonitoringForRegion = function (pluginResult) {
+    console.log('didStartMonitoringForRegion:', pluginResult);
 
-		logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
-	},
+    logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+};
 
-	didRangeBeaconsInRegion: function (pluginResult) {
-		logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
-	}
-
-});
+delegate.didRangeBeaconsInRegion: function (pluginResult) {
+    logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+};
 
 var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
 var identifier = 'beaconOnTheMacBooksShelf';
@@ -163,27 +161,27 @@ var logToDom = function (message) {
 	window.scrollTo(0, window.document.height);
 };
 
-var delegate = new cordova.plugins.locationManager.Delegate().implement({
+var delegate = new cordova.plugins.locationManager.Delegate();
 	
-	didDetermineStateForRegion: function (pluginResult) {
+delegate.didDetermineStateForRegion = function (pluginResult) {
 
-		logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+    logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
 
-		cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
-			+ JSON.stringify(pluginResult));
-	},
+    cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+        + JSON.stringify(pluginResult));
+};
 
-	didStartMonitoringForRegion: function (pluginResult) {
-		console.log('didStartMonitoringForRegion:', pluginResult);
+delegate.didStartMonitoringForRegion = function (pluginResult) {
+    console.log('didStartMonitoringForRegion:', pluginResult);
 
-		logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
-	},
+    logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+};
 
-	didRangeBeaconsInRegion: function (pluginResult) {
-		logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
-	}
+delegate.didRangeBeaconsInRegion = function (pluginResult) {
+    logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+};
 
-});
+
 
 var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
 var identifier = 'beaconOnTheMacBooksShelf';
@@ -250,19 +248,19 @@ var major = 5;
 var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
 
 // The Delegate is optional
-var delegate = new cordova.plugins.locationManager.Delegate().implement({
+var delegate = new cordova.plugins.locationManager.Delegate();
 
-    // Event when advertising starts (there may be a short delay after the request)
-    // The property 'region' provides details of the broadcasting Beacon
-    peripheralManagerDidStartAdvertising: function(pluginResult) {
-        console.log('peripheralManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
-    },
-    // Event when bluetooth transmission state changes 
-    // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
-    peripheralManagerDidUpdateState: function(pluginResult) {
-        console.log('peripheralManagerDidUpdateState: '+ pluginResult.state);
-    }
-});
+// Event when advertising starts (there may be a short delay after the request)
+// The property 'region' provides details of the broadcasting Beacon
+delegate.peripheralManagerDidStartAdvertising = function(pluginResult) {
+    console.log('peripheralManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
+};
+// Event when bluetooth transmission state changes 
+// If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
+delegate.peripheralManagerDidUpdateState = function(pluginResult) {
+    console.log('peripheralManagerDidUpdateState: '+ pluginResult.state);
+};
+
 cordova.plugins.locationManager.setDelegate(delegate);
 
 // Verify the platform supports transmitting as a beacon
