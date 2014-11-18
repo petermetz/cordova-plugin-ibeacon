@@ -80,7 +80,7 @@ Delegate.safeTraceLogging = function(message) {
 		return;
 	}
 	try {
-		cordova.plugins.LocationManager.appendToDeviceLog(message);
+		cordova.plugins.locationManager.appendToDeviceLog(message);
 	} catch (e) {
 		console.error('Fail in safeTraceLogging()' + e.message, e);
 	}
