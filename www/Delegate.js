@@ -27,14 +27,15 @@ var Regions = require('com.unarin.cordova.beacon.Regions');
  * 
  * @example 
  * 
- * var delegate = new cordova.plugins.LocationManager.Delegate.implement({
- *       didDetermineStateForRegion: function(region) {
- *           console.log('didDetermineState:forRegion: ' + JSON.stringify(region));
- *       },
- *       didStartMonitoringForRegion: function (region) {
- *           console.log('didStartMonitoringForRegion: ' + JSON.stringify(region));
- *       }
- *   });
+ * var delegate = new cordova.plugins.LocationManager.Delegate();
+ *
+ * delegate.didDetermineStateForRegion = function(region) {
+ *      console.log('didDetermineState:forRegion: ' + JSON.stringify(region));
+ * };
+ *
+ * delegate.didStartMonitoringForRegion = function (region) {
+ *      console.log('didStartMonitoringForRegion: ' + JSON.stringify(region));
+ * }
  * 
  * @returns {Delegate} An instance of the type {@type Delegate}.
  */

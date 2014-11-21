@@ -27,3 +27,11 @@ errors and stopped apps from working after the plugin has been added to the proj
 and add the plugin again with the cordova cli commands: ```cordova plugin rm org.apache.cordova.ibeacon``` and then
 ```cordova plugin add com.unarin.cordova.beacon``` to get the latest version. You can have a look at the PhoneGap Build
 submission [here](https://build.phonegap.com/plugins/986).
+
+# 3.2.0
+
+## Breaking Changes
+
+* Klass dependency has been removed. Therefore ```cordova.plugins.LocationManager.Delegate``` entity no longer supports 
+implements and any callbacks mys override the default callbacks directly. See ```ReadMe.md``` for examples of how to use
+ Delegate since this change
