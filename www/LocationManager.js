@@ -135,8 +135,7 @@ LocationManager.prototype._mapDelegateCallback = function (pluginResult) {
 	
 	this.appendToDeviceLog('_mapDelegateCallback() found eventType ' + eventType);
 
-	if (_.isFunction(Delegate[eventType])) {
-		//Delegate[eventType](pluginResult);
+	if (_.isFunction(this.delegate[eventType])) {
 		this.delegate[eventType](pluginResult);
 	} else {
 		console.error('Delegate unable to handle eventType: ' + eventType);
