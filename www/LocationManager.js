@@ -268,6 +268,24 @@ LocationManager.prototype.stopMonitoringForRegion = function(region) {
 };
 
 /**
+ * Request state the for specified region. When result is ready
+ * didDetermineStateForRegion is triggered. This can be any region, 
+ * also those which is not currently monitored. 
+ *
+ * This is done asynchronously and may not be immediately reflected in monitoredRegions.
+ *
+ * @param {Region} region An instance of {Region} which will be monitored
+ * by the operating system.
+ * 
+ * @return {Q.Promise} Returns a promise which is resolved as soon as the
+ * native layer acknowledged the dispatch of the request to stop monitoring.
+ */
+LocationManager.prototype.requestStateForRegion = function(region) {
+	Regions.checkRegionType(region);
+	return this._promisedExec('requestStateForRegion', [region], []);
+};
+
+/**
  * Start ranging the specified beacon region.
  *
  * If a region of the same type with the same identifier is already being
