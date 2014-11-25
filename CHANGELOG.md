@@ -1,3 +1,17 @@
+# 3.2.2
+
+## Features
+
+* New feature added: ```requestStateForRegion``` (iOS only)
+
+# 3.2.0
+
+## Breaking Changes
+
+* Klass dependency has been removed. Therefore ```cordova.plugins.LocationManager.Delegate``` entity no longer supports 
+implements and any callbacks mys override the default callbacks directly. See ```ReadMe.md``` for examples of how to use
+ Delegate since this change
+
 # 3.1.1
 
 ## Fixed bugs
@@ -28,10 +42,22 @@ and add the plugin again with the cordova cli commands: ```cordova plugin rm org
 ```cordova plugin add com.unarin.cordova.beacon``` to get the latest version. You can have a look at the PhoneGap Build
 submission [here](https://build.phonegap.com/plugins/986).
 
-# 3.2.0
+# 2.1.0 (10.08.2014)
+* API for Advertising added to 2.0 design (support for iOS only).
+* Distance approximation called 'accuracy' added to Ranging callback
+* Beacon Tx value added (Android only)
 
-## Breaking Changes
+# 2.0.0 (06.07.2014)
+* Redesigned to use **Promise** .then() .fail(), .done() for method callbacks
+* Singleton **Delegate** object implementation for event handling
+* Android support added 
+* Monitoring and Ranging support for iOS and Android
 
-* Klass dependency has been removed. Therefore ```cordova.plugins.LocationManager.Delegate``` entity no longer supports 
-implements and any callbacks mys override the default callbacks directly. See ```ReadMe.md``` for examples of how to use
- Delegate since this change
+# 1.0.0 (05.04.2014)
+* iOS API for Advertising, Ranging and Monitoring on iOS.
+
+# 0.2.0 (20.03.2014)
+* Wrote proper documentation and retested all the functionality. No API change introduced.
+
+# 0.1.0 (14.02.2014)
+* Beta version created.
