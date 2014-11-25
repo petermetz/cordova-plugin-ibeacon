@@ -160,6 +160,8 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         	getMonitoredRegions(callbackContext);
         } else if (action.equals("getRangedRegions")) {
         	getRangedRegions(callbackContext);
+        } else if (action.equals("requestStateForRegion")) {
+        	requestStateForRegion(args.optJSONObject(0), callbackContext);
         } else if (action.equals("registerDelegateCallbackId")) {
         	registerDelegateCallbackId(args.optJSONObject(0), callbackContext);
         } else if (action.equals("isMonitoringAvailableForClass")) {
@@ -751,7 +753,8 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			}
     	});			
 	}
-    
+	
+	
     private void getMonitoredRegions(CallbackContext callbackContext) {
        	
     	_handleCallSafely(callbackContext, new ILocationManagerCommand() {
@@ -796,6 +799,23 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			}
     	});
 	}
+	
+	//NOT IMPLEMENTED: Manually request monitoring scan for region.
+	//This might not even be needed for Android as it should happen no matter what
+	private void requestStateForRegion(final JSONObject arguments, CallbackContext callbackContext) {
+    	
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+    		@Override
+			public PluginResult run() {
+    			
+    			//not supported on Android
+    			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Manual request for monitoring update is not supported on Android");
+				result.setKeepCallback(true);
+				return result;
+ 				
+			}
+    	});
+	}	
 
 	private void isRangingAvailable(CallbackContext callbackContext) {
 	   	
