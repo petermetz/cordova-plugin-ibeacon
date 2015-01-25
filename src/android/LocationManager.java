@@ -34,7 +34,9 @@ import org.json.JSONObject;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -172,6 +174,8 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         	startAdvertising(args.optJSONObject(0), callbackContext);
         } else if (action.equals("stopAdvertising")) {
         	stopAdvertising(callbackContext);
+        } else if (action.equals("enableBluetooth")) {
+        	enableBluetooth(callbackContext);
         } else {
             return false;
         }
@@ -513,7 +517,31 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			}
     	});
     }
-    
+  	
+	private void enableBluetooth(CallbackContext callbackContext) {
+
+		_handleCallSafely(callbackContext, new ILocationManagerCommand() {
+
+			@Override
+			public PluginResult run() {
+				Activity activity = cordova.getActivity();
+				
+				//Get Bluetooth adapter via Bluetooth Manager
+				BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+				BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+				try{
+					bluetoothAdapter.enable();
+					PluginResult result = new PluginResult(PluginResult.Status.OK);
+					result.setKeepCallback(true);
+					return result;
+				}catch(Exception e){
+		        	Log.e(TAG, "'enableBluetooth' service error: " + e.getCause());
+			    	return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+				}
+			}
+    	});
+	}
+  
 	private void disableDebugNotifications(CallbackContext callbackContext) {
 
 		_handleCallSafely(callbackContext, new ILocationManagerCommand() {

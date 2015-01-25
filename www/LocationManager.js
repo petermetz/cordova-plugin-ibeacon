@@ -226,6 +226,15 @@ LocationManager.prototype._promisedExec = function (method, commandArgs, preProc
 LocationManager.prototype.onDomDelegateReady = function() {
 	return this._promisedExec('onDomDelegateReady', [], []);
 };
+/**
+ * Enables Bluetooth using the native Layer.
+ * 
+ * @returns {Q.Promise} Returns a promise which is resolved when Bluetooth
+ * could be enabled. If not, the promise will be rejected with an error.
+ */
+LocationManager.prototype.enableBluetooth = function() {
+	return this._promisedExec('enableBluetooth', [], []);
+};
 
 /**
  * Start monitoring the specified region.
