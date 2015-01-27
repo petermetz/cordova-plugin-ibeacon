@@ -23,6 +23,15 @@ import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.BleNotAvailableException;
+import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -47,21 +56,13 @@ import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.radiusnetworks.ibeacon.BleNotAvailableException;
-import com.radiusnetworks.ibeacon.IBeacon;
-import com.radiusnetworks.ibeacon.IBeaconConsumer;
-import com.radiusnetworks.ibeacon.IBeaconManager;
-import com.radiusnetworks.ibeacon.MonitorNotifier;
-import com.radiusnetworks.ibeacon.RangeNotifier;
-import com.radiusnetworks.ibeacon.Region;
-
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
+//@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 	
     public static final String TAG = "com.unarin.cordova.beacon";
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     
-    private IBeaconManager iBeaconManager;
+    private BeaconManager iBeaconManager;
     private BlockingQueue<Runnable> queue;
     private PausableThreadPoolExecutor threadPoolExecutor;
     
@@ -89,6 +90,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
+
         initBluetoothListener();
         initEventQueue();
         pauseEventPropagationToDom(); // Before the DOM is loaded we'll just keep collecting the events and fire them later.
@@ -106,7 +108,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
      */ 
     @Override
     public void onDestroy() {
-    	iBeaconManager.unBind(this);
+    	iBeaconManager.unbind(this);
     	
     	if (broadcastReceiver != null) {
     		cordova.getActivity().unregisterReceiver(broadcastReceiver);
@@ -183,7 +185,8 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 	///////////////// SETUP AND VALIDATION /////////////////////////////////
     
     private void initLocationManager() {
-        iBeaconManager = IBeaconManager.getInstanceForApplication(cordova.getActivity());
+        iBeaconManager = BeaconManager.getInstanceForApplication(cordova.getActivity());
+        iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         iBeaconManager.bind(this);
     }
     
@@ -364,7 +367,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 		
        iBeaconManager.setRangeNotifier(new RangeNotifier() {
 	        @Override 
-	        public void didRangeBeaconsInRegion(final Collection<IBeacon> iBeacons, final Region region) {
+	        public void didRangeBeaconsInRegion(final Collection<Beacon> iBeacons, final Region region) {
 	           	
 	        	threadPoolExecutor.execute(new Runnable() {
                     public void run() {
@@ -372,7 +375,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
                     	try {
                     		JSONObject data = new JSONObject();
                     		JSONArray beaconData = new JSONArray();
-                    		for (IBeacon beacon : iBeacons) {
+                    		for (Beacon beacon : iBeacons) {
                     			beaconData.put(mapOfBeacon(beacon));
                     		}
                     		data.put("eventType", "didRangeBeaconsInRegion");
@@ -523,7 +526,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			@Override
 			public PluginResult run() {
 				debugEnabled = false;
-				IBeaconManager.setDebug(false);
+				BeaconManager.setDebug(false);
 				//android.bluetooth.BluetoothAdapter.DBG = false;
 				return new PluginResult(PluginResult.Status.OK);
 			}
@@ -537,7 +540,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			public PluginResult run() {
 				debugEnabled = true;
 				//android.bluetooth.BluetoothAdapter.DBG = true;
-				IBeaconManager.setDebug(true);
+				BeaconManager.setDebug(true);
 				return new PluginResult(PluginResult.Status.OK);
 			}
     	});		
@@ -551,7 +554,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			@Override
 			public PluginResult run() {
 				debugEnabled = false;
-				IBeaconManager.setDebug(false);
+				BeaconManager.setDebug(false);
 				//android.bluetooth.BluetoothAdapter.DBG = false;
 				return new PluginResult(PluginResult.Status.OK);
 			}
@@ -565,7 +568,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 			public PluginResult run() {
 				debugEnabled = true;
 				//android.bluetooth.BluetoothAdapter.DBG = true;
-				IBeaconManager.setDebug(true);
+				BeaconManager.setDebug(true);
 				return new PluginResult(PluginResult.Status.OK);
 			}
     	});		
@@ -999,13 +1002,13 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     	
     	//For Android, uuid can be null when scanning for all beacons (I think)
     	String uuid = json.has("uuid")&&!json.isNull("uuid") ? json.getString("uuid") : null;
-    	Integer major = json.has("major")&&!json.isNull("major") ? json.getInt("major") : null;
-    	Integer minor = json.has("minor")&&!json.isNull("minor") ? json.getInt("minor") : null;
+    	String major = json.has("major")&&!json.isNull("major") ? json.getString("major") : null;
+    	String minor = json.has("minor")&&!json.isNull("minor") ? json.getString("minor") : null;
     	
     	if (major==null && minor!=null)
     		throw new UnsupportedOperationException("Unsupported combination of 'major' and 'minor' parameters.");
     		
-    	return new Region(identifier,uuid,major,minor);
+    	return new Region(identifier, Identifier.parse(uuid), Identifier.parse(major), Identifier.parse(minor));
     }    
 
     
@@ -1037,14 +1040,14 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
        	 dict.put("identifier", region.getUniqueId());
         }
 
-    	dict.put("uuid", region.getProximityUuid());
+    	dict.put("uuid", region.getId1());
 
-       if (region.getMajor()!=null) {
-           dict.put("major", region.getMajor());
+       if (region.getId2()!=null) {
+           dict.put("major", region.getId2());
        }
 
-       if (region.getMinor()!=null) {
-       	dict.put("minor", region.getMinor());
+       if (region.getId3()!=null) {
+       	dict.put("minor", region.getId3());
        }
        
        dict.put("typeName", "BeaconRegion");
@@ -1074,16 +1077,16 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
   	
     }*/
 
-    private JSONObject mapOfBeacon(IBeacon region) throws JSONException {
+    private JSONObject mapOfBeacon(Beacon region) throws JSONException {
     	JSONObject dict = new JSONObject();
         
     	//beacon id
-    	dict.put("uuid", region.getProximityUuid());
-        dict.put("major", region.getMajor());
-       	dict.put("minor", region.getMinor());
+    	dict.put("uuid", region.getId1());
+        dict.put("major", region.getId2());
+       	dict.put("minor", region.getId3());
 
         // proximity
-        dict.put("proximity", nameOfProximity(region.getProximity()));
+//        dict.put("proximity", nameOfProximity(region.getProximity()));
 
         // signal strength and transmission power
         dict.put("rssi", region.getRssi());
@@ -1091,24 +1094,25 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
 
         // accuracy = rough distance estimate limited to two decimal places (in metres)
         // NO NOT ASSUME THIS IS ACCURATE - it is effected by radio interference and obstacles
-        dict.put("accuracy", Math.round(region.getAccuracy()*100.0)/100.0);
+        dict.put("accuracy", Math.round(region.getDistance()*100.0)/100.0);
         
         return dict;
     }
 
     private String nameOfProximity(int proximity) {
-        switch (proximity) {
-            case IBeacon.PROXIMITY_NEAR:
-                return "ProximityNear";
-            case IBeacon.PROXIMITY_FAR:
-                return "ProximityFar";
-            case IBeacon.PROXIMITY_IMMEDIATE:
-                return "ProximityImmediate";
-            case IBeacon.PROXIMITY_UNKNOWN:
-                return "ProximityUnknown";
-            default:
-                return "ErrorProximityValueUnknown";
-        }
+//        switch (proximity) {
+//            case Beacon.PROXIMITY_NEAR:
+//                return "ProximityNear";
+//            case Beacon.PROXIMITY_FAR:
+//                return "ProximityFar";
+//            case Beacon.PROXIMITY_IMMEDIATE:
+//                return "ProximityImmediate";
+//            case Beacon.PROXIMITY_UNKNOWN:
+//                return "ProximityUnknown";
+//            default:
+//                return "ErrorProximityValueUnknown";
+//        }
+    	return "ProximityNear";
     }
     
 	private boolean hasBlueToothPermission()
@@ -1193,7 +1197,7 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
     //////// IBeaconConsumer implementation /////////////////////
 
 	@Override
-	public void onIBeaconServiceConnect() {
+	public void onBeaconServiceConnect() {
 		debugLog("Connected to IBeacon service");
 	}
 
