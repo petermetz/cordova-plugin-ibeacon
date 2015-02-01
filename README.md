@@ -217,7 +217,7 @@ cordova.plugins.locationManager.stopRangingBeaconsInRegion(beaconRegion)
 
 ```
 
-##### Determine if advertising is supported (iOS is supported, Android is not)
+##### Determine if advertising is supported (iOS is supported, Android is not yet)
 
 ```
 cordova.plugins.locationManager.isAdvertisingAvailable()
@@ -290,11 +290,28 @@ cordova.plugins.locationManager.stopAdvertising()
 
 ```
 
+##### Enable/Disable BlueTooth (Android only)
+
+```        
+cordova.plugins.locationManager.isBluetoothEnabled()
+    .then(function(isEnabled){
+        console.log("isEnabled: " + isEnabled);
+        if (isEnabled) {
+            cordova.plugins.locationManager.disableBluetooth();
+        } else {
+            cordova.plugins.locationManager.enableBluetooth();        
+        }
+    })
+    .fail(console.error)
+    .done();
+
+```
+
 ## Contributions
 
 > Contributions are welcome at all times, please make sure that the tests are running without errors
 > before submitting a pull request. The current development branch that you should submit your pull requests against is
-> "v3.x".
+> "master" branch.
 
 ### How to execute the tests - OS X
 

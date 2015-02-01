@@ -18,7 +18,7 @@
 */
 package com.unarin.cordova.beacon;
 
-import com.radiusnetworks.ibeacon.Region;
+import org.altbeacon.beacon.Region;
 
 /*
  * Interface for addition iOS events

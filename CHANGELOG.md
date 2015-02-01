@@ -1,3 +1,11 @@
+# 3.3.0
+
+## Features
+
+* New feature: ```enableBluetooth```/```disableBluetooth``` (Android only) (Thanks to @akreienbring)
+* New feature: ```isBluetoothEnabled```
+* AltBeacon library backend for Android version (Thanks to @RonMen)
+
 # 3.2.2
 
 ## Features
