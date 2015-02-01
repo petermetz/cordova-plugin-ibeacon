@@ -227,6 +227,35 @@ LocationManager.prototype.onDomDelegateReady = function() {
 };
 
 /**
+ * Determines if bluetooth is switched on, according to the native layer.
+ * @returns {Q.Promise} Returns a promise which is resolved with a {Boolean}
+ * indicating whether bluetooth is active.
+ */
+LocationManager.prototype.isBluetoothEnabled = function() {
+	return this._promisedExec('isBluetoothEnabled', [], []);
+};
+
+/**
+ * Enables Bluetooth using the native Layer. (ANDROID ONLY)
+ *
+ * @returns {Q.Promise} Returns a promise which is resolved when Bluetooth
+ * could be enabled. If not, the promise will be rejected with an error.
+ */
+LocationManager.prototype.enableBluetooth = function() {
+	return this._promisedExec('enableBluetooth', [], []);
+};
+
+/**
+ * Disables Bluetooth using the native Layer. (ANDROID ONLY)
+ *
+ * @returns {Q.Promise} Returns a promise which is resolved when Bluetooth
+ * could be enabled. If not, the promise will be rejected with an error.
+ */
+LocationManager.prototype.disableBluetooth = function() {
+	return this._promisedExec('disableBluetooth', [], []);
+};
+
+/**
  * Start monitoring the specified region.
  *
  * If a region of the same type with the same identifier is already being 

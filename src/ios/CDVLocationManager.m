@@ -709,6 +709,43 @@
     } :command];
 }
 
+- (void)isBluetoothEnabled: (CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+
+        //this should be sufficient - otherwise will need to add a centralmanager reference
+        BOOL isEnabled = _peripheralManager.state == CBPeripheralManagerStatePoweredOn;
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isEnabled];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
+- (void)enableBluetooth: (CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+       [[self getLogger] debugLog:@"Enable Bluetooth not required on iOS."];
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
+- (void)disableBluetooth: (CDVInvokedUrlCommand*)command {
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        [[self getLogger] debugLog:@"Disable Bluetooth not required on iOS."];
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [result setKeepCallbackAsBool:YES];
+        return result;
+        
+    } :command];
+}
+
 #pragma mark Parsing 
 
 - (CLRegion*) parseRegion:(CDVInvokedUrlCommand*) command returningError:(out NSError **)error {
