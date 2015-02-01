@@ -1008,7 +1008,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     	if (major==null && minor!=null)
     		throw new UnsupportedOperationException("Unsupported combination of 'major' and 'minor' parameters.");
     		
-    	return new Region(identifier, Identifier.parse(uuid), Identifier.parse(major), Identifier.parse(minor));
+    	return new Region(identifier, Identifier.parse(uuid), (major == null) ? null : Identifier.parse(major), (minor == null) ? null : Identifier.parse(minor));
     }    
 
     
