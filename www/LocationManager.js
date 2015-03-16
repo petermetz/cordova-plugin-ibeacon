@@ -44,7 +44,7 @@ var BeaconRegion = require('com.unarin.cordova.beacon.BeaconRegion');
 
 	this.bindMethodContexts();
 	
- };
+ }
  
 /**
  * Binds the contexts of instance methods to the actual {LocationManager}
@@ -507,7 +507,7 @@ LocationManager.prototype.disableDebugLogs = function() {
  */
 LocationManager.prototype.enableDebugNotifications = function() {
 	return this._promisedExec('enableDebugNotifications', [], []);
-},
+};
 /**
  * Disables the posting of debug notifications in the native layer. Use this method if you want
  * to prevent the plugin from posting local notifications.
