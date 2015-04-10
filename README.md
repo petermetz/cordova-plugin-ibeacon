@@ -26,7 +26,7 @@
 
  * Ranging
  * Monitoring
- 
+
 #### Features exclusive to iOS
 
  * Region Monitoring (or geo fencing), works in all app states. 
@@ -51,7 +51,7 @@ Since version 3.2 the Klass dependency has been removed and therefore means crea
 #### iOS 8 Permissions
 
 On iOS 8, you have to request permissions from the user of your app explicitly. You can do this through the plugin's API.
-See the [LocationManager](https://github.com/petermetz/cordova-plugin-ibeacon/blob/master/www/LocationManager.js)'s 
+See the [LocationManager](https://github.com/petermetz/cordova-plugin-ibeacon/blob/master/www/LocationManager.js)'s
 related methods: ```requestWhenInUseAuthorization``` and ```requestWhenInUseAuthorization``` for further details.
 
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
@@ -62,7 +62,7 @@ related methods: ```requestWhenInUseAuthorization``` and ```requestWhenInUseAuth
 ```
 /**
  * Function that creates a BeaconRegion data transfer object.
- * 
+ *
  * @throws Error if the BeaconRegion parameters are not valid.
  */
 function createBeacon() {
@@ -74,11 +74,11 @@ function createBeacon() {
 
     // throws an error if the parameters are not valid
     var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
-   
-    return beaconRegion;   
-} 
+
+    return beaconRegion;
+}
 ```
- 
+
 ##### Start monitoring a single iBeacon
 ```
 var logToDom = function (message) {
@@ -90,12 +90,12 @@ var logToDom = function (message) {
 	document.body.appendChild(e);
 	document.body.appendChild(br);
 	document.body.appendChild(br2);
-	
+
 	window.scrollTo(0, window.document.height);
 };
 
 var delegate = new cordova.plugins.locationManager.Delegate();
-	
+
 delegate.didDetermineStateForRegion = function (pluginResult) {
 
     logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
@@ -123,7 +123,7 @@ var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, 
 cordova.plugins.locationManager.setDelegate(delegate);
 
 // required in iOS 8+
-cordova.plugins.locationManager.requestWhenInUseAuthorization(); 
+cordova.plugins.locationManager.requestWhenInUseAuthorization();
 // or cordova.plugins.locationManager.requestAlwaysAuthorization()
 
 cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
@@ -131,7 +131,7 @@ cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 	.done();
 
 ```
- 
+
 
 ##### Stop monitoring a single iBeacon
 ```
@@ -146,8 +146,8 @@ cordova.plugins.locationManager.stopMonitoringForRegion(beaconRegion)
 	.done();
 
 ```
- 
- 
+
+
 ##### Start ranging a single iBeacon
 ```
 var logToDom = function (message) {
@@ -159,12 +159,12 @@ var logToDom = function (message) {
 	document.body.appendChild(e);
 	document.body.appendChild(br);
 	document.body.appendChild(br2);
-	
+
 	window.scrollTo(0, window.document.height);
 };
 
 var delegate = new cordova.plugins.locationManager.Delegate();
-	
+
 delegate.didDetermineStateForRegion = function (pluginResult) {
 
     logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
@@ -194,7 +194,7 @@ var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, 
 cordova.plugins.locationManager.setDelegate(delegate);
 
 // required in iOS 8+
-cordova.plugins.locationManager.requestWhenInUseAuthorization(); 
+cordova.plugins.locationManager.requestWhenInUseAuthorization();
 // or cordova.plugins.locationManager.requestAlwaysAuthorization()
 
 cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
@@ -202,7 +202,7 @@ cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
 	.done();
 
 ```
- 
+
 ##### Stop ranging a single iBeacon
 ```
 var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
@@ -231,7 +231,7 @@ cordova.plugins.locationManager.isAdvertisingAvailable()
 
 ##### Determine if advertising is currently turned on (iOS only)
 
-```        
+```
 cordova.plugins.locationManager.isAdvertising()
     .then(function(isAdvertising){
         console.log("isAdvertising: " + isAdvertising);
@@ -257,7 +257,7 @@ var delegate = new cordova.plugins.locationManager.Delegate();
 delegate.peripheralManagerDidStartAdvertising = function(pluginResult) {
     console.log('peripheralManagerDidStartAdvertising: '+ JSON.stringify(pluginResult.region));
 };
-// Event when bluetooth transmission state changes 
+// Event when bluetooth transmission state changes
 // If 'state' is not set to BluetoothManagerStatePoweredOn when advertising cannot start
 delegate.peripheralManagerDidUpdateState = function(pluginResult) {
     console.log('peripheralManagerDidUpdateState: '+ pluginResult.state);
@@ -292,14 +292,14 @@ cordova.plugins.locationManager.stopAdvertising()
 
 ##### Enable/Disable BlueTooth (Android only)
 
-```        
+```
 cordova.plugins.locationManager.isBluetoothEnabled()
     .then(function(isEnabled){
         console.log("isEnabled: " + isEnabled);
         if (isEnabled) {
             cordova.plugins.locationManager.disableBluetooth();
         } else {
-            cordova.plugins.locationManager.enableBluetooth();        
+            cordova.plugins.locationManager.enableBluetooth();
         }
     })
     .fail(console.error)
