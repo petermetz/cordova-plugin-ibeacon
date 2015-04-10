@@ -798,7 +798,7 @@
     
     CLLocationDistance radius = [radiusAsNumber doubleValue];
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
-
+    
     region = [[CLRegion alloc] initCircularRegionWithCenter:center radius:radius identifier:identifier];
 
     if (region == nil) {
@@ -832,7 +832,7 @@
         region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:identifier];
     } else if (major != nil && minor == nil){
         region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:[major doubleValue] identifier:identifier];
-    } else if (major != nil && minor != nil) {
+    } else if (major != nil && major != nil) {
         region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:[major doubleValue] minor:[minor doubleValue] identifier:identifier];
     } else {
         *error = [self parseErrorWithDescription:@"Unsupported combination of 'major' and 'minor' parameters."];
