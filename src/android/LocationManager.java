@@ -94,6 +94,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
         iBeaconManager = BeaconManager.getInstanceForApplication(cordova.getActivity());
 
+        iBeaconManager.setForegroundBetweenScanPeriod(5000);
+
         initBluetoothListener();
         initEventQueue();
         pauseEventPropagationToDom(); // Before the DOM is loaded we'll just keep collecting the events and fire them later.
