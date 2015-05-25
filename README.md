@@ -67,7 +67,7 @@ related methods: ```requestWhenInUseAuthorization``` and ```requestWhenInUseAuth
  */
 function createBeacon() {
 
-    var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9'; // mandatory
+    var uuid = '00000000-0000-0000-0000-000000000000'; // mandatory
     var identifier = 'beaconAtTheMacBooks'; // mandatory
     var minor = 1000; // optional, defaults to wildcard if left empty
     var major = 5; // optional, defaults to wildcard if left empty
@@ -114,7 +114,7 @@ delegate.didRangeBeaconsInRegion = function (pluginResult) {
     logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
 };
 
-var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var uuid = '00000000-0000-0000-0000-000000000000';
 var identifier = 'beaconOnTheMacBooksShelf';
 var minor = 1000;
 var major = 5;
@@ -135,7 +135,7 @@ cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 
 ##### Stop monitoring a single iBeacon
 ```
-var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var uuid = '00000000-0000-0000-0000-000000000000';
 var identifier = 'beaconOnTheMacBooksShelf';
 var minor = 1000;
 var major = 5;
@@ -185,7 +185,7 @@ delegate.didRangeBeaconsInRegion = function (pluginResult) {
 
 
 
-var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var uuid = '00000000-0000-0000-0000-000000000000';
 var identifier = 'beaconOnTheMacBooksShelf';
 var minor = 1000;
 var major = 5;
@@ -205,7 +205,7 @@ cordova.plugins.locationManager.startRangingBeaconsInRegion(beaconRegion)
  
 ##### Stop ranging a single iBeacon
 ```
-var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var uuid = '00000000-0000-0000-0000-000000000000';
 var identifier = 'beaconOnTheMacBooksShelf';
 var minor = 1000;
 var major = 5;
@@ -243,7 +243,7 @@ cordova.plugins.locationManager.isAdvertising()
 
 ##### Start advertising device as an iBeacon (iOS only)
 ```
-var uuid = 'DA5336AE-2042-453A-A57F-F80DD34DFCD9';
+var uuid = '00000000-0000-0000-0000-000000000000';
 var identifier = 'advertisedBeacon';
 var minor = 2000;
 var major = 5;
