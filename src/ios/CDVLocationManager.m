@@ -832,7 +832,7 @@
         region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:identifier];
     } else if (major != nil && minor == nil){
         region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:[major doubleValue] identifier:identifier];
-    } else if (major != nil && major != nil) {
+    } else if (major != nil && minor != nil) {
         region = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:[major doubleValue] minor:[minor doubleValue] identifier:identifier];
     } else {
         *error = [self parseErrorWithDescription:@"Unsupported combination of 'major' and 'minor' parameters."];
