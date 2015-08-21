@@ -84,13 +84,16 @@ LocationManager.prototype.setDelegate = function(newDelegate) {
  * the DOM asynchronously about an event of it's own, for example entering 
  * into a region.
  * 
+ * The same callback will be used for success and fail handling since the
+ * handling is the same. 
+ *
  * @returns {Q.Promise}
  */
 LocationManager.prototype._registerDelegateCallbackId = function () {
 	this.appendToDeviceLog('registerDelegateCallbackId()');
 	var d = Q.defer();
 
-	exec(_.bind(this._onDelegateCallback, this, d), d.reject, "LocationManager",
+	exec(_.bind(this._onDelegateCallback, this, d), _.bind(this._onDelegateCallback, this, d), "LocationManager",
 		"registerDelegateCallbackId", []);
 
 	return d.promise;

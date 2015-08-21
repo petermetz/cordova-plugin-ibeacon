@@ -181,7 +181,7 @@
             NSMutableDictionary* dict = [NSMutableDictionary new];
             [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
             [dict setObject:[self mapOfRegion:region] forKey:@"region"];
-            [dict setObject:@"error" forKey:error.description];
+            [dict setObject:error.description forKey:@"error"];
             
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
             [pluginResult setKeepCallbackAsBool:YES];
