@@ -71,6 +71,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private boolean debugEnabled = true;
     private IBeaconServiceNotifier beaconServiceNotifier; 
     
+    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    
     //listener for changes in state for system Bluetooth service
 	private BroadcastReceiver broadcastReceiver; 
 	private BluetoothAdapter bluetoothAdapter;
@@ -105,6 +107,25 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         }
         //TODO AddObserver when page loaded
 
+	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+	{
+   		final Activity act = cordova.getActivity();
+   		// Android M Permission check 
+   		if (act.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+   		{
+      			final AlertDialog.Builder builder = new AlertDialog.Builder(act);
+      			builder.setTitle("This app needs location access");
+      			builder.setMessage("Please grant location access so this app can detect beacons.");
+      			builder.setPositiveButton(android.R.string.ok, null);
+      			builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+         			@Override
+         			public void onDismiss(DialogInterface dialog) {
+            				act.requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+         			}
+      			});
+      			builder.show();
+		}
+	}
     }
     
     /**
