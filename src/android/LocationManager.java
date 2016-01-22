@@ -19,6 +19,7 @@
 package com.commontime.plugin;
 
 import java.security.InvalidKeyException;
+import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -41,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -56,9 +58,10 @@ import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     
-    public static final String TAG = "com.unarin.cordova.beacon";
+    public static final String TAG = "com.commontime.cordova.beacon";
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     
     private BeaconManager iBeaconManager;
@@ -221,7 +224,6 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         iBeaconManager.bind(this);
     }
     
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void initBluetoothAdapter() {
         Activity activity = cordova.getActivity();
         BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
