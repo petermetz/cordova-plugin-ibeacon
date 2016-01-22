@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-package com.unarin.cordova.beacon;
+package com.commontime.plugin;
 
 import java.security.InvalidKeyException;
 import java.util.Collection;
@@ -42,12 +42,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -106,27 +109,6 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         	initBluetoothAdapter();
         }
         //TODO AddObserver when page loaded
-
-	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-	{
-   		final Activity act = cordova.getActivity();
-   		// Android M Permission check 
-   		if (act.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-   		{
-      			final AlertDialog.Builder builder = new AlertDialog.Builder(act);
-      			builder.setTitle("This app needs location access");
-      			builder.setMessage("Please grant location access so this app can detect beacons.");
-      			builder.setPositiveButton(android.R.string.ok, null);
-      			builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-      				@SuppressLint("NewApi")
-         			@Override
-         			public void onDismiss(DialogInterface dialog) {
-            				act.requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-         			}
-      			});
-      			builder.show();
-		}
-	}
     }
     
     /**
