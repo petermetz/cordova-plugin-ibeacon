@@ -92,6 +92,10 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
+        iBeaconManager = BeaconManager.getInstanceForApplication(cordova.getActivity());
+
+        iBeaconManager.setForegroundBetweenScanPeriod(5000);
+
         initBluetoothListener();
         initEventQueue();
         pauseEventPropagationToDom(); // Before the DOM is loaded we'll just keep collecting the events and fire them later.
@@ -195,7 +199,6 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 	///////////////// SETUP AND VALIDATION /////////////////////////////////
     
     private void initLocationManager() {
-        iBeaconManager = BeaconManager.getInstanceForApplication(cordova.getActivity());
         iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         iBeaconManager.bind(this);
     }
@@ -228,9 +231,12 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 		//check device support
 		try {
 			iBeaconManager.checkAvailability();
-		} catch (Exception e) {
-			//if device does not support iBeacons an error is thrown
+		} catch (BleNotAvailableException e) {
+			//if device does not support iBeacons this error is thrown
 			debugWarn("Cannot listen to Bluetooth service: "+e.getMessage());
+			return;
+		} catch (Exception e) {
+			debugWarn("Unexpected exception checking for Bluetooth service: "+e.getMessage());
 			return;
 		}
 		
