@@ -52,7 +52,7 @@ Since version 3.2 the Klass dependency has been removed and therefore means crea
 
 On iOS 8, you have to request permissions from the user of your app explicitly. You can do this through the plugin's API.
 See the [LocationManager](https://github.com/petermetz/cordova-plugin-ibeacon/blob/master/www/LocationManager.js)'s 
-related methods: ```requestWhenInUseAuthorization``` and ```requestWhenInUseAuthorization``` for further details.
+related methods: ```requestWhenInUseAuthorization``` and ```requestAlwaysAuthorization``` for further details.
 
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
