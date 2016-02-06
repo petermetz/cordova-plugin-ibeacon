@@ -6,9 +6,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,7 +21,7 @@
 #import "LMLogger.h"
 
 @implementation CDVLocationManager {
-
+    
 }
 
 # pragma mark CDVPlugin
@@ -30,7 +30,7 @@
 {
     [self initEventQueue];
     [self pauseEventPropagationToDom]; // Before the DOM is loaded we'll just keep collecting the events and fire them later.
-
+    
     [self initLocationManager];
     [self initPeripheralManager];
     
@@ -43,6 +43,11 @@
 - (void) initLocationManager {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
+    
+    
+    if (IsAtLeastiOSVersion(@"9.0")) {
+        self.locationManager.allowsBackgroundLocationUpdates = YES;
+    }
 }
 
 - (void) initPeripheralManager {
@@ -76,13 +81,11 @@
 }
 
 - (void) checkIfDomSignaldDelegateReady {
-
+    
     if (self.queue != nil && !self.queue.isSuspended) {
         return;
     }
     NSString *warnMsg = [NSString stringWithFormat:@"[Cordova-Plugin-IBeacon] WARNING did not receive delegate ready callback from DOM after %f seconds!", CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT];
-    
-    NSLog(@"%@", warnMsg);
     
     NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error('%@')", warnMsg];
     [self.commandDelegate evalJs:javascriptErrorLoggingStatement];
@@ -124,13 +127,13 @@
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
             [pluginResult setKeepCallbackAsBool:YES];
             return pluginResult;
-
+            
         } :nil :NO :self.delegateCallbackId];
     }];
 }
 
 -(void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-
+    
     [self.queue addOperationWithBlock:^{
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
@@ -151,7 +154,7 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region {
-
+    
     [self.queue addOperationWithBlock:^{
         
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
@@ -223,7 +226,7 @@
 
 - (void)onDomDelegateReady:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
-
+        
         // Starts propagating the events.
         [self resumeEventPropagationToDom];
         
@@ -233,13 +236,13 @@
 
 - (void)disableDebugLogs:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
-
+        
         self.debugLogEnabled = false;
         [self.logger setDebugLogEnabled:false];
         
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } :command];
-
+    
 }
 
 - (void)enableDebugLogs:(CDVInvokedUrlCommand*)command {
@@ -264,7 +267,7 @@
 
 - (void)enableDebugNotifications:(CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand * command) {
-
+        
         self.debugNotificationsEnabled = true;
         [self.logger setDebugNotificationsEnabled:true];
         
@@ -399,7 +402,7 @@
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
         CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
-
+        
         NSString* authorizationStatusString = [self authorizationStatusAsString:authorizationStatus];
         
         NSDictionary *dict = @{@"authorizationStatus": authorizationStatusString};
@@ -410,39 +413,40 @@
 }
 
 - (void) requestAlwaysAuthorization:(CDVInvokedUrlCommand*)command {
-
+    
     // Under iOS 8, there is no need for these permissions, therefore we can
     // send back OK to the calling DOM without any further ado.
     if (!IsAtLeastiOSVersion(@"8.0")) {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
-
+        
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
-
+            
             [self.locationManager requestAlwaysAuthorization];
-
+            [self.locationManager startUpdatingLocation];
+            
             return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-
+            
         } :command];
     }
 }
 
 - (void) requestWhenInUseAuthorization:(CDVInvokedUrlCommand*)command  {
-
+    
     // Under iOS 8, there is no need for these permissions, therefore we can
     // send back OK to the calling DOM without any further ado.
     if (!IsAtLeastiOSVersion(@"8.0")) {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
-
+        
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
-
+            
             [self.locationManager requestWhenInUseAuthorization];
-
+            
             return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-
+            
         } :command];
     }
 }
@@ -450,22 +454,22 @@
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     NSLog(@"didChangeAuthorizationStatus");
     
-     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
-         
-         NSString *statusString = [self authorizationStatusAsString:status];
-         
-         [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
-         [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
-         
-         NSMutableDictionary* dict = [NSMutableDictionary new];
-         [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
-         [dict setObject:statusString forKey:@"status"];
-         
-         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-         [pluginResult setKeepCallbackAsBool:YES];
-         return pluginResult;
-
-     } :nil :NO :self.delegateCallbackId];
+    [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
+        
+        NSString *statusString = [self authorizationStatusAsString:status];
+        
+        [[self getLogger] debugLog:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
+        [[self getLogger] debugNotification:@"didChangeAuthorizationStatus: %d => %@", status, statusString];
+        
+        NSMutableDictionary* dict = [NSMutableDictionary new];
+        [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
+        [dict setObject:statusString forKey:@"status"];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+        [pluginResult setKeepCallbackAsBool:YES];
+        return pluginResult;
+        
+    } :nil :NO :self.delegateCallbackId];
 }
 
 
@@ -490,7 +494,7 @@
         } else {
             arrayOfRegions = [self mapsOfRegions:self.locationManager.rangedRegions];
         }
-
+        
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:arrayOfRegions];
     } :command];
 }
@@ -518,10 +522,10 @@
         
         [[self getLogger] debugLog:@"Registering delegate callback ID: %@", command.callbackId];
         self.delegateCallbackId = command.callbackId;
-
+        
         CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [result setKeepCallbackAsBool:YES];
-
+        
         return result;
     } :command];
 }
@@ -638,7 +642,7 @@
             [[self getLogger] debugLog:@"ERROR Cannot advertise with that Region. Must be a Beacon"];
             return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Cannot advertise with that Region. Must be a BeaconRegion"];
         } else {
-           
+            
             BOOL measuredPowerSpecifiedByUser = command.arguments.count > 1;
             NSNumber *measuredPower = nil;
             if (measuredPowerSpecifiedByUser) {
@@ -647,11 +651,11 @@
             } else {
                 [[self getLogger] debugLog:@"[Default measuredPower will be used."];
             }
-
+            
             CLBeaconRegion* beaconRegion = (CLBeaconRegion*)region;
             _advertisedBeaconRegion = beaconRegion;
             _advertisedPeripheralData = [beaconRegion peripheralDataWithMeasuredPower:measuredPower];
-
+            
             NSMutableDictionary* dict = [[NSMutableDictionary alloc]init];
             [dict setObject:[self peripherialStateAsString:_peripheralManager.state] forKey:@"state"];
             
@@ -673,7 +677,7 @@
         
         if (_peripheralManager.state == CBPeripheralManagerStatePoweredOn) {
             [[self getLogger] debugLog:@"Stopping the advertising. The peripheral manager might report isAdvertising true even after this, for a short period of time."];
-
+            
             [_peripheralManager stopAdvertising];
             _advertisedBeaconRegion = nil;
             _advertisedPeripheralData = nil;
@@ -701,7 +705,7 @@
         } else {
             isAvailable = isValidRegion;
         }
-
+        
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isAvailable];
         [result setKeepCallbackAsBool:YES];
         return result;
@@ -711,7 +715,7 @@
 
 - (void)isBluetoothEnabled: (CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
-
+        
         //this should be sufficient - otherwise will need to add a centralmanager reference
         BOOL isEnabled = _peripheralManager.state == CBPeripheralManagerStatePoweredOn;
         
@@ -725,7 +729,7 @@
 - (void)enableBluetooth: (CDVInvokedUrlCommand*)command {
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
-       [[self getLogger] debugLog:@"Enable Bluetooth not required on iOS."];
+        [[self getLogger] debugLog:@"Enable Bluetooth not required on iOS."];
         
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [result setKeepCallbackAsBool:YES];
@@ -746,12 +750,12 @@
     } :command];
 }
 
-#pragma mark Parsing 
+#pragma mark Parsing
 
 - (CLRegion*) parseRegion:(CDVInvokedUrlCommand*) command returningError:(out NSError **)error {
     
     NSDictionary* dict = command.arguments[0];
-
+    
     NSString* typeName = [dict objectForKey:@"typeName"];
     if (typeName == nil) {
         *error = [self parseErrorWithDescription:@"'typeName' is missing, cannot parse CLRegion."];
@@ -763,7 +767,7 @@
         *error = [self parseErrorWithDescription:@"'identifier' is missing, cannot parse CLRegion."];
         return nil;
     }
-  
+    
     if ([typeName isEqualToString:@"BeaconRegion"]) {
         return [self parseBeaconRegionFromMap:dict andIdentifier:identifier returningError:error];
     } else if ([typeName isEqualToString:@"CircularRegion"]) {
@@ -800,7 +804,7 @@
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
     
     region = [[CLRegion alloc] initCircularRegionWithCenter:center radius:radius identifier:identifier];
-
+    
     if (region == nil) {
         *error = [self parseErrorWithDescription:@"CLCircularRegion parsing failed for unknown reason."];
     }
@@ -838,7 +842,7 @@
         *error = [self parseErrorWithDescription:@"Unsupported combination of 'major' and 'minor' parameters."];
         return nil;
     }
-
+    
     NSNumber *notifyFlag = [dict objectForKey:@"notifyEntryStateOnDisplay"];
     
     if (notifyFlag != nil) {
@@ -862,7 +866,7 @@
 
 
 - (NSError*) errorWithCode: (int)code andDescription:(NSString*) description {
-
+    
     NSMutableDictionary* details;
     if (description != nil) {
         details = [NSMutableDictionary dictionary];
@@ -904,7 +908,7 @@
 - (void) _handleExceptionOfCommand: (CDVInvokedUrlCommand*) command : (NSException*) exception {
     NSLog(@"Uncaught exception: %@", exception.description);
     NSLog(@"Stack trace: %@", [exception callStackSymbols]);
-
+    
     // When calling without a request (LocationManagerDelegate callbacks) from the client side the command can be null.
     if (command == nil) {
         return;
@@ -928,11 +932,11 @@
 - (NSString *)authorizationStatusAsString: (CLAuthorizationStatus) authorizationStatus {
     
     NSDictionary* statuses = @{@(kCLAuthorizationStatusNotDetermined) : @"AuthorizationStatusNotDetermined",
-      @(kCLAuthorizationStatusAuthorized) : @"AuthorizationStatusAuthorized",
-      @(kCLAuthorizationStatusDenied) : @"AuthorizationStatusDenied",
-      @(kCLAuthorizationStatusRestricted) : @"AuthorizationStatusRestricted",
-      @(kCLAuthorizationStatusAuthorizedWhenInUse) : @"AuthorizationStatusAuthorizedWhenInUse",
-      @(kCLAuthorizationStatusAuthorizedAlways) : @"AuthorizationStatusAuthorizedAlways"};
+                               @(kCLAuthorizationStatusAuthorized) : @"AuthorizationStatusAuthorized",
+                               @(kCLAuthorizationStatusDenied) : @"AuthorizationStatusDenied",
+                               @(kCLAuthorizationStatusRestricted) : @"AuthorizationStatusRestricted",
+                               @(kCLAuthorizationStatusAuthorizedWhenInUse) : @"AuthorizationStatusAuthorizedWhenInUse",
+                               @(kCLAuthorizationStatusAuthorizedAlways) : @"AuthorizationStatusAuthorizedAlways"};
     
     return [statuses objectForKey:[NSNumber numberWithInt: authorizationStatus]];
 }
@@ -965,17 +969,17 @@
 
 
 - (NSDictionary*) mapOfRegion: (CLRegion*) region {
-
+    
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-
+    
     // identifier
     [dict setObject:region.identifier forKey:@"identifier"];
-
+    
     // typeName - First two characters are cut down to remove the "CL" prefix.
     NSString *typeName = [NSStringFromClass([region class]) substringFromIndex:2];
     typeName = [typeName isEqualToString:@"Region"] ? @"CircularRegion" : typeName;
     [dict setObject:typeName forKey:@"typeName"];
-
+    
     if ([region isKindOfClass:[CLBeaconRegion class]]) {
         CLBeaconRegion* beaconRegion = (CLBeaconRegion*) region;
         NSDictionary * beaconRegionDict = [self mapOfBeaconRegion:beaconRegion];
@@ -986,14 +990,14 @@
     // radius
     NSNumber* radius = [NSNumber numberWithDouble: region.radius];
     [dict setValue: radius forKey:@"radius"];
-
+    
     
     NSNumber* latitude = [NSNumber numberWithDouble: region.center.latitude ];
     NSNumber* longitude = [NSNumber numberWithDouble: region.center.longitude];
     // center
     [dict setObject: latitude forKey:@"latitude"];
     [dict setObject: longitude forKey:@"longitude"];
-
+    
     return dict;
 }
 
@@ -1061,7 +1065,7 @@
     
     NSString* shortName = [fullName stringByReplacingOccurrencesOfString:@"locationManager:" withString:@""];
     shortName = [shortName stringByReplacingOccurrencesOfString:@":error:" withString:@""];
-
+    
     NSRange range = [shortName rangeOfString:@":"];
     
     while(range.location != NSNotFound) {
@@ -1070,7 +1074,7 @@
             NSString* upperCaseLetter = [[shortName substringWithRange:range] uppercaseString];
             shortName = [shortName stringByReplacingCharactersInRange:range withString:upperCaseLetter];
         }
-
+        
         range = [shortName rangeOfString:@":"];
     };
     
