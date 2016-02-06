@@ -43,6 +43,11 @@
 - (void) initLocationManager {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
+    
+    
+    if (IsAtLeastiOSVersion(@"9.0")) {
+        self.locationManager.allowsBackgroundLocationUpdates = YES;
+    }
 }
 
 - (void) initPeripheralManager {
@@ -81,8 +86,6 @@
         return;
     }
     NSString *warnMsg = [NSString stringWithFormat:@"[Cordova-Plugin-IBeacon] WARNING did not receive delegate ready callback from DOM after %f seconds!", CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT];
-    
-    NSLog(@"%@", warnMsg);
     
     NSString *javascriptErrorLoggingStatement =[NSString stringWithFormat:@"console.error('%@')", warnMsg];
     [self.commandDelegate evalJs:javascriptErrorLoggingStatement];
