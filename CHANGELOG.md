@@ -1,3 +1,13 @@
+# 3.4.0
+
+## Features
+* New Feature: You can now configure the foreground scan between period (Android) directly from 
+the config.xml file of your Cordova project.
+* Dependency updated: AltBeacon jar is now on version 2.7.1.
+* Important for contributors: The Android source code has been reformatted with Android Studio, the
+indentation is now 4 spaces instead of a mixture of tabs and spaces. These changes were on commits
+that have no other changes contained in them.
+
 # 3.3.0
 
 ## Features
