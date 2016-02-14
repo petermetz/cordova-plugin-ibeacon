@@ -549,7 +549,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
      *
      *  Discussion:
      *      Called from the DOM by the LocationManager Javascript object when it's delegate has been set.
-     *      This is to notify the native layer that it can start sending queued up events, like didEnterRegion, 
+     *      This is to notify the native layer that it can start sending queued up events, like didEnterRegion,
      *      didDetermineState, etc.
      *
      *      Without this mechanism, the messages would get lost in background mode, because the native layer
@@ -1092,7 +1092,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
         if (!json.has("radius"))
             throw new InvalidKeyException("'radius' is missing, cannot parse CircularRegion.");
-    
+
      	/*String identifier = json.getString("identifier");
          double latitude = json.getDouble("latitude");
      	double longitude = json.getDouble("longitude");
@@ -1127,7 +1127,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
             case MonitorNotifier.OUTSIDE:
                 return "CLRegionStateOutside";
             /*case MonitorNotifier.UNKNOWN:
-	            return "CLRegionStateUnknown";*/
+                return "CLRegionStateUnknown";*/
             default:
                 return "ErrorUnknownCLRegionStateObjectReceived";
         }
@@ -1163,11 +1163,11 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         return dict;
 
     }
-    
+
     /* NOT SUPPORTED */
     /*private JSONObject mapOfCircularRegion(Region region) throws JSONException {
         JSONObject dict = new JSONObject();
-        
+
         // identifier
         if (region.getUniqueId() != null) {
        	 dict.put("identifier", region.getUniqueId());
@@ -1180,9 +1180,9 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
        //coordinates.put("longitude", 0.0d);
        //dict.put("center", coordinates);
        //dict.put("typeName", "CircularRegion");
-       
+
        return dict;
-  	
+
     }*/
 
     private JSONObject mapOfBeacon(Beacon region) throws JSONException {
