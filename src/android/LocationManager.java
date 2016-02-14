@@ -54,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.InvalidKeyException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -63,7 +64,10 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
     public static final String TAG = "com.unarin.beacon";
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    private static final String FOREGROUND_BETWEEN_SCAN_PERIOD_NAME = "com.unarin.cordova.beacon.android.altbeacon.ForegroundBetweenScanPeriod";
+    private static final int DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = 0;
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
+
     private BeaconManager iBeaconManager;
     private BlockingQueue<Runnable> queue;
     private PausableThreadPoolExecutor threadPoolExecutor;
@@ -92,9 +96,16 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
-        iBeaconManager = BeaconManager.getInstanceForApplication(cordova.getActivity());
+        final Activity cordovaActivity = cordova.getActivity();
 
-        iBeaconManager.setForegroundBetweenScanPeriod(5000);
+        final int foregroundBetweenScanPeriod = this.preferences.getInteger(
+                FOREGROUND_BETWEEN_SCAN_PERIOD_NAME, DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD);
+
+        Log.i(TAG, "Determined config value FOREGROUND_BETWEEN_SCAN_PERIOD: " +
+                String.valueOf(foregroundBetweenScanPeriod));
+
+        iBeaconManager = BeaconManager.getInstanceForApplication(cordovaActivity);
+        iBeaconManager.setForegroundBetweenScanPeriod(foregroundBetweenScanPeriod);
 
         initBluetoothListener();
         initEventQueue();
