@@ -1267,7 +1267,9 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private void _handleExceptionOfCommand(CallbackContext callbackContext, Exception exception) {
 
         Log.e(TAG, "Uncaught exception: " + exception.getMessage());
-        Log.e(TAG, "Stack trace: " + exception.getStackTrace());
+        final StackTraceElement[] stackTrace = exception.getStackTrace();
+        final String stackTraceElementsAsString = Arrays.toString(stackTrace);
+        Log.e(TAG, "Stack trace: " + stackTraceElementsAsString);
 
         // When calling without a callback from the client side the command can be null.
         if (callbackContext == null) {
