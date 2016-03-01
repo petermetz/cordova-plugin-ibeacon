@@ -1,5 +1,5 @@
 {
-  "name": "cordova-plugin-ibeacon",
+  "name": "com.unarin.cordova.beacon",
   "version": "3.4.0",
   "description": "Proximity Beacon Monitoring and Transmission Plugin (supporting iBeacons)",
   "cordova": {
