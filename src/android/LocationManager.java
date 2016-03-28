@@ -19,12 +19,15 @@
 package com.unarin.cordova.beacon;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -53,6 +56,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,6 +72,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static final String FOREGROUND_BETWEEN_SCAN_PERIOD_NAME = "com.unarin.cordova.beacon.android.altbeacon.ForegroundBetweenScanPeriod";
     private static final int DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = 0;
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
+    private static final int BUILD_VERSION_CODES_M = 23;
 
     private BeaconManager iBeaconManager;
     private BlockingQueue<Runnable> queue;
@@ -120,32 +126,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         }
         //TODO AddObserver when page loaded
 
-
-        // TODO Due to the below code only compiling when targeting Marshmallow it makes the plugin
-        // inflexible when using it below Marshmallow. This is probably better putting this away
-        // from the plugin on app start.
-
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            final Activity act = cordova.getActivity();
-            // Android M Permission check 
-            if (act.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(act);
-                builder.setTitle("This app needs location access");
-                builder.setMessage("Please grant location access so this app can detect beacons.");
-                builder.setPositiveButton(android.R.string.ok, null);
-                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @SuppressLint("NewApi")
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                            act.requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-                    }
-                });
-                builder.show();
-            }
-        }*/
+        tryToRequestMarshmallowLocationPermission();
     }
 
     /**
@@ -238,6 +219,100 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private void initLocationManager() {
         iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         iBeaconManager.bind(this);
+    }
+
+    @TargetApi(BUILD_VERSION_CODES_M)
+    private void tryToRequestMarshmallowLocationPermission() {
+
+        if (Build.VERSION.SDK_INT < BUILD_VERSION_CODES_M) {
+            Log.i(TAG, "tryToRequestMarshmallowLocationPermission() skipping because API code is " +
+                    "below criteria: " + String.valueOf(Build.VERSION.SDK_INT));
+            return;
+        }
+
+        final Activity activity = cordova.getActivity();
+
+        final Method checkSelfPermissionMethod = getCheckSelfPermissionMethod();
+
+        if (checkSelfPermissionMethod == null) {
+            Log.e(TAG, "Could not obtain the method Activity.checkSelfPermission method. Will " +
+                    "not check for ACCESS_COARSE_LOCATION even though we seem to be on a " +
+                    "supported version of Android.");
+            return;
+        }
+
+        try {
+
+            final Integer permissionCheckResult = (Integer) checkSelfPermissionMethod.invoke(
+                    activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+
+            Log.i(TAG, "Permission check result for ACCESS_COARSE_LOCATION: " +
+                    String.valueOf(permissionCheckResult));
+
+            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "Permission for ACCESS_COARSE_LOCATION has already been granted.");
+                return;
+            }
+
+            final Method requestPermissionsMethod = getRequestPermissionsMethod();
+
+            if (requestPermissionsMethod == null) {
+                Log.e(TAG, "Could not obtain the method Activity.requestPermissions. Will " +
+                        "not ask for ACCESS_COARSE_LOCATION even though we seem to be on a " +
+                        "supported version of Android.");
+                return;
+            }
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("This app needs location access");
+            builder.setMessage("Please grant location access so this app can detect beacons.");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @SuppressLint("NewApi")
+                @Override
+                public void onDismiss(final DialogInterface dialog) {
+
+                    try {
+                        requestPermissionsMethod.invoke(activity,
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                PERMISSION_REQUEST_COARSE_LOCATION
+                        );
+                    } catch (IllegalAccessException e) {
+                        Log.e(TAG, "IllegalAccessException while requesting permission for " +
+                                "ACCESS_COARSE_LOCATION:", e);
+                    } catch (InvocationTargetException e) {
+                        Log.e(TAG, "InvocationTargetException while requesting permission for " +
+                                "ACCESS_COARSE_LOCATION:", e);
+                    }
+                }
+            });
+
+            builder.show();
+
+        } catch (final IllegalAccessException e) {
+            Log.w(TAG, "IllegalAccessException while checking for ACCESS_COARSE_LOCATION:", e);
+        } catch (final InvocationTargetException e) {
+            Log.w(TAG, "InvocationTargetException while checking for ACCESS_COARSE_LOCATION:", e);
+        }
+    }
+
+    private Method getCheckSelfPermissionMethod() {
+        try {
+            return Activity.class.getMethod("checkSelfPermission", String.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Method getRequestPermissionsMethod() {
+        try {
+            final Class[] parameterTypes = {String[].class, int.class};
+
+            return Activity.class.getMethod("requestPermissions", parameterTypes);
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
