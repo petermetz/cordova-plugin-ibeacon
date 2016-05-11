@@ -42,6 +42,11 @@ import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+
+import org.altbeacon.beacon.BeaconTransmitter;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseSettings;
+
 import org.altbeacon.beacon.BleNotAvailableException;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
@@ -155,7 +160,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
      * @param callbackContext The callback id used when calling back into JavaScript.
      * @return True if the action was valid, false if not.
      */
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("onDomDelegateReady")) {
             onDomDelegateReady(callbackContext);
         } else if (action.equals("disableDebugNotifications")) {
@@ -1089,9 +1094,16 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
             public PluginResult run() {
 
                 //not supported at Android yet (see Android L)
-                PluginResult result = new PluginResult(PluginResult.Status.OK, false);
-                result.setKeepCallback(true);
-                return result;
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    // only for ANDROID >= 5.0
+                    PluginResult result = new PluginResult(PluginResult.Status.OK, true);
+                    result.setKeepCallback(true);
+                    return result;
+                }else{
+                    PluginResult result = new PluginResult(PluginResult.Status.OK, false);
+                    result.setKeepCallback(true);
+                    return result;
+                }
 
             }
         });
@@ -1114,14 +1126,71 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
     }
 
-    private void startAdvertising(JSONObject arguments, CallbackContext callbackContext) {
+    private void startAdvertising(final JSONObject arguments, CallbackContext callbackContext) throws JSONException {
+        debugLog("Advertisement start START BEACON ");
+        debugLog(arguments.toString(4));
+        String identifier = arguments.getString("identifier");
+
+        //For Android, uuid can be null when scanning for all beacons (I think)
+        final String uuid = arguments.has("uuid") && !arguments.isNull("uuid") ? arguments.getString("uuid") : null;
+        final String major = arguments.has("major") && !arguments.isNull("major") ? arguments.getString("major") : null;
+        final String minor = arguments.has("minor") && !arguments.isNull("minor") ? arguments.getString("minor") : null;
+
+        if (major == null && minor != null)
+            throw new UnsupportedOperationException("Unsupported combination of 'major' and 'minor' parameters.");
 
         _handleCallSafely(callbackContext, new ILocationManagerCommand() {
             @Override
             public PluginResult run() {
+                debugLog("Advertisement start STEP Beacon.Builder ");
+
+                Beacon beacon = new Beacon.Builder()
+                        .setId1(uuid) // UUID for beacon
+                        .setId2(major) // Major for beacon
+                        .setId3(minor) // Minor for beacon
+                        .setManufacturer(0x004C) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
+                        .setTxPower(-56) // Power in dB
+                        .setDataFields(Arrays.asList(new Long[] {0l})) // Remove this for beacon layouts without d: fields
+                        .build();
+                debugLog("[DEBUG] Beacon.Builder: "+beacon);
+                /*
+                Beacon beacon = new Beacon.Builder()
+                        .setId1("00000000-2016-0000-0000-000000000000") // UUID for beacon
+                        .setId2("5") // Major for beacon
+                        .setId3("2000") // Minor for beacon
+                        .setManufacturer(0x004C) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
+                        .setTxPower(-56) // Power in dB
+                        .setDataFields(Arrays.asList(new Long[] {0l})) // Remove this for beacon layouts without d: fields
+                        .build();
+                */
+                debugLog("Advertisement start STEP BeaconParser ");
+                BeaconParser beaconParser = new BeaconParser()
+                        .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+
+                debugLog("Advertisement start STEP BeaconTransmitter ");
+                BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+
+                debugLog("[DEBUG] BeaconTransmitter: "+beaconTransmitter);
+                beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+
+                    @Override
+                    public void onStartFailure(int errorCode) {
+                        debugWarn("Advertisement start failed with code: "+errorCode);
+                    }
+
+                    @Override
+                    public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                        debugWarn("startAdvertising start succeeded.");
+                    }
+                });
 
                 //not supported on Android
+                /*
                 PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
+                result.setKeepCallback(true);
+                return result;
+                */
+                PluginResult result = new PluginResult(PluginResult.Status.OK, false);
                 result.setKeepCallback(true);
                 return result;
             }
