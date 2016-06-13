@@ -183,8 +183,6 @@ delegate.didRangeBeaconsInRegion = function (pluginResult) {
     logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
 };
 
-
-
 var uuid = '00000000-0000-0000-0000-000000000000';
 var identifier = 'beaconOnTheMacBooksShelf';
 var minor = 1000;
