@@ -854,6 +854,11 @@
     if (region == nil) {
         *error = [self parseErrorWithDescription:@"CLBeaconRegion parsing failed for unknown reason."];
     }
+    
+    region.notifyEntryStateOnDisplay = YES;
+    region.notifyOnExit = YES;
+    region.notifyOnEntry = YES;
+    
     return region;
 }
 
