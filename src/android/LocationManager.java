@@ -68,6 +68,7 @@ import java.lang.reflect.Method;
 public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
     public static final String TAG = "com.unarin.cordova.beacon";
+		private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
 		private static final int BUILD_VERSION_CODES_M = 23;
 
