@@ -81,7 +81,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static final int DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = 0;
     private static final String SAMPLE_EXPIRATION_MILLISECOND = "com.unarin.cordova.beacon.android.altbeacon.SampleExpirationMilliseconds";
     private static final int DEFAULT_SAMPLE_EXPIRATION_MILLISECOND = 20000;
-    private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = 200;
+    private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = 1100;
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     private static final int BUILD_VERSION_CODES_M = 23;
 
@@ -123,6 +123,12 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         Log.i(TAG, "Determined config value FOREGROUND_BETWEEN_SCAN_PERIOD: " +
                 String.valueOf(foregroundBetweenScanPeriod));
 
+        final int foregroundScanPeriod = this.preferences.getInteger(
+                FOREGROUND_SCAN_PERIOD_NAME, DEFAULT_FOREGROUND_SCAN_PERIOD);
+
+        Log.i(TAG, "Determined config value FOREGROUND_SCAN_PERIOD: " +
+                String.valueOf(foregroundScanPeriod));
+
         iBeaconManager = BeaconManager.getInstanceForApplication(cordovaActivity);
         iBeaconManager.setForegroundBetweenScanPeriod(foregroundBetweenScanPeriod);
         iBeaconManager.setForegroundScanPeriod(foregroundScanPeriod);
@@ -133,7 +139,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         Log.i(TAG, "Determined config value SAMPLE_EXPIRATION_MILLISECOND: " +
                 String.valueOf(sampleExpirationMilliseconds));
 
-        iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);        
+        iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);
         RunningAverageRssiFilter.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
         RangedBeacon.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
 
