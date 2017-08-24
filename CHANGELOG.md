@@ -1,3 +1,7 @@
+# 3.5.1
+
+* Hot-fix: syntax errors fixed in Android
+
 # 3.5.0
 
 * Upgraded AltBeacon to v2.11
