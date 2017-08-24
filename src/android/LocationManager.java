@@ -117,11 +117,6 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
         final int foregroundBetweenScanPeriod = this.preferences.getInteger(
                 FOREGROUND_BETWEEN_SCAN_PERIOD_NAME, DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD);
-         final int foregroundScanPeriod = this.preferences.getInteger(
-         FOREGROUND_SCAN_PERIOD_NAME, DEFAULT_FOREGROUND_SCAN_PERIOD);
-
-        Log.i(TAG, "Determined config value FOREGROUND_BETWEEN_SCAN_PERIOD: " +
-                String.valueOf(foregroundBetweenScanPeriod));
 
         final int foregroundScanPeriod = this.preferences.getInteger(
                 FOREGROUND_SCAN_PERIOD_NAME, DEFAULT_FOREGROUND_SCAN_PERIOD);
