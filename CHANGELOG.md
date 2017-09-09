@@ -1,3 +1,7 @@
+# 3.5.2
+
+* Feature: Stop advertising as iBeacon is now implemented on the Android platform as well.
+
 # 3.5.1
 
 * Hot-fix: syntax errors fixed in Android
