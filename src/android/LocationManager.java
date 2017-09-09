@@ -85,6 +85,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     private static final int BUILD_VERSION_CODES_M = 23;
 
+    private BeaconTransmitter beaconTransmitter;
     private BeaconManager iBeaconManager;
     private BlockingQueue<Runnable> queue;
     private PausableThreadPoolExecutor threadPoolExecutor;
@@ -244,6 +245,16 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private void initLocationManager() {
         iBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         iBeaconManager.bind(this);
+    }
+
+    private BeaconTransmitter createOrGetBeaconTransmitter() {
+        if (this.beaconTransmitter == null) {
+            final BeaconParser beaconParser = new BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+
+            this.beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+        }
+        return this.beaconTransmitter;
     }
 
     @TargetApi(BUILD_VERSION_CODES_M)
@@ -1184,11 +1195,9 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
                         .build();
                 */
                 debugLog("Advertisement start STEP BeaconParser ");
-                BeaconParser beaconParser = new BeaconParser()
-                        .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
 
                 debugLog("Advertisement start STEP BeaconTransmitter ");
-                BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+                final BeaconTransmitter beaconTransmitter = LocationManager.this.createOrGetBeaconTransmitter();
 
                 debugLog("[DEBUG] BeaconTransmitter: "+beaconTransmitter);
                 beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
@@ -1204,13 +1213,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
                     }
                 });
 
-                //not supported on Android
-                /*
-                PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
-                result.setKeepCallback(true);
-                return result;
-                */
-                PluginResult result = new PluginResult(PluginResult.Status.OK, false);
+                final PluginResult result = new PluginResult(PluginResult.Status.OK, false);
                 result.setKeepCallback(true);
                 return result;
             }
@@ -1224,8 +1227,13 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
             @Override
             public PluginResult run() {
 
+                debugInfo("LocationManager::stopAdvertising::STOPPING...");
+                final BeaconTransmitter beaconTransmitter = LocationManager.this.createOrGetBeaconTransmitter();
+                beaconTransmitter.stopAdvertising();
+                debugInfo("LocationManager::stopAdvertising::DONE");
+
                 //not supported on Android
-                PluginResult result = new PluginResult(PluginResult.Status.ERROR, "iBeacon Advertising is not supported on Android");
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "iBeacon Advertising stopped.");
                 result.setKeepCallback(true);
                 return result;
 
@@ -1468,6 +1476,11 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         callbackContext.sendPluginResult(pluginResult);
     }
 
+    private void debugInfo(String message) {
+        if (debugEnabled) {
+            Log.i(TAG, message);
+        }
+    }
     private void debugLog(String message) {
         if (debugEnabled) {
             Log.d(TAG, message);
