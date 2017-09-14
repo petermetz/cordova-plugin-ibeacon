@@ -54,6 +54,8 @@ On iOS 8, you have to request permissions from the user of your app explicitly. 
 See the [LocationManager](https://github.com/petermetz/cordova-plugin-ibeacon/blob/master/www/LocationManager.js)'s 
 related methods: ```requestWhenInUseAuthorization``` and ```requestAlwaysAuthorization``` for further details.
 
+In order to use Advertising (e.g ```startAdvertising```), the iOS-Capability "Location updates" is required. (set in Xcode -> [your Target] -> Capabilities -> Background Modes -> Location updates)
+
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
 
@@ -269,7 +271,7 @@ cordova.plugins.locationManager.isAdvertisingAvailable()
 
         if (isSupported) {
             cordova.plugins.locationManager.startAdvertising(beaconRegion)
-                .fail(conole.error)
+                .fail(console.error)
                 .done();
         } else {
             console.log("Advertising not supported");
