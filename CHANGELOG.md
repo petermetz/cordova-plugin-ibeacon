@@ -1,3 +1,8 @@
+# 3.5.3
+
+* Fix: WKWebView crash no longer happens
+    - https://github.com/petermetz/cordova-plugin-ibeacon/pull/326
+
 # 3.5.2
 
 * Feature: Stop advertising as iBeacon is now implemented on the Android platform as well.
