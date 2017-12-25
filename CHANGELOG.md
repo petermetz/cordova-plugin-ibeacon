@@ -1,3 +1,8 @@
+# 3.5.4
+
+* Fix: Cordova Android 7.0.0 build issues averted:
+    - https://github.com/petermetz/cordova-plugin-ibeacon/pull/337
+    
 # 3.5.3
 
 * Fix: WKWebView crash no longer happens
