@@ -1,3 +1,8 @@
+# 3.5.6
+
+* iOS 11 .plist compatibility added (`NSLocationAlwaysAndWhenInUseUsageDescription`)
+    - https://github.com/petermetz/cordova-plugin-ibeacon/issues/322
+
 # 3.5.5
 
 * Fixes: https://github.com/petermetz/cordova-plugin-ibeacon/issues/323
