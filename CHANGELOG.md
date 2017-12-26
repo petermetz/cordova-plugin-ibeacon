@@ -1,3 +1,8 @@
+# 3.6.0
+
+* Android now allows the usage of wildcard UUIDs by passing in `cordova.plugins.locationManager.BeaconRegion.WILDCARD_UUID`
+    as the UUID of a BeaconRegion (constructor)
+
 # 3.5.6
 
 * iOS 11 .plist compatibility added (`NSLocationAlwaysAndWhenInUseUsageDescription`)
