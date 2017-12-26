@@ -7,6 +7,11 @@
     <keywords>cordova,ibeacon,beacon,bluetooth,le</keywords>
     <repo>https://github.com/petermetz/cordova-plugin-ibeacon.git</repo>
 
+    <!-- Version is set to anything because the only feature we use is the device.platform property which was available
+    since forever. The added benefit is that we don't force the consumers of this plugin to use a certain version of
+    the device plugin. -->
+    <dependency id="cordova-plugin-device" version="*" />
+
     <!-- Third party libraries -->
     <js-module name="underscorejs" src="www/lib/underscore-min-1.6.js">
         <runs/>

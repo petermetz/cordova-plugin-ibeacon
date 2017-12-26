@@ -307,6 +307,47 @@ cordova.plugins.locationManager.isBluetoothEnabled()
 
 ```
 
+##### Specify wildcard UUID (Android only)
+
+```javascript
+var uuid = cordova.plugins.locationManager.BeaconRegion.WILDCARD_UUID; //wildcard
+var identifier = 'SomeIdentifier';
+var major = undefined;
+var minor = undefined;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+var logToDom = function (message) {
+	console.warn(message);
+};
+
+var delegate = new cordova.plugins.locationManager.Delegate();
+
+delegate.didDetermineStateForRegion = function (pluginResult) {
+
+    logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+
+    cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+        + JSON.stringify(pluginResult));
+};
+
+delegate.didStartMonitoringForRegion = function (pluginResult) {
+    console.log('didStartMonitoringForRegion:', pluginResult);
+
+    logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+};
+
+delegate.didRangeBeaconsInRegion = function (pluginResult) {
+    logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+};
+
+cordova.plugins.locationManager.setDelegate(delegate);
+
+cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
+	.fail(function(e) { console.error(e); })
+	.done();
+
+```
+
 ## Contributions
 
 > Contributions are welcome at all times, please make sure that the tests are running without errors
