@@ -37,7 +37,6 @@
     self.debugLogEnabled = true;
     self.debugNotificationsEnabled = false;
     
-    [self resumeEventPropagationToDom]; // DOM propagation when Location Manager, PeripheralManager initiated
 }
 
 - (void) initLocationManager {
