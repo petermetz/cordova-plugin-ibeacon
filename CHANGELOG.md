@@ -1,3 +1,7 @@
+# 3.6.1
+
+* Fixes: https://github.com/petermetz/cordova-plugin-ibeacon/issues/259
+
 # 3.6.0
 
 * Android now allows the usage of wildcard UUIDs by passing in `cordova.plugins.locationManager.BeaconRegion.WILDCARD_UUID`
