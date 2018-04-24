@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/petermetz/cordova-plugin-ibeacon/issues"
   },
-  "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon"
+  "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon",
+  "devDependencies": {
+    "cordova-paramedic": "^0.5.0"
+  }
 }
