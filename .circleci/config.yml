@@ -1,0 +1,143 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+    
+x-build-steps-common: &x-build-steps-common
+  - checkout
+  - restore_cache: 
+      keys:
+        - npm-{{ checksum "package.json" }}-{{ arch }}
+  - run: npm install
+  - save_cache:
+      paths:
+        - node_modules
+      key: npm-{{ checksum "package.json" }}-{{ arch }}
+
+x-build-steps-cordova-android-5x: &x-build-steps-cordova-android-5x
+  - run: 
+      # NOTE: https://github.com/AltBeacon/android-beacon-library/blob/master/build.gradle altbeacon supports a 
+      # minSdkVersion of 14, so this is the oldest android version we'll build against for testing.
+      name: cordova-android@5.x build, api levels 14-23, android version 4.0-6.0.1
+      command: npx cordova-paramedic --cleanUpAfterRun --verbose --platform android@5.x --plugin "." --justbuild
+
+x-build-steps-cordova-android-6x: &x-build-steps-cordova-android-6x
+  - run: 
+      # NOTE: https://cordova.apache.org/docs/en/latest/guide/platforms/android/ indiciates 6.x support ends with 
+      # api level 25, android version 7.1.1, but seems to work with api-26 build infrastructure. 
+      name: cordova-android@6.x build, api levels 16-25, android version 4.1-7.1.1
+      command: npx cordova-paramedic --cleanUpAfterRun --verbose --platform android@6.x --plugin "." --justbuild
+
+x-build-steps-cordova-ios-3x: &x-build-steps-cordova-ios-3x
+  - run: 
+      # SEE: https://cordova.apache.org/docs/en/7.x/guide/platforms/ios/ 
+      # SEE: https://cordova.apache.org/docs/en/7.x/guide/platforms/ios/upgrade.html
+      name: cordova-ios@3.x build
+      command: npx cordova-paramedic --cleanUpAfterRun --ve
+
+x-build-steps-cordova-ios-4x: &x-build-steps-cordova-ios-4x
+  - run: 
+      # SEE: https://cordova.apache.org/docs/en/7.x/guide/platforms/ios/ 
+      # SEE: https://cordova.apache.org/docs/en/7.x/guide/platforms/ios/upgrade.html
+      name: cordova-ios@4.x build
+      command: npx cordova-paramedic --cleanUpAfterRun --verbose --platform ios@4.x --plugin "." --justbuild
+
+x-ignore-master: &x-ignore-master
+  filters:
+    branches:
+      ignore: master
+
+x-only-master: &x-only-master
+  filters:
+    branches:
+      only: master
+
+
+# Jobs are organized to create a build matrix of build api level, cordova-android platform version.
+jobs:
+  # Android 8.0 Oreo
+  build_android_26:
+    docker:
+      - image: circleci/android:api-26-node8-alpha
+    steps:
+      <<: *x-build-steps-common
+      <<: *x-build-steps-cordova-android-5x
+      <<: *x-build-steps-cordova-android-6x
+
+  # Android 7.x Nougat
+  build_android_25:
+    docker:
+      - image: circleci/android:api-25-node8-alpha
+    steps:
+      <<: *x-build-steps-common
+      <<: *x-build-steps-cordova-android-5x
+      <<: *x-build-steps-cordova-android-6x
+
+  # Android 7.x Nougat
+  build_android_24:
+    docker:
+      - image: circleci/android:api-24-node8-alpha
+    steps:
+      <<: *x-build-steps-common
+      <<: *x-build-steps-cordova-android-5x
+      <<: *x-build-steps-cordova-android-6x
+
+  # Android 6.x Marshmallow
+  build_android_23:
+    docker:
+      - image: circleci/android:api-23-node8-alpha
+    steps:
+      <<: *x-build-steps-common
+      <<: *x-build-steps-cordova-android-5x
+      <<: *x-build-steps-cordova-android-6x
+  
+  build_ios_9_3_0:
+    macos:
+      xcode: "9.3.0"
+    steps:
+      <<: *x-build-steps-common
+      <<: *x-build-steps-cordova-ios-3x
+      <<: *x-build-steps-cordova-ios-4x
+  
+  build_ios_8_3_3:
+    macos:
+      xcode: "8.3.3"
+    steps:
+      <<: *x-build-steps-common
+      <<: *x-build-steps-cordova-ios-3x
+      <<: *x-build-steps-cordova-ios-4x
+
+
+workflows:
+  version: 2
+
+  pullrequest:
+    jobs: 
+      - build_android_26:
+         <<: *x-ignore-master
+      - build_android_25:
+         <<: *x-ignore-master
+      - build_android_24:
+         <<: *x-ignore-master
+      - build_android_23:
+         <<: *x-ignore-master
+      - build_ios_9_3_0:
+         <<: *x-ignore-master
+      - build_ios_8_3_3:
+         <<: *x-ignore-master
+  
+  master:
+    jobs:
+      - build_android_26:
+         <<: *x-only-master
+      - build_android_25:
+         <<: *x-only-master
+      - build_android_24:
+         <<: *x-only-master
+      - build_android_23:
+         <<: *x-only-master
+      - build_ios_9_3_0:
+         <<: *x-only-master
+      - build_ios_8_3_3:
+         <<: *x-only-master
