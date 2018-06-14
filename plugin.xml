@@ -97,7 +97,6 @@
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 			<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -123,8 +122,6 @@
                     <action android:name="com.unarin.cordova.beacon.IBeaconPlugin.DID_MONITORING" />
                 </intent-filter>
             </service>
-            <service android:name="org.altbeacon.beacon.service.ScanJob" 
-                     android:permission="android.permission.BIND_JOB_SERVICE" />
         </config-file>
 
         <source-file src="src/android/LocationManager.java" target-dir="src/com/unarin/cordova/beacon" />
