@@ -130,7 +130,6 @@
         <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/com/unarin/cordova/beacon" />
 
         <lib-file src="libs/android/altbeacon.jar" />
-        <framework src="com.android.support:support-core-utils:26+" />
     </platform>
 
 </plugin>
