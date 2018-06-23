@@ -100,7 +100,6 @@
         <source-file src="src/android/IBeaconServiceNotifier.java" target-dir="src/com/unarin/cordova/beacon" />
         <source-file src="src/android/ILocationManagerCommand.java" target-dir="src/com/unarin/cordova/beacon" />
         <source-file src="src/android/PausableThreadPoolExecutor.java" target-dir="src/com/unarin/cordova/beacon" />
-        <resource-file src="libs/android/android-beacon-library-2.13.1.aar"  target="libs/android-beacon-library-2.13.1.aar" />
 
         <framework src="src/android/cordova-plugin-ibeacon.gradle" custom="true" type="gradleReference" />
         <framework src="com.android.support:support-core-utils:26+" />
