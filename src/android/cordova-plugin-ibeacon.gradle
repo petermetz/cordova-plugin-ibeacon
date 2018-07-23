@@ -1,12 +1,9 @@
 repositories{
     jcenter()
-    flatDir{
-        dirs 'libs'
-    }
 }
 
 dependencies {
-    compile(name:'android-beacon-library-2.13.1', ext:'aar')
+    compile 'org.altbeacon:android-beacon-library:2.14'
 }
 
 android {
