@@ -27,9 +27,6 @@
  * Ranging
  * Monitoring
 
-
-a;xlkj;lkxdjv;
-
 #### Features exclusive to iOS
 
  * Region Monitoring (or geo fencing), works in all app states. 
