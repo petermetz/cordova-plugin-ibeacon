@@ -23,10 +23,19 @@
     "cordova-ios",
     "cordova-android"
   ],
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "author": "Peter Metz (Somogyvari) <peter.metz@unarin.com>",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/petermetz/cordova-plugin-ibeacon/issues"
   },
-  "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon"
+  "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon",
+  "devDependencies": {
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-conventional": "^7.0.1"
+  }
 }

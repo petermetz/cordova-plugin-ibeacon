@@ -26,7 +26,7 @@
 
  * Ranging
  * Monitoring
- 
+
 #### Features exclusive to iOS
 
  * Region Monitoring (or geo fencing), works in all app states. 
