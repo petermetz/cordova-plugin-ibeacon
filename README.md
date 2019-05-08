@@ -354,6 +354,8 @@ cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 > before submitting a pull request. The current development branch that you should submit your pull requests against is
 > "v3.x" branch.
 
+This project uses [commitlint](https://github.com/conventional-changelog/commitlint#what-is-commitlint), please ensure all commit messages pass commitlint before submitting a pull request.
+
 ### How to execute the tests - OS X
 
 #### Prerequisites Of The Test Runner
