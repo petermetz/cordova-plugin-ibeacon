@@ -356,6 +356,18 @@ cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 
 This project uses [commitlint](https://github.com/conventional-changelog/commitlint#what-is-commitlint), please ensure all commit messages pass commitlint before submitting a pull request.
 
+### Release checklist
+
+* `CHANGELOG.md` list meaningful changes since last release, use the format of `git log --pretty=oneline --abbrev-commit`
+* `package.json` bump the version
+* `plugin.xml` bump the version
+* Publish to both npm packages (due to historical reasons)
+  * `$ npm publish` (this publishes under `com.unarin.cordova.beacon` in npm)
+  * Edit `name` and `cordova.id` properties in the `package.json` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
+  * Edit `id` property in the `plugin.xml` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
+  * `$ npm publish` again to publish under the legacy package name as well
+  * revert the change you just did in `package.json` and `plugin.xml`
+
 ### How to execute the tests - OS X
 
 #### Prerequisites Of The Test Runner
