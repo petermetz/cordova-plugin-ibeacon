@@ -1,3 +1,6 @@
+# 3.8.1
+- Fixing botched plugin id in release of v3.8.0.
+
 # 3.8.0
 
 - 40abc3b feat: add ARMA filter support for distance calcs

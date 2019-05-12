@@ -372,10 +372,9 @@ This project uses [commitlint](https://github.com/conventional-changelog/commitl
 * `plugin.xml` bump the version
 * Publish to both npm packages (due to historical reasons)
   * `$ npm publish` (this publishes under `com.unarin.cordova.beacon` in npm)
-  * Edit `name` and `cordova.id` properties in the `package.json` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
-  * Edit `id` property in the `plugin.xml` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
+  * Edit `name` property in the `package.json` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
   * `$ npm publish` again to publish under the legacy package name as well
-  * revert the change you just did in `package.json` and `plugin.xml`
+  * revert the change you just did in `package.json`
 
 ### How to execute the tests - OS X
 
