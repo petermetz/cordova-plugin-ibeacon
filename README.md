@@ -32,6 +32,9 @@
  * Region Monitoring (or geo fencing), works in all app states. 
  * Advertising device as an iBeacon
 
+#### Features exclusive to Android
+ * ARMA filter for distance calculations
+
 ### Installation
 
 ```
@@ -347,6 +350,12 @@ cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 	.done();
 
 ```
+
+##### Enable ARMA filter for distance calculations (Android only)
+
+The underlying library uses the moving average to calculate distance by default, but an ARMA filter can be enabled which will weigh more recent measurements higher than older measurements. It can be enabled by adding the following preference to your `config.xml` file:
+
+```<preference name="com.unarin.cordova.beacon.android.altbeacon.EnableArmaFilter" value="true" />```
 
 ## Contributions
 
