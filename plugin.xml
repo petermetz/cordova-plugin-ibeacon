@@ -84,8 +84,11 @@
         <framework src="CoreLocation.framework" />
 
     </platform>
-
     <platform name="android">
+	
+	<preference name="LOCATION_ACCESS_TITLE" value="This app needs location access" />
+	<preference name="LOCATION_ACCESS_DESCRIPTION" value="Please grant location access so this app can detect beacons." />	
+	
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocationManager" >
                 <param name="android-package" value="com.unarin.cordova.beacon.LocationManager"/>
@@ -103,6 +106,19 @@
 
         <framework src="src/android/cordova-plugin-ibeacon.gradle" custom="true" type="gradleReference" />
         <framework src="com.android.support:support-core-utils:26+" />
+		
+        <source-file src="src/android/location_access_string.xml" target-dir="res/values" />
+        <!-- Used for cordova-android 6 -->
+		 <config-file target="res/values/location_access_string.xml" parent="/*">
+            <string name="location_access_title">$LOCATION_ACCESS_TITLE</string>
+			<string name="location_access_description">$LOCATION_ACCESS_DESCRIPTION</string>
+        </config-file>
+        <!-- Used for cordova-android 7 -->
+		<config-file target="app/src/main/res/values/location_access_string.xml" parent="/*">
+            <string name="location_access_title">$LOCATION_ACCESS_TITLE</string>
+			<string name="location_access_description">$LOCATION_ACCESS_DESCRIPTION</string>
+        </config-file>
+		
     </platform>
 
 </plugin>
