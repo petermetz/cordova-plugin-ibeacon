@@ -321,11 +321,11 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 			String message = cordova.getActivity().getString(cordova.getActivity().getResources().getIdentifier( "location_access_description", "string", cordova.getActivity().getPackageName()));
 			
 			if (title == null || title.isEmpty()) {
-				title = "This app needs location access"; //default string for title
+				title = "This app needs location access"; //default title
 			}
 			
 			if (message == null || message.isEmpty()) {
-				message = "Please grant location access so this app can detect beacons."; //default string for message
+				message = "Please grant location access so this app can detect beacons."; //default message
 			}
 			
             builder.setTitle(title);
