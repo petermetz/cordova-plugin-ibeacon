@@ -1,3 +1,13 @@
+# 3.8.1
+- Fixing botched plugin id in release of v3.8.0.
+
+# 3.8.0
+
+- 40abc3b feat: add ARMA filter support for distance calcs
+- f2fe545 build(android): updated to latest published altbeacon library
+- 0fa7553 fix(build): upgrades commitlint  CLI due to vulnerability
+- 7a0472a fix(ios): location manager no longer handles other instances messages
+
 # 3.6.1
 
 * Fixes: https://github.com/petermetz/cordova-plugin-ibeacon/issues/259

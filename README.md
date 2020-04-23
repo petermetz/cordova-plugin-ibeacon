@@ -32,6 +32,10 @@
  * Region Monitoring (or geo fencing), works in all app states. 
  * Advertising device as an iBeacon
 
+#### Features exclusive to Android
+ * ARMA filter for distance calculations
+ * Disable request for bluetooth permissions
+
 ### Installation
 
 ```
@@ -348,11 +352,36 @@ cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
 
 ```
 
+##### Enable ARMA filter for distance calculations (Android only)
+
+The underlying library uses the moving average to calculate distance by default, but an ARMA filter can be enabled which will weigh more recent measurements higher than older measurements. It can be enabled by adding the following preference to your `config.xml` file:
+
+```<preference name="com.unarin.cordova.beacon.android.altbeacon.EnableArmaFilter" value="true" />```
+
+#### Disable request for bluetooth permission
+By default, this library requests the user for bluetooth permissions when the app starts. If you would like to request permission in a different way or at a different time, set the following preference in your `config.xml` file.
+
+```<preference name="com.unarin.cordova.beacon.android.altbeacon.RequestBtPermission" value="false" />```
+
+
 ## Contributions
 
 > Contributions are welcome at all times, please make sure that the tests are running without errors
 > before submitting a pull request. The current development branch that you should submit your pull requests against is
 > "v3.x" branch.
+
+This project uses [commitlint](https://github.com/conventional-changelog/commitlint#what-is-commitlint), please ensure all commit messages pass commitlint before submitting a pull request.
+
+### Release checklist
+
+* `CHANGELOG.md` list meaningful changes since last release, use the format of `git log --pretty=oneline --abbrev-commit`
+* `package.json` bump the version
+* `plugin.xml` bump the version
+* Publish to both npm packages (due to historical reasons)
+  * `$ npm publish` (this publishes under `com.unarin.cordova.beacon` in npm)
+  * Edit `name` property in the `package.json` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
+  * `$ npm publish` again to publish under the legacy package name as well
+  * revert the change you just did in `package.json`
 
 ### How to execute the tests - OS X
 

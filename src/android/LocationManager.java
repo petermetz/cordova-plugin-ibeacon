@@ -53,6 +53,7 @@ import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.service.RunningAverageRssiFilter;
+import org.altbeacon.beacon.service.ArmaRssiFilter;
 import org.altbeacon.beacon.service.RangedBeacon;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -81,6 +82,10 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static final int DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = 0;
     private static final String SAMPLE_EXPIRATION_MILLISECOND = "com.unarin.cordova.beacon.android.altbeacon.SampleExpirationMilliseconds";
     private static final int DEFAULT_SAMPLE_EXPIRATION_MILLISECOND = 20000;
+    private static final String ENABLE_ARMA_FILTER_NAME = "com.unarin.cordova.beacon.android.altbeacon.EnableArmaFilter";
+    private static final boolean DEFAULT_ENABLE_ARMA_FILTER = false;
+    private static final String REQUEST_BT_PERMISSION_NAME = "com.unarin.cordova.beacon.android.altbeacon.RequestBtPermission";
+    private static final boolean DEFAULT_REQUEST_BT_PERMISSION = true;
     private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = 1100;
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     private static final int BUILD_VERSION_CODES_M = 23;
@@ -135,8 +140,16 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         Log.i(TAG, "Determined config value SAMPLE_EXPIRATION_MILLISECOND: " +
                 String.valueOf(sampleExpirationMilliseconds));
 
-        iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);
-        RunningAverageRssiFilter.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
+        final boolean enableArmaFilter = this.preferences.getBoolean(
+                ENABLE_ARMA_FILTER_NAME, DEFAULT_ENABLE_ARMA_FILTER);
+
+        if(enableArmaFilter){
+               iBeaconManager.setRssiFilterImplClass(ArmaRssiFilter.class);
+        }
+        else{
+               iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);
+               RunningAverageRssiFilter.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
+        }
         RangedBeacon.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
 
         initBluetoothListener();
@@ -152,7 +165,11 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         }
         //TODO AddObserver when page loaded
 
-        tryToRequestMarshmallowLocationPermission();
+        final boolean requestPermission = this.preferences.getBoolean(
+                REQUEST_BT_PERMISSION_NAME, DEFAULT_REQUEST_BT_PERMISSION);
+           
+        if(requestPermission)
+              tryToRequestMarshmallowLocationPermission();
     }
 
     /**
@@ -225,7 +242,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         } else if (action.equals("isAdvertising")) {
             isAdvertising(callbackContext);
         } else if (action.equals("startAdvertising")) {
-            startAdvertising(args.optJSONObject(0), callbackContext);
+            startAdvertising(args, callbackContext);
         } else if (action.equals("stopAdvertising")) {
             stopAdvertising(callbackContext);
         } else if (action.equals("isBluetoothEnabled")) {
@@ -1157,15 +1174,34 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
 
     }
 
-    private void startAdvertising(final JSONObject arguments, CallbackContext callbackContext) throws JSONException {
+    private void startAdvertising(final JSONArray args, CallbackContext callbackContext) throws JSONException {
         debugLog("Advertisement start START BEACON ");
-        debugLog(arguments.toString(4));
+        debugLog(args.toString(4));
+        /*
+        Advertisement start START BEACON 
+            [
+                {
+                    "identifier": "beaconAsMesh",
+                    "uuid": "e80300fe-ff4b-0c37-5149-d9f394b5ca39",
+                    "major": 0,
+                    "minor": 30463,
+                    "notifyEntryStateOnDisplay": true,
+                    "typeName": "BeaconRegion"
+                },
+                7
+            ]
+        */
+        
+        JSONObject arguments = args.optJSONObject(0); // get first object
         String identifier = arguments.getString("identifier");
 
         //For Android, uuid can be null when scanning for all beacons (I think)
         final String uuid = arguments.has("uuid") && !arguments.isNull("uuid") ? arguments.getString("uuid") : null;
         final String major = arguments.has("major") && !arguments.isNull("major") ? arguments.getString("major") : null;
         final String minor = arguments.has("minor") && !arguments.isNull("minor") ? arguments.getString("minor") : null;
+
+        // optinal second member in JSONArray is just a number 
+        final int measuredPower = args.length() > 1 ? args.getInt(1) : -55;
 
         if (major == null && minor != null)
             throw new UnsupportedOperationException("Unsupported combination of 'major' and 'minor' parameters.");
@@ -1180,7 +1216,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
                         .setId2(major) // Major for beacon
                         .setId3(minor) // Minor for beacon
                         .setManufacturer(0x004C) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
-                        .setTxPower(-56) // Power in dB
+                        .setTxPower(measuredPower) // Power in dB
                         .setDataFields(Arrays.asList(new Long[] {0l})) // Remove this for beacon layouts without d: fields
                         .build();
                 debugLog("[DEBUG] Beacon.Builder: "+beacon);
