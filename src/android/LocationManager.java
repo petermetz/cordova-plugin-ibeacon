@@ -86,6 +86,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static final boolean DEFAULT_ENABLE_ARMA_FILTER = false;
     private static final String REQUEST_BT_PERMISSION_NAME = "com.unarin.cordova.beacon.android.altbeacon.RequestBtPermission";
     private static final boolean DEFAULT_REQUEST_BT_PERMISSION = true;
+    private static final String ENABLE_LOCATION_PERMISSION_ALERT = "com.unarin.cordova.beacon.android.altbeacon.EnableLocationPermissionAlert";
+    private static final boolean DEFAULT_ENABLE_LOCATION_PERMISSION_ALERT = true;
     private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = 1100;
     private static int CDV_LOCATION_MANAGER_DOM_DELEGATE_TIMEOUT = 30;
     private static final int BUILD_VERSION_CODES_M = 23;
@@ -315,32 +317,37 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
                         "supported version of Android.");
                 return;
             }
+            
+            final boolean enableLocationPermissionAlert = this.preferences.getBoolean(
+                ENABLE_LOCATION_PERMISSION_ALERT, DEFAULT_ENABLE_LOCATION_PERMISSION_ALERT);
 
-            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("This app needs location access");
-            builder.setMessage("Please grant location access so this app can detect beacons.");
-            builder.setPositiveButton(android.R.string.ok, null);
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @SuppressLint("NewApi")
-                @Override
-                public void onDismiss(final DialogInterface dialog) {
+            if (enableLocationPermissionAlert) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setTitle("This app needs location access");
+                builder.setMessage("Please grant location access so this app can detect beacons.");
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @SuppressLint("NewApi")
+                    @Override
+                    public void onDismiss(final DialogInterface dialog) {
 
-                    try {
-                        requestPermissionsMethod.invoke(activity,
-                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                PERMISSION_REQUEST_COARSE_LOCATION
-                        );
-                    } catch (IllegalAccessException e) {
-                        Log.e(TAG, "IllegalAccessException while requesting permission for " +
-                                "ACCESS_COARSE_LOCATION:", e);
-                    } catch (InvocationTargetException e) {
-                        Log.e(TAG, "InvocationTargetException while requesting permission for " +
-                                "ACCESS_COARSE_LOCATION:", e);
+                        try {
+                            requestPermissionsMethod.invoke(activity,
+                                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    PERMISSION_REQUEST_COARSE_LOCATION
+                            );
+                        } catch (IllegalAccessException e) {
+                            Log.e(TAG, "IllegalAccessException while requesting permission for " +
+                                    "ACCESS_COARSE_LOCATION:", e);
+                        } catch (InvocationTargetException e) {
+                            Log.e(TAG, "InvocationTargetException while requesting permission for " +
+                                    "ACCESS_COARSE_LOCATION:", e);
+                        }
                     }
-                }
-            });
+                });
 
-            builder.show();
+                builder.show();
+            }
 
         } catch (final IllegalAccessException e) {
             Log.w(TAG, "IllegalAccessException while checking for ACCESS_COARSE_LOCATION:", e);
