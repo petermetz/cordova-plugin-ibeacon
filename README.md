@@ -358,6 +358,12 @@ The underlying library uses the moving average to calculate distance by default,
 
 ```<preference name="com.unarin.cordova.beacon.android.altbeacon.EnableArmaFilter" value="true" />```
 
+##### Disable moving average for distance calculations (Android only)
+
+The underlying library uses the moving average to calculate distance by default. It can be disabled by adding the following preference to your `config.xml` file:
+
+```<preference name="com.unarin.cordova.beacon.android.altbeacon.EnableRunningAverageFilter" value="false" />```
+
 #### Disable request for bluetooth permission
 By default, this library requests the user for bluetooth permissions when the app starts. If you would like to request permission in a different way or at a different time, set the following preference in your `config.xml` file.
 
