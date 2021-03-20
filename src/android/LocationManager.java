@@ -84,6 +84,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
     private static final int DEFAULT_SAMPLE_EXPIRATION_MILLISECOND = 20000;
     private static final String ENABLE_ARMA_FILTER_NAME = "com.unarin.cordova.beacon.android.altbeacon.EnableArmaFilter";
     private static final boolean DEFAULT_ENABLE_ARMA_FILTER = false;
+    private static final String ENABLE_RUNNING_AVERAGE_FILTER_NAME = "com.unarin.cordova.beacon.android.altbeacon.EnableRunningAverageFilter";
+    private static final boolean DEFAULT_ENABLE_RUNNING_AVERAGE_FILTER = true;
     private static final String REQUEST_BT_PERMISSION_NAME = "com.unarin.cordova.beacon.android.altbeacon.RequestBtPermission";
     private static final boolean DEFAULT_REQUEST_BT_PERMISSION = true;
     private static final int DEFAULT_FOREGROUND_SCAN_PERIOD = 1100;
@@ -143,10 +145,13 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer {
         final boolean enableArmaFilter = this.preferences.getBoolean(
                 ENABLE_ARMA_FILTER_NAME, DEFAULT_ENABLE_ARMA_FILTER);
 
+        final boolean enableRunningAverageFilter = this.preferences.getBoolean(
+                ENABLE_RUNNING_AVERAGE_FILTER_NAME, DEFAULT_ENABLE_RUNNING_AVERAGE_FILTER);
+
         if(enableArmaFilter){
                iBeaconManager.setRssiFilterImplClass(ArmaRssiFilter.class);
         }
-        else{
+        else if(enableRunningAverageFilter){
                iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);
                RunningAverageRssiFilter.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
         }
