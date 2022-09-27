@@ -3,7 +3,7 @@ repositories{
 }
 
 dependencies {
-    compile 'org.altbeacon:android-beacon-library:2.16.4'
+    implementation 'org.altbeacon:android-beacon-library:2.19.3'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 }
 
