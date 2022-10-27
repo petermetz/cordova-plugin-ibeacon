@@ -1,3 +1,6 @@
+# 3.8.2
+* Upgraded AltBeacon to v2.19, fixes https://github.com/petermetz/cordova-plugin-ibeacon/issues/474
+
 # 3.8.1
 - Fixing botched plugin id in release of v3.8.0.
 
