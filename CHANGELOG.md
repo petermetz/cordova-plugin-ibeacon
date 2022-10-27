@@ -1,3 +1,6 @@
+# 3.8.2
+- Update AltBeacon library to 2.19
+
 # 3.8.1
 - Fixing botched plugin id in release of v3.8.0.
 
