@@ -4,6 +4,7 @@ repositories{
 
 dependencies {
     implementation 'org.altbeacon:android-beacon-library:2.16.1'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
 }
 
 android {
