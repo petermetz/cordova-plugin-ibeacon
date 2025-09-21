@@ -72,11 +72,19 @@ Delegate.peripheralManagerDidStartAdvertising = function(pluginResult) {
 	pluginResult.region = Regions.fromJson(pluginResult.region);
 };
 
-Delegate.peripheralManagerDidUpdateState = function(pluginResult) {
+/**
+ * 
+ * @param {*} _pluginResult 
+ */
+Delegate.peripheralManagerDidUpdateState = function(_pluginResult) {
 
 };
 
-Delegate.didChangeAuthorizationStatus = function(status) {
+/**
+ * 
+ * @param {String} _status 
+ */
+Delegate.didChangeAuthorizationStatus = function(_status) {
 	
 };
 

@@ -28,20 +28,20 @@
       "@commitlint/config-conventional"
     ]
   },
-  "author": "Peter Metz (Somogyvari) <peter.metz@unarin.com>",
+  "author": "Peter Metz <peter.metz@unarin.com>",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/petermetz/cordova-plugin-ibeacon/issues"
   },
   "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon",
   "devDependencies": {
-    "@commitlint/cli": "^7.6.1",
-    "@commitlint/config-conventional": "^7.0.1",
-    "husky": "^2.2.0"
+    "@commitlint/cli": "19.8.1",
+    "@commitlint/config-conventional": "19.8.1",
+    "eslint": "9.36.0",
+    "husky": "9.1.7"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }  
+  "scripts": {
+    "lint": "eslint .",
+    "postinstall": "husky"
   }
 }
