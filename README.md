@@ -386,24 +386,12 @@ This project uses [commitlint](https://github.com/conventional-changelog/commitl
 ### How to execute the tests - OS X
 
 #### Prerequisites Of The Test Runner
-* [Dart SDK](http://dartlang.org) installed on the path (Tested with: 1.2, 1.3, 1.3.3)
 * [NodeJS](http://nodejs.org/)
-* [NPM](https://www.npmjs.org/)
-* [Cordova NPM package](https://www.npmjs.org/package/cordova) (Tested with: 3.4.0-0.1.3)
+* [npm](https://www.npmjs.org/)
+* [Cordova npm package](https://www.npmjs.org/package/cordova) (Tested with: 3.4.0-0.1.3)
 * [XCode](https://developer.apple.com/xcode/) (Tested with 5.0.2 and 6.0)
 
-
-```
-dart test/run_tests.dart
-```
-
-Executing the test runner will do the following:
-* Generates a Cordova project
-* Add the iOS platform
-* Installs the iBeacon plugin from the local file-system.
-* Launches XCode by opening the project.
-
-### How to execute the tests - Without the Dart SDK
+### How to execute the tests on iOS/Safari - Without the Dart SDK
 
 * Open an app which has Cordova iBeacon plugin installed in XCode
 * Install it onto a device or simulator
